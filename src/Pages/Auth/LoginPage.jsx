@@ -8,8 +8,8 @@ import logo from '../../../images/logo.png';
 function LoginPage({ loginSuccess }) {
   const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-200">
+  return (min-h-screen flex items-center justify-center bg-gray-200
+    <div className="">
 
       {/* Login Card */}
       <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">

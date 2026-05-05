@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
+import { stocks } from '../../../utils/local/stock.js';
+
 import { FaCirclePlus } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 
 function TableStock() {
-  const stockItems = [
-    { id: 1, name: 'Es Teh', sku: 'ET-DR-01', status: 'Aman' },
-    { id: 2, name: 'Ayam Geprek', sku: 'AG-FD-01', status: 'Menipis' },
-    { id: 3, name: 'Magelangan', sku: 'MG-FD-02', status: 'Menipis' },
-    { id: 4, name: 'Es Kopi', sku: 'EK-DR-02', status: 'Aman' },
-    { id: 5, name: 'Nasi Goreng', sku: 'MG-FD-03', status: 'Aman' },
-    { id: 6, name: 'Es Coklat', sku: 'EC-DR-03', status: 'Menipis' },
-    { id: 7, name: 'Ayam Katsu', sku: 'AK-FD-04', status: 'Aman' },
-    { id: 8, name: 'Mie Jebew', sku: 'MF-FD-05', status: 'Aman' },
-    { id: 9, name: 'Ayam Goreng', sku: 'AG-FD-06', status: 'Aman' },
-    { id: 10, name: 'Jus Mangga', sku: 'JM-DR-04', status: 'Menipis' },
-    { id: 11, name: 'Jus Alpukat', sku: 'JA-DR-05', status: 'Menipis' }
-  ];
-
+  const navigate = useNavigate();
 
   {/* Variabel untuk ganti halaman tabel */}
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,9 +20,9 @@ function TableStock() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   {/* Buat variabel untuk menampung data stok halaman tertentu */}
-  const currentItems = stockItems.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = stocks.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalItems = stockItems.length;
+  const totalItems = stocks.length;
   const startRange = indexOfFirstItem + 1;
 
   {/* Tampilkan angka urutan terakhir untuk mencegah "Menampilkan 6-10 padahal stok ada 7" */}
@@ -50,6 +40,10 @@ function TableStock() {
       setCurrentPage(currentPage - 1);
   };
 
+  async function onAddHandler() {
+    navigate('/dashboard/newstock');
+  }
+
   return (
     <div>
 
@@ -65,6 +59,9 @@ function TableStock() {
         <div className="flex-4 text-center">
           SKU
         </div>
+        <div className="flex-2 text-center">
+          Stok
+        </div>
         <div className="flex-4 text-center">
           Status
         </div>
@@ -72,30 +69,36 @@ function TableStock() {
 
       {/* Daftar Produk dalam Tabel */}
       <div className="flex flex-col">
-        {currentItems.map((item) => {
+        {currentItems.map((stocks, index) => {
           return (
             <div
-              key={item.id}
-              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300"
+              key={stocks.id}
+              onClick={() => navigate(`/stock/${stocks.id}`)}
+              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
-              {/* Nomor */}
+              {/* Nomor biar urut kalau ada yang dihapus */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.id}
+                {indexOfFirstItem + index + 1}
               </div>
 
               {/* Nama Produk */}
               <div className="flex-4 text-center text-gray-800 text-sm">
-                {item.name}
+                {stocks.name}
               </div>
 
-              {/* Total */}
+              {/* sku */}
               <div className="flex-4 text-center text-gray-800 text-sm">
-                {item.sku}
+                {stocks.sku}
+              </div>
+
+              {/* jumlah */}
+              <div className="flex-2 text-center text-gray-800 text-sm">
+                {stocks.qty}
               </div>
 
               {/* Status */}
               <div className="flex-4 text-center text-gray-800 text-sm">
-                {item.status}
+                {stocks.status}
               </div>
             </div>
           );
@@ -143,7 +146,9 @@ function TableStock() {
       </div>
 
       {/* Button Tambah Barang */}
-      <button className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
+      <button
+        onClick={() => onAddHandler()}
+        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
         <span>
           <FaCirclePlus  size={16}/>
         </span>

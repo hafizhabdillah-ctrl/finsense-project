@@ -30,13 +30,14 @@ function Sidebar() {
         </h1>
       </div>
 
-      {/* New Transaction Button */}
+      {/* New Item btn ke /new */}
       <div className="mx-4 mt-2">
-        <button
+        <NavLink
+          to="/dashboard/new"
           className="w-full bg-sky-950 text-white font-bold rounded-lg py-3 flex items-center justify-center gap-3 cursor-pointer">
           <FiPlusCircle size={20}/>
-          <span>New Transaction</span>
-        </button>
+          <span>New Item</span>
+        </NavLink>
       </div>
 
       {/* Pages */}

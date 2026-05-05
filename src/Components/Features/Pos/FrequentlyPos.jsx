@@ -2,11 +2,11 @@ import React from 'react';
 
 function FrequentlyPos() {
   const products = [
-    { id: 1, name: 'Ayam Geprek', price: 10000, quantity: 1 },
-    { id: 2, name: 'Es Teh', price: 6000, quantity: 2 },
-    { id: 3, name: 'Nasi Goreng', price: 15000, quantity: 1 },
-    { id: 4, name: 'Ayam Katsu', price: 15000, quantity: 1 },
-    { id: 5, name: 'Es Kopi', price: 5000, quantity: 2 },
+    { id: 1, name: 'Beras 1kg', price: 10000, quantity: 1 },
+    { id: 2, name: 'Garam 500gr', price: 6000, quantity: 2 },
+    { id: 3, name: 'Gula 1kg', price: 15000, quantity: 1 },
+    { id: 4, name: 'Telur 1kg', price: 15000, quantity: 1 },
+    { id: 5, name: 'Ayam 1kg', price: 5000, quantity: 2 },
   ];
 
   return (

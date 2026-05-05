@@ -2,10 +2,10 @@ import React from 'react';
 
 function LakuDashboard() {
   const stockItems = [
-    { id: 1, name: 'Es Teh', terjual: 21, total: '63.000' },
-    { id: 2, name: 'Ayam Geprek', terjual: 15, total: '150.000' },
-    { id: 3, name: 'Magelangan', terjual: 12, total: '144.000' },
-    { id: 4, name: 'Es Kopi', terjual: 7, total: '35.000' },
+    { id: 1, name: 'Telur 1kg', terjual: 21, total: '63.000' },
+    { id: 2, name: 'Minyak Goreng 1L', terjual: 15, total: '150.000' },
+    { id: 3, name: 'Gula 1kg', terjual: 12, total: '144.000' },
+    { id: 4, name: 'Beras 1kg', terjual: 7, total: '35.000' },
   ];
 
   return (

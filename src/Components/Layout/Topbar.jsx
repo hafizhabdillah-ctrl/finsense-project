@@ -1,17 +1,29 @@
 import React from 'react';
 import SearchBarTop from './SearchBarTop';
+import { useNavigate } from 'react-router-dom';
 import { IoIosNotifications, IoIosSettings } from 'react-icons/io';
 
 {/* jangan lupa diganti aowkaowkoawk */}
 import bahlil from '../../../images/bahlil.jpg';
 
 function Topbar() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-row w-full py-4 border-b border-gray-200">
 
       {/* Search Bar */}
-      <div className="mx-4 px-4 flex items-center">
-        <SearchBarTop />
+      <div className="mx-4 flex gap-2">
+        <span className="text-gray-500 text-3xl mr-2 px-2 border border-white hover:bg-gray-300 hover:border hover:rounded-lg transition-all">
+          <button
+            onClick={() => navigate(-1)}
+          >
+            &larr;
+          </button>
+        </span>
+        <span>
+          <SearchBarTop />
+        </span>
       </div>
 
       {/* Top Right */}

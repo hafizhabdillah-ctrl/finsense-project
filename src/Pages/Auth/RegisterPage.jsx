@@ -1,20 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../utils/network-data.js';
 import RegisterInput from '../../Components/Auth/Register/RegisterInput.jsx';
 import logo from '../../../images/logo.png';
 
 function LoginPage({ loginSuccess }) {
   const navigate = useNavigate();
-
-  async function onLogin({ email, password }) {
-    const { error, data } = await login({ email, password });
-
-    if (!error) {
-      loginSuccess({ accessToken: data.accessToken });
-      navigate('/dashboard');
-    }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200">

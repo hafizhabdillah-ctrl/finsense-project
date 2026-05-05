@@ -3,7 +3,7 @@ import { FaMicrophone } from 'react-icons/fa';
 
 function InputPos() {
   return (
-    <div className="flex flex-col items-center justify-start py-12 gap-4">
+    <div className="flex flex-col items-center py-12 gap-4">
 
       <p className="text-lg font-semibold text-sky-950 mb-2">"Lorem Ipsum Prompt"</p>
 
