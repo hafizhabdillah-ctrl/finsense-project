@@ -1,0 +1,249 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+enum TransactionType {
+  income
+  expense
+}
+
+enum SourceEnum {
+  manual
+  voice
+  ai
+}
+
+enum SeverityEnum {
+  low
+  mid
+  high
+}
+
+enum GoalStatus {
+  active
+  achieved
+  failed
+}
+
+enum PeriodType {
+  monthly
+  weekly
+}
+
+enum ModelType {
+  classify
+  forecast
+  anomaly
+}
+
+// ==================== AUTH & UMKM ====================
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  full_name     String
+  is_verified   Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  umkm_profile         UmkmProfile?
+  transactions         Transaction[]
+  chat_sessions        AiChatSession[]
+  financial_goals      FinancialGoal[]
+  monthly_budgets      MonthlyBudget[]
+  anomaly_detections   AnomalyDetection[]
+  financial_forecasts  FinancialForecast[]
+  financial_reports    FinancialReport[]
+  refreshTokens        RefreshToken[] 
+}
+
+model UmkmProfile {
+  id                  String   @id @default(uuid())
+  user_id             String   @unique
+  business_name       String
+  business_type       String?
+  province            String?
+  city                String?
+  monthly_revenue_est Float?
+  employee_count      Int?
+  onboarding_done     Boolean  @default(false)
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user_id   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// ==================== TRANSAKSI & KATEGORI ====================
+model TransactionCategory {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  coicop_code String?         @unique
+  type        TransactionType
+  parent_id   Int?            // self relation untuk subkategori
+  icon        String?
+  color_hex   String?
+  is_default  Boolean         @default(false)
+
+  parent   TransactionCategory? @relation("CategorySubcategory", fields: [parent_id], references: [id])
+  children TransactionCategory[] @relation("CategorySubcategory")
+
+  transactions   Transaction[]
+  transaction_items TransactionItem[]
+  monthly_budgets MonthlyBudget[]
+}
+
+model Transaction {
+  id               String          @id @default(uuid())
+  user_id          String
+  category_id      Int
+  type             TransactionType
+  amount           Float
+  description      String?         // raw teks dari voice / manual
+  transaction_date DateTime        @default(now())
+  source           SourceEnum
+  is_anomaly       Boolean         @default(false)
+  created_at       DateTime        @default(now())
+
+  user     User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category TransactionCategory @relation(fields: [category_id], references: [id])
+
+  items  TransactionItem[]  // detail item per transaksi
+  anomaly AnomalyDetection? // one-to-one optional
+}
+
+// === Tabel transaction_items (sesuai permintaan) ===
+model TransactionItem {
+  id             String   @id @default(uuid())
+  transaction_id String
+  item_name      String
+  quantity       Float
+  unit           String?   // pcs, kg, liter
+  unit_price     Float
+  total_price    Float    @default(0)
+  category_id    Int?     // bisa beda dari kategori transaksi utama
+  ai_confidence  Float?   // confidence dari klasifikasi AI
+
+  transaction Transaction         @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  category    TransactionCategory? @relation(fields: [category_id], references: [id])
+}
+
+// ==================== AI & MODEL ====================
+model AiModel {
+  id          Int       @id @default(autoincrement())
+  name        String
+  version     String
+  type        ModelType
+  accuracy    Float?
+  model_path  String?   // path ke file .keras
+  is_active   Boolean   @default(false)
+  deployed_at DateTime? @default(now())
+
+  forecasts FinancialForecast[]
+}
+
+model AiChatSession {
+  id              String   @id @default(uuid())
+  user_id         String
+  session_title   String?
+  context_summary String?
+  message_count   Int      @default(0)
+  created_at      DateTime @default(now())
+  last_active_at  DateTime @default(now())
+
+  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  messages AiMessage[]
+}
+
+model AiMessage {
+  id          String   @id @default(uuid())
+  session_id  String
+  role        String   // 'user' atau 'assistant'
+  content     String
+  token_used  Int?
+  model_used  String?  // 'Claude' / 'GPT'
+  created_at  DateTime @default(now())
+
+  session AiChatSession @relation(fields: [session_id], references: [id], onDelete: Cascade)
+}
+
+// ==================== LAPORAN & BUDGET ====================
+model FinancialGoal {
+  id             String     @id @default(uuid())
+  user_id        String
+  goal_name      String
+  target_amount  Float
+  current_amount Float      @default(0)
+  deadline       DateTime
+  status         GoalStatus @default(active)
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model MonthlyBudget {
+  id              String   @id @default(uuid())
+  user_id         String
+  category_id     Int
+  month           Int      // 1-12
+  year            Int
+  budget_amount   Float
+  alert_threshold Float    @default(80) // persentase
+
+  user     User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category TransactionCategory @relation(fields: [category_id], references: [id])
+}
+
+model AnomalyDetection {
+  id             Int          @id @default(autoincrement())
+  user_id        String
+  transaction_id String       @unique
+  anomaly_type   String
+  severity       SeverityEnum
+  deviation_pct  Float
+  is_reviewed    Boolean      @default(false)
+  detected_at    DateTime     @default(now())
+
+  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+}
+
+model FinancialForecast {
+  id                 String   @id @default(uuid())
+  user_id            String
+  forecast_date      DateTime @default(now())
+  predicted_balance  Float
+  predicted_expense  Float
+  confidence         Float?
+  model_id           Int?
+
+  user  User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  model AiModel? @relation(fields: [model_id], references: [id])
+}
+
+model FinancialReport {
+  id            String     @id @default(uuid())
+  user_id       String
+  period_type   PeriodType
+  period_start  DateTime
+  period_end    DateTime
+  total_income  Float
+  total_expense Float
+  net_balance   Float
+  pdf_url       String?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
