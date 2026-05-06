@@ -1,24 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { carts, deleteCart } from '../../../utils/local/pos';
 
 function CartPos() {
-  const products = [
-    { id:1, name: 'Beras Premium', price: 10000, quantity: 2 },
-    { id:2, name: 'Minyak Goreng', price: 15000, quantity: 1 },
-    { id:3, name: 'Telur 1 kilogram', price: 15000, quantity: 2 },
-  ];
+  const [cartItems, setCartItems] = useState(carts);
+  useEffect(() => {
+    setCartItems([...carts]);
+  }, []);
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  const subtotal = products.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const onDeleteHandler = (item) => {
+    const isConfirmed = window.confirm(`Konfirmasi hapus ${item.name}?`);
+
+    if (isConfirmed) {
+      deleteCart(item.id);
+      setCartItems(carts);
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full p-2 overflow-y-auto w-96 ">
+    <div className="flex flex-col p-2 w-96 h-190">
 
       {/* Header */}
       <h1 className="font-semibold text-xl text-sky-950 mb-4 flex-shrink-0">Keranjang</h1>
 
       {/* Map barang */}
-      <div className="flex flex-col gap-2 flex-1 overflow-y-auto">
-        {products.map((item) =>{
-          const total = item.price * item.quantity;
+      <div className="flex flex-col gap-2 flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-300px)]">
+        {cartItems.length > 0 ? cartItems.map((item) => {
+          const total = item.price * item.qty;
           return (
             <div
               key={item.id}
@@ -31,16 +39,23 @@ function CartPos() {
 
               {/* Harga dan jumlah */}
               <div className="text-gray-500 flex justify-between">
-                {item.price} x {item.quantity}
+                {item.price} x {item.qty}
 
                 {/* Total */}
-                <div className="relative bottom-4 text-sky-950 font-bold text-lg">
-                  {total}
+                <div className="flex gap-2 relative bottom-4 text-sky-950 font-bold text-lg">
+                  <span>
+                    {total}
+                  </span>
+                  <button
+                    onClick={() => onDeleteHandler(item)}
+                    className="text-red-800 cursor-pointer">
+                    X
+                  </button>
                 </div>
               </div>
             </div>
           );
-        })}
+        }) : <p className="text-gray-500 text-center py-4">Keranjang kosong</p>}
       </div>
 
       {/* Tombol konfirmasi */}

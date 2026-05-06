@@ -11,7 +11,7 @@ function EditStock() {
   const [qty, setQty] = useState('');
 
   useEffect(() => {
-    const stockToEdit = stocks.find((s) => s.id === Number(id)); //
+    const stockToEdit = stocks.find((s) => s.id === Number(id));
     if (stockToEdit) {
       setName(stockToEdit.name);
       setSku(stockToEdit.sku);
@@ -19,8 +19,8 @@ function EditStock() {
     }
   }, [id]);
 
-  const onSubmitHandler = (n) => {
-    n.preventDefault();
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
 
     updateStock({
       id: Number(id),
@@ -29,7 +29,7 @@ function EditStock() {
       qty,
     });
 
-    alert('Data berhasil diperbarui');
+    alert('Stok berhasil diperbarui');
     navigate(`/stock/${id}`);
   };
 
@@ -40,7 +40,6 @@ function EditStock() {
       <h1 className="text-2xl font-bold text-gray-800">Edit Produk</h1>
       <p className="mb-2 mt-2 text-sm text-gray-500">ID Barang: {id}</p>
 
-      {/* Tabel detail */}
       <div className="grid grid-cols-2 gap-4 border-t pt-4">
         <p className="flex items-center font-semibold text-gray-600">Nama Produk:</p>
         <input

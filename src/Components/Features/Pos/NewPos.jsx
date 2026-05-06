@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { addCart } from '../../../utils/local/pos';
 
-function NewPos({ keyword, keywordChange }) {
+function NewPos() {
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [qty, setQty] = useState('');
+
+  function onSubmitHandler(event) {
+    if (name.trim() === '' || price.trim() === '' || qty === '') {
+      event.preventDefault();
+      alert('Mohon lengkapi semua data sebelum menambahkan barang');
+      return;
+    }
+
+    if (Number(qty) < 0) {
+      event.preventDefault();
+      alert('Angka tidak boleh minus!');
+      return;
+    }
+
+    event.preventDefault();
+    addCart({ name, price, qty });
+    navigate('/pos');
+  }
+
   return (
-    <div className="py-2 px-4">
+    <form className="py-2 px-4" onSubmit={onSubmitHandler}>
 
       {/* Header */}
       <h1 className="p-2 text-gray-700 text-2xl font-bold">Tambah POS Baru</h1>
@@ -16,8 +41,8 @@ function NewPos({ keyword, keywordChange }) {
           type="text"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan nama barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          value={name}
+          onChange={(n) => setName(n.target.value)}
         />
       </div>
 
@@ -30,8 +55,8 @@ function NewPos({ keyword, keywordChange }) {
           type="number"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan jumlah Barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          value={qty}
+          onChange={(n) => setQty(n.target.value)}
         />
       </div>
 
@@ -44,8 +69,8 @@ function NewPos({ keyword, keywordChange }) {
           type="number"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan harga barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          value={price}
+          onChange={(n) => setPrice(n.target.value)}
         />
       </div>
 
@@ -54,7 +79,7 @@ function NewPos({ keyword, keywordChange }) {
           Konfirmasi
         </span>
       </button>
-    </div>
+    </form>
   );
 }
 

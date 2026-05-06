@@ -1,129 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { logs } from '../../../utils/local/log';
+
 import { FaCirclePlus } from 'react-icons/fa6';
 
 function TableLog() {
-  const logs = [
-    {
-      id: 1,
-      waktu: '2026-05-02 10:42:00',
-      produk: 'Kopi Arabika Gayo 1Kg',
-      sku: 'KAG-1K-001',
-      tipe: 'Penjualan POS',
-      jumlah: -2,
-      oleh: 'Kasir 1 (Budi)',
-      status: 'Selesai'
-    },
-    {
-      id: 2,
-      waktu: '2026-05-02 09:15:00',
-      produk: 'Susu UHT Full Cream 1L',
-      sku: 'SUHT-1L-005',
-      tipe: 'Stok Masuk',
-      jumlah: 50,
-      oleh: 'Gudang (Agus)',
-      status: 'Selesai'
-    },
-    {
-      id: 3,
-      waktu: '2026-05-02 08:30:00',
-      produk: 'Gula Pasir Premium 1Kg',
-      sku: 'GPP-1K-002',
-      tipe: 'Penyesuaian Manual',
-      jumlah: -15,
-      oleh: 'Admin (Siti)',
-      status: 'Menunggu Audit'
-    },
-    {
-      id: 4,
-      waktu: '2026-05-01 16:45:00',
-      produk: 'Teh Hitam Celup',
-      sku: 'THC-B-010',
-      tipe: 'Penjualan POS',
-      jumlah: -1,
-      oleh: 'Kasir 2 (Dewi)',
-      status: 'Selesai'
-    },
-    {
-      id: 5,
-      waktu: '2026-05-01 14:20:00',
-      produk: 'Minyak Goreng 2L',
-      sku: 'MNG-2L-015',
-      tipe: 'Stok Masuk',
-      jumlah: 100,
-      oleh: 'Gudang (Agus)',
-      status: 'Selesai'
-    },
-    {
-      id: 6,
-      waktu: '2026-05-01 11:10:00',
-      produk: 'Beras Pandan Wangi 5Kg',
-      sku: 'BPW-5K-022',
-      tipe: 'Penyesuaian Manual',
-      jumlah: -2,
-      oleh: 'Admin (Siti)',
-      status: 'Selesai'
-    },
-    {
-      id: 7,
-      waktu: '2026-05-01 10:05:00',
-      produk: 'Garam Dapur 500g',
-      sku: 'GRM-5H-009',
-      tipe: 'Penjualan POS',
-      jumlah: -5,
-      oleh: 'Kasir 1 (Budi)',
-      status: 'Selesai'
-    },
-    {
-      id: 8,
-      waktu: '2026-04-30 09:30:00',
-      produk: 'Sabun Mandi Cair 450ml',
-      sku: 'SMC-4H-031',
-      tipe: 'Stok Masuk',
-      jumlah: 24,
-      oleh: 'Gudang (Rian)',
-      status: 'Selesai'
-    },
-    {
-      id: 9,
-      waktu: '2026-04-30 15:50:00',
-      produk: 'Mie Instan Kuah (Karton)',
-      sku: 'MIK-K-045',
-      tipe: 'Penjualan POS',
-      jumlah: -10,
-      oleh: 'Kasir 2 (Dewi)',
-      status: 'Selesai'
-    },
-    {
-      id: 10,
-      waktu: '2026-04-30 13:15:00',
-      produk: 'Deterjen Bubuk 800g',
-      sku: 'DTB-8H-012',
-      tipe: 'Penyesuaian Manual',
-      jumlah: 3,
-      oleh: 'Admin (Siti)',
-      status: 'Menunggu Audit'
-    },
-    {
-      id: 11,
-      waktu: '2026-04-29 08:45:00',
-      produk: 'Kecap Manis 520ml',
-      sku: 'KCM-5H-007',
-      tipe: 'Penjualan POS',
-      jumlah: -4,
-      oleh: 'Kasir 1 (Budi)',
-      status: 'Selesai'
-    },
-    {
-      id: 12,
-      waktu: '2026-04-29 17:00:00',
-      produk: 'Tepung Terigu 1Kg',
-      sku: 'TTG-1K-019',
-      tipe: 'Stok Masuk',
-      jumlah: 40,
-      oleh: 'Gudang (Agus)',
-      status: 'Selesai'
-    }
-  ];
+  const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -137,7 +19,6 @@ function TableLog() {
 
   const endRange = Math.min(indexOfLastItem, totalItems);
 
-
   {/* Fungsi ganti halaman tabel */}
   const goToNextPage = () => {
     if (indexOfLastItem < totalItems)
@@ -148,6 +29,11 @@ function TableLog() {
     if (currentPage > 1)
       setCurrentPage(currentPage - 1);
   };
+
+  async function onAddHandler() {
+    navigate('/new/newlog');
+  }
+
 
   return (
     <div>
@@ -180,45 +66,46 @@ function TableLog() {
 
       {/* Daftar hutang */}
       <div className="flex flex-col">
-        {currentItems.map((item) => {
+        {currentItems.map((logs) => {
           return (
             <div
-              key={item.id}
-              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300"
+              key={logs.id}
+              onClick={() => navigate(`/log/${logs.id}`)}
+              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Waktu */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.waktu}
+                {logs.waktu}
               </div>
 
               {/* Nama Produk */}
               <div className="flex-1 text-center text-gray-800 text-sm font-bold">
-                {item.produk}
+                {logs.produk}
               </div>
 
               {/* SKU */}
               <div className="flex-1 text-center text-gray-500 text-sm">
-                {item.sku}
+                {logs.sku}
               </div>
 
               {/* tipe */}
               <div className="flex-1 text-center text-gray-500 text-sm">
-                {item.tipe}
+                {logs.tipe}
               </div>
 
               {/* jumlah */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.jumlah}
+                {logs.jumlah}
               </div>
 
               {/* oleh */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.oleh}
+                {logs.oleh}
               </div>
 
               {/* status */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.status}
+                {logs.status}
               </div>
             </div>
           );
@@ -266,7 +153,9 @@ function TableLog() {
       </div>
 
       {/* Button tambah log barang */}
-      <button className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
+      <button
+        onClick={() => onAddHandler()}
+        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
         <span>
           <FaCirclePlus  size={16}/>
         </span>

@@ -21,7 +21,7 @@ function NewStock() {
     // jumlah gaboleh negatif
     if (Number(qty) < 0) {
       event.preventDefault();
-      alert('Jumlah stok tidak boleh minus!');
+      alert('Angka tidak boleh minus!');
       return;
     }
 
