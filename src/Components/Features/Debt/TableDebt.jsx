@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
+import { debts } from '../../../utils/local/debt';
 import { FaCirclePlus } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 
 function TableDebt() {
-  const debts = [
-    { id: 1, name: 'Budi', hutang: '1.250.000', tempo: '12 Desember 2026', status: 'Lunas' },
-    { id: 2, name: 'Andi', hutang: '1.500.000', tempo: '13 Desember 2026', status: 'Belum Lunas' },
-    { id: 3, name: 'Siti', hutang: '1.750.000', tempo: '14 Desember 2026', status: 'Belum Lunas' },
-    { id: 4, name: 'Rina', hutang: '1.600.000', tempo: '15 Desember 2026', status: 'Lunas' },
-    { id: 5, name: 'Doni', hutang: '1.400.000', tempo: '16 Desember 2026', status: 'Belum Lunas' },
-    { id: 6, name: 'Eko', hutang: '2.100.000', tempo: '17 Desember 2026', status: 'Belum Lunas' },
-    { id: 7, name: 'Maya', hutang: '950.000', tempo: '18 Desember 2026', status: 'Lunas' },
-    { id: 8, name: 'Gani', hutang: '3.200.000', tempo: '19 Desember 2026', status: 'Belum Lunas' },
-    { id: 9, name: 'Lia', hutang: '1.150.000', tempo: '20 Desember 2026', status: 'Lunas' },
-    { id: 10, name: 'Fajar', hutang: '2.450.000', tempo: '21 Desember 2026', status: 'Belum Lunas' },
-    { id: 11, name: 'Dewi', hutang: '1.800.000', tempo: '22 Desember 2026', status: 'Belum Lunas' },
-    { id: 12, name: 'Heri', hutang: '700.000', tempo: '23 Desember 2026', status: 'Lunas' },
-    { id: 13, name: 'Siska', hutang: '2.000.000', tempo: '24 Desember 2026', status: 'Belum Lunas' },
-    { id: 14, name: 'Bambang', hutang: '1.350.000', tempo: '25 Desember 2026', status: 'Lunas' },
-    { id: 15, name: 'Putri', hutang: '2.750.000', tempo: '26 Desember 2026', status: 'Belum Lunas' },
-    { id: 16, name: 'Rian', hutang: '1.900.000', tempo: '27 Desember 2026', status: 'Belum Lunas' },
-    { id: 17, name: 'Yanti', hutang: '3.000.000', tempo: '28 Desember 2026', status: 'Lunas' },
-  ];
+  const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -44,6 +28,10 @@ function TableDebt() {
   const goToPrevPage = () => {
     if (currentPage > 1)
       setCurrentPage(currentPage - 1);
+  };
+
+  async function onAddHandler() {
+    navigate('/new/newdebt');
   };
 
   return (
@@ -71,35 +59,36 @@ function TableDebt() {
 
       {/* Daftar hutang */}
       <div className="flex flex-col">
-        {currentItems.map((item) => {
+        {currentItems.map((debts, index) => {
           return (
             <div
-              key={item.id}
-              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300"
+              key={debts.id}
+              onClick={() => navigate(`/debt/${debts.id}`)}
+              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Nomor */}
               <div className="flex-1 text-center text-gray-800 text-sm">
-                {item.id}
+                {indexOfFirstItem + index + 1}
               </div>
 
               {/* Nama Produk */}
               <div className="flex-8 text-center text-gray-800 text-sm font-bold">
-                {item.name}
+                {debts.name}
               </div>
 
               {/* Total */}
               <div className="flex-8 text-center text-gray-500 text-sm">
-                {item.hutang}
+                {debts.hutang}
               </div>
 
               {/* Tempo */}
               <div className="flex-8 text-center text-gray-500 text-sm">
-                {item.tempo}
+                {debts.tempo}
               </div>
 
               {/* Status */}
               <div className="flex-8 text-center text-gray-800 text-sm">
-                {item.status}
+                {debts.status}
               </div>
             </div>
           );
@@ -147,7 +136,9 @@ function TableDebt() {
       </div>
 
       {/* Button tambah piutang */}
-      <button className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
+      <button
+        onClick={() => onAddHandler()}
+        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
         <span>
           <FaCirclePlus  size={16}/>
         </span>

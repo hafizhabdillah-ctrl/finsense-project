@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { addDebt } from '../../../utils/local/debt';
 
-function NewDebt({ keyword, keywordChange }) {
+function NewDebt() {
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [hutang, setHutang] = useState('');
+  const [tempo, setTempo] = useState('');
+
+  function onSubmitHandler(event) {
+
+    if (name.trim() === '' || hutang.trim() === '' || tempo.trim() === '') {
+      event.preventDefault();
+      alert('Mohon lengkapi semua data');
+      return;
+    };
+
+    if (Number(hutang) < 0) {
+      event.preventDefault();
+      alert('Angka tidak boleh minus!');
+      return;
+    }
+
+    event.preventDefault();
+    addDebt({ name, hutang, tempo });
+    navigate('/debt');
+  }
+
   return (
-    <div className="py-2 px-4">
+    <form className="py-2 px-4" onSubmit={onSubmitHandler}>
 
       {/* Header */}
       <h1 className="p-2 text-gray-700 text-2xl font-bold">Tambah Piutang Baru</h1>
@@ -16,8 +42,8 @@ function NewDebt({ keyword, keywordChange }) {
           type="text"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan nama barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          value={name}
+          onChange={(n) => setName(n.target.value)}
         />
       </div>
 
@@ -29,9 +55,9 @@ function NewDebt({ keyword, keywordChange }) {
         <input
           type="number"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan jumlah Barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          placeholder="Masukan jumlah hutang..."
+          value={hutang}
+          onChange={(n) => setHutang(n.target.value)}
         />
       </div>
 
@@ -41,11 +67,11 @@ function NewDebt({ keyword, keywordChange }) {
           Jatuh Tempo:
         </span>
         <input
-          type="text"
+          type="date"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan harga barang..."
-          value={keyword}
-          onChange={(event) => keywordChange(event.target.value)}
+          placeholder="Masukan jatuh tempo..."
+          value={tempo}
+          onChange={(n) => setTempo(n.target.value)}
         />
       </div>
 
@@ -54,7 +80,7 @@ function NewDebt({ keyword, keywordChange }) {
           Konfirmasi
         </span>
       </button>
-    </div>
+    </form>
   );
 }
 

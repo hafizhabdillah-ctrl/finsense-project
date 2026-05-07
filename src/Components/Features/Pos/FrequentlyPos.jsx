@@ -10,7 +10,7 @@ function FrequentlyPos() {
   ];
 
   return (
-    <div>
+    <div className="mt-20">
       <p className="text-lg font-semibold px-4 py-2 mb-4">Produk Sering Dibeli</p>
 
       <div className="flex px-2 gap-4 justify-around">

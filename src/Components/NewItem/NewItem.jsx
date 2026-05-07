@@ -8,22 +8,22 @@ function NewItem() {
     {
       title: 'Tambah Barang',
       description: 'Masukkan barang yang baru tiba atau restock',
-      link: '/dashboard/newstock'
+      link: '/new/newstock'
     },
     {
       title: 'Tambah Log POS Terminal',
       description: 'Catat aktivitas terminal POS secara manual',
-      link: '/dashboard/newpos'
+      link: '/new/newpos'
     },
     {
       title: 'Tambah Piutang',
       description: 'Catat hutang atau piutang pelanggan',
-      link: '/dashboard/newdebt'
+      link: '/new/newdebt'
     },
     {
       title: 'Tambah Log Barang',
       description: 'Catat riwayat pergerakan dan penyesuaian',
-      link: '/dashboard/newlog'
+      link: '/new/newlog'
     }
   ];
 

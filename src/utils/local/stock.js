@@ -6,7 +6,7 @@ export let stocks = [
 ];
 
 export function addStock({ name, sku, qty }) {
-  stocks = [... stocks, {
+  stocks = [...stocks, {
     id: stocks.length + 1,
     name: name,
     sku: sku,

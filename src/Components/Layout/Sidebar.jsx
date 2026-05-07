@@ -33,7 +33,7 @@ function Sidebar() {
       {/* New Item btn ke /new */}
       <div className="mx-4 mt-2">
         <NavLink
-          to="/dashboard/new"
+          to="/new"
           className="w-full bg-sky-950 text-white font-bold rounded-lg py-3 flex items-center justify-center gap-3 cursor-pointer">
           <FiPlusCircle size={20}/>
           <span>New Item</span>

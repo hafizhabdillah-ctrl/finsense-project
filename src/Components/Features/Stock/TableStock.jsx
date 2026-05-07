@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { stocks } from '../../../utils/local/stock.js';
 
 import { FaCirclePlus } from 'react-icons/fa6';
-import { useNavigate } from 'react-router-dom';
 
 function TableStock() {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ function TableStock() {
   };
 
   async function onAddHandler() {
-    navigate('/dashboard/newstock');
+    navigate('/new/newstock');
   }
 
   return (

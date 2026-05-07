@@ -10,7 +10,7 @@ function ErrorPage() {
         PAGE NOT FOUND
       </span>
       <span>
-        Halaman tidak ditemukan.....:v
+        Halaman tidak ditemukan.....
       </span>
     </div>
   );
