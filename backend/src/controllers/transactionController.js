@@ -43,61 +43,196 @@ exports.getTransactions = async (req, res) => {
 };
 
 // CREATE transaction (manual or voice)
+// exports.createTransaction = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     let { amount, description, transaction_date, type, source, items } =
+//       req.body;
+
+//     // Validasi amount
+//     if (!amount || isNaN(parseFloat(amount))) {
+//       return res.status(400).json({ error: 'Amount harus berupa angka' });
+//     }
+
+//     let categoryId = null;
+
+//     if (description) {
+//       // Coba klasifikasi via AI
+//       const aiResult = await aiClient.classifyText(description);
+//       categoryId = aiResult.categoryId;
+
+//       // Validasi apakah categoryId ada di database
+//       const categoryExists = await prisma.transactionCategory.findUnique({
+//         where: { id: categoryId },
+//       });
+//       if (!categoryExists) {
+//         console.warn(
+//           `Category ID ${categoryId} dari AI tidak valid, pakai default`,
+//         );
+//         categoryId = await getDefaultCategoryId();
+//       }
+//     } else {
+//       // fallback kategori default
+//       categoryId = await getDefaultCategoryId();
+//     }
+
+//     // Pastikan categoryId final valid
+//     const finalCategory = await prisma.transactionCategory.findUnique({
+//       where: { id: categoryId },
+//     });
+//     if (!finalCategory) {
+//       return res.status(500).json({ error: 'Kategori tidak valid' });
+//     }
+
+//     // Siapkan data untuk create
+//     const transactionData = {
+//       user_id: userId,
+//       category_id: categoryId,
+//       amount: parseFloat(amount),
+//       description: description || null,
+//       transaction_date: transaction_date
+//         ? new Date(transaction_date)
+//         : new Date(),
+//       type: type,
+//       source: source || 'manual',
+//     };
+
+//     // Jika ada items, tambahkan relasi create
+//     if (items && items.length) {
+//       transactionData.items = {
+//         create: items.map((item) => ({
+//           item_name: item.item_name,
+//           quantity: item.quantity,
+//           unit: item.unit || null,
+//           unit_price: item.unit_price,
+//           total_price: item.quantity * item.unit_price,
+//           category_id: item.category_id || categoryId,
+//           ai_confidence: item.ai_confidence || null,
+//         })),
+//       };
+//     }
+
+//     const transaction = await prisma.transaction.create({
+//       data: transactionData,
+//       include: { items: true },
+//     });
+
+//     res.status(201).json(transaction);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 exports.createTransaction = async (req, res) => {
   try {
     const userId = req.userId;
     let { amount, description, transaction_date, type, source, items } =
       req.body;
 
-    // Validasi amount
+    // ========== 1. Validasi awal ==========
     if (!amount || isNaN(parseFloat(amount))) {
       return res.status(400).json({ error: 'Amount harus berupa angka' });
     }
+    amount = parseFloat(amount);
 
+    // Validasi type
+    if (!['income', 'expense'].includes(type)) {
+      return res.status(400).json({ error: 'Type harus income atau expense' });
+    }
+
+    // Validasi items jika ada
+    if (items && !Array.isArray(items)) {
+      return res.status(400).json({ error: 'Items harus berupa array' });
+    }
+
+    if (items && items.length) {
+      for (const item of items) {
+        if (!item.item_name || typeof item.item_name !== 'string') {
+          return res
+            .status(400)
+            .json({ error: 'Setiap item harus memiliki item_name' });
+        }
+        if (
+          !item.quantity ||
+          isNaN(parseFloat(item.quantity)) ||
+          parseFloat(item.quantity) <= 0
+        ) {
+          return res
+            .status(400)
+            .json({ error: `Quantity item ${item.item_name} harus angka > 0` });
+        }
+        if (
+          !item.unit_price ||
+          isNaN(parseFloat(item.unit_price)) ||
+          parseFloat(item.unit_price) < 0
+        ) {
+          return res
+            .status(400)
+            .json({
+              error: `Unit price item ${item.item_name} harus angka >= 0`,
+            });
+        }
+        // Konversi ke number
+        item.quantity = parseFloat(item.quantity);
+        item.unit_price = parseFloat(item.unit_price);
+      }
+    }
+
+    // Validasi transaction_date
+    let transactionDate = transaction_date
+      ? new Date(transaction_date)
+      : new Date();
+    if (isNaN(transactionDate.getTime())) {
+      return res.status(400).json({ error: 'transaction_date tidak valid' });
+    }
+
+    // ========== 2. Tentukan kategori (AI atau default) ==========
     let categoryId = null;
 
-    if (description) {
-      // Coba klasifikasi via AI
-      const aiResult = await aiClient.classifyText(description);
-      categoryId = aiResult.categoryId;
+    try {
+      if (description && typeof description === 'string') {
+        const aiResult = await aiClient.classifyText(description);
+        categoryId = aiResult.categoryId;
 
-      // Validasi apakah categoryId ada di database
-      const categoryExists = await prisma.transactionCategory.findUnique({
-        where: { id: categoryId },
-      });
-      if (!categoryExists) {
-        console.warn(
-          `Category ID ${categoryId} dari AI tidak valid, pakai default`,
-        );
+        // Validasi apakah categoryId ada di DB
+        const categoryExists = await prisma.transactionCategory.findUnique({
+          where: { id: categoryId },
+        });
+        if (!categoryExists) {
+          console.warn(
+            `Category ID ${categoryId} dari AI tidak valid, pakai default`,
+          );
+          categoryId = await getDefaultCategoryId();
+        }
+      } else {
         categoryId = await getDefaultCategoryId();
       }
-    } else {
-      // fallback kategori default
+    } catch (aiError) {
+      console.error('Gagal klasifikasi AI:', aiError.message);
       categoryId = await getDefaultCategoryId();
     }
 
-    // Pastikan categoryId final valid
+    // Pastikan categoryId final valid (guard)
     const finalCategory = await prisma.transactionCategory.findUnique({
       where: { id: categoryId },
     });
     if (!finalCategory) {
-      return res.status(500).json({ error: 'Kategori tidak valid' });
+      return res
+        .status(500)
+        .json({ error: 'Konfigurasi kategori default tidak valid' });
     }
 
-    // Siapkan data untuk create
+    // ========== 3. Siapkan data transaksi ==========
     const transactionData = {
       user_id: userId,
       category_id: categoryId,
-      amount: parseFloat(amount),
+      amount: amount,
       description: description || null,
-      transaction_date: transaction_date
-        ? new Date(transaction_date)
-        : new Date(),
+      transaction_date: transactionDate,
       type: type,
       source: source || 'manual',
     };
 
-    // Jika ada items, tambahkan relasi create
     if (items && items.length) {
       transactionData.items = {
         create: items.map((item) => ({
@@ -112,15 +247,61 @@ exports.createTransaction = async (req, res) => {
       };
     }
 
-    const transaction = await prisma.transaction.create({
-      data: transactionData,
-      include: { items: true },
+    // ========== 4. Jalankan dalam Prisma transaction ==========
+    const result = await prisma.$transaction(async (tx) => {
+      // 4a. Buat transaksi
+      const transaction = await tx.transaction.create({
+        data: transactionData,
+        include: { items: true },
+      });
+
+      // 4b. Jika type income dan ada items yang memiliki product_id -> kurangi stok
+      if (type === 'income' && items && items.length) {
+        for (const item of items) {
+          if (item.product_id) {
+            const product = await tx.product.findFirst({
+              where: { id: item.product_id, user_id: userId },
+            });
+            if (!product) {
+              throw new Error(
+                `Produk dengan ID ${item.product_id} tidak ditemukan untuk user ini`,
+              );
+            }
+            const newStock = product.stock - item.quantity;
+            if (newStock < 0) {
+              throw new Error(
+                `Stok produk ${product.name} tidak mencukupi (stok: ${product.stock}, permintaan: ${item.quantity})`,
+              );
+            }
+            await tx.product.update({
+              where: { id: item.product_id },
+              data: { stock: newStock },
+            });
+            await tx.stockLog.create({
+              data: {
+                product_id: item.product_id,
+                user_id: userId,
+                type: 'out',
+                quantity: -item.quantity, // negatif untuk pengurangan (bisa disesuaikan schema)
+                note: `Penjualan via POS - transaksi ${transaction.id}`,
+                operator: 'POS',
+                status: 'completed',
+              },
+            });
+          }
+        }
+      }
+
+      return transaction;
     });
 
-    res.status(201).json(transaction);
+    res.status(201).json(result);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error('Create transaction error:', err);
+    // Kirim pesan error yang jelas ke client
+    res
+      .status(500)
+      .json({ error: err.message || 'Terjadi kesalahan pada server' });
   }
 };
 

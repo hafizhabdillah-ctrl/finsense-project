@@ -11,6 +11,9 @@ const anomalyRoutes = require('./routes/anomalyRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const forecastRoutes = require('./routes/forecastRoutes');
 const aiModelRoutes = require('./routes/aiModelRoutes');
+const productRoutes = require('./routes/productRoutes');
+const stockLogRoutes = require('./routes/stockLogRoutes');
+const debtRoutes = require('./routes/debtRoutes');
 
 const app = express();
 app.use(cors());
@@ -28,6 +31,9 @@ app.use('/api/anomalies', anomalyRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/forecasts', forecastRoutes);
 app.use('/api/ai-models', aiModelRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/stock-logs', stockLogRoutes);
+app.use('/api/debts', debtRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
 

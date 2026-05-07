@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,7 +6,7 @@ datasource db {
   provider = "postgresql"
 }
 
-
+// ==================== ENUMS ====================
 enum TransactionType {
   income
   expense
@@ -42,6 +41,24 @@ enum ModelType {
   anomaly
 }
 
+enum DebtStatus {
+  pending
+  partial 
+  paid
+  overdue
+}
+
+enum StockLogType {
+  in
+  out
+  adjust
+}
+
+enum StockLogStatus {
+  completed
+  pending_audit
+}
+
 // ==================== AUTH & UMKM ====================
 model User {
   id            String    @id @default(uuid())
@@ -60,7 +77,13 @@ model User {
   anomaly_detections   AnomalyDetection[]
   financial_forecasts  FinancialForecast[]
   financial_reports    FinancialReport[]
-  refreshTokens        RefreshToken[] 
+  refreshTokens        RefreshToken[]
+  products             Product[]
+  stockLogs            StockLog[]
+  debts                Debt[]
+
+  @@index([email])
+  @@index([created_at])
 }
 
 model UmkmProfile {
@@ -75,6 +98,8 @@ model UmkmProfile {
   onboarding_done     Boolean  @default(false)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model RefreshToken {
@@ -86,6 +111,10 @@ model RefreshToken {
   revoked   Boolean  @default(false)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token])
+  @@index([expiresAt])
 }
 
 // ==================== TRANSAKSI & KATEGORI ====================
@@ -94,7 +123,7 @@ model TransactionCategory {
   name        String          @unique
   coicop_code String?         @unique
   type        TransactionType
-  parent_id   Int?            // self relation untuk subkategori
+  parent_id   Int?
   icon        String?
   color_hex   String?
   is_default  Boolean         @default(false)
@@ -102,9 +131,12 @@ model TransactionCategory {
   parent   TransactionCategory? @relation("CategorySubcategory", fields: [parent_id], references: [id])
   children TransactionCategory[] @relation("CategorySubcategory")
 
-  transactions   Transaction[]
-  transaction_items TransactionItem[]
-  monthly_budgets MonthlyBudget[]
+  transactions        Transaction[]
+  transaction_items   TransactionItem[]
+  monthly_budgets     MonthlyBudget[]
+
+  @@index([type])
+  @@index([parent_id])
 }
 
 model Transaction {
@@ -113,7 +145,7 @@ model Transaction {
   category_id      Int
   type             TransactionType
   amount           Float
-  description      String?         // raw teks dari voice / manual
+  description      String?
   transaction_date DateTime        @default(now())
   source           SourceEnum
   is_anomaly       Boolean         @default(false)
@@ -122,24 +154,113 @@ model Transaction {
   user     User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
   category TransactionCategory @relation(fields: [category_id], references: [id])
 
-  items  TransactionItem[]  // detail item per transaksi
-  anomaly AnomalyDetection? // one-to-one optional
+  items   TransactionItem[]
+  anomaly AnomalyDetection?
+
+  @@index([user_id])
+  @@index([category_id])
+  @@index([transaction_date])
+  @@index([type])
+  @@index([source])
+  @@index([is_anomaly])
 }
 
-// === Tabel transaction_items (sesuai permintaan) ===
 model TransactionItem {
   id             String   @id @default(uuid())
   transaction_id String
   item_name      String
   quantity       Float
-  unit           String?   // pcs, kg, liter
+  unit           String?
   unit_price     Float
   total_price    Float    @default(0)
-  category_id    Int?     // bisa beda dari kategori transaksi utama
-  ai_confidence  Float?   // confidence dari klasifikasi AI
+  category_id    Int?
+  ai_confidence  Float?
+  product_id     String?
 
   transaction Transaction         @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
   category    TransactionCategory? @relation(fields: [category_id], references: [id])
+  product     Product?            @relation(fields: [product_id], references: [id])
+
+  @@index([transaction_id])
+  @@index([category_id])
+  @@index([product_id])
+}
+
+// ==================== STOK & PRODUK ====================
+model Product {
+  id          String   @id @default(uuid())
+  user_id     String
+  name        String
+  sku         String?  @unique
+  stock       Int      @default(0)
+  unit        String?
+  price       Float?
+  min_stock   Int      @default(10)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transaction_items TransactionItem[]
+  stock_logs        StockLog[]
+
+  @@index([user_id])
+  @@index([sku])
+  @@index([name])
+}
+
+model StockLog {
+  id         String         @id @default(uuid())
+  product_id String
+  user_id    String
+  type       StockLogType
+  quantity   Int            // positif untuk in, negatif untuk out
+  note       String?
+  operator   String
+  status     StockLogStatus @default(completed)
+  created_at DateTime       @default(now())
+
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id])
+  @@index([user_id])
+  @@index([created_at])
+  @@index([type])
+  @@index([status])
+}
+
+// ==================== HUTANG PIUTANG ====================
+model Debt {
+  id            String     @id @default(uuid())
+  user_id       String
+  customer_name String
+  total_debt    Float
+  paid_amount   Float      @default(0)
+  due_date      DateTime
+  status        DebtStatus @default(pending)
+  note          String?
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+
+  user     User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  payments  DebtPayment[]
+
+  @@index([user_id])
+  @@index([status])
+  @@index([due_date])
+}
+
+model DebtPayment {
+  id        String   @id @default(uuid())
+  debt_id   String
+  amount    Float
+  paid_at   DateTime @default(now())
+  note      String?
+
+  debt Debt @relation(fields: [debt_id], references: [id], onDelete: Cascade)
+
+  @@index([debt_id])
+  @@index([paid_at])
 }
 
 // ==================== AI & MODEL ====================
@@ -149,11 +270,14 @@ model AiModel {
   version     String
   type        ModelType
   accuracy    Float?
-  model_path  String?   // path ke file .keras
+  model_path  String?
   is_active   Boolean   @default(false)
   deployed_at DateTime? @default(now())
 
   forecasts FinancialForecast[]
+
+  @@index([type])
+  @@index([is_active])
 }
 
 model AiChatSession {
@@ -165,8 +289,11 @@ model AiChatSession {
   created_at      DateTime @default(now())
   last_active_at  DateTime @default(now())
 
-  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user     User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   messages AiMessage[]
+
+  @@index([user_id])
+  @@index([last_active_at])
 }
 
 model AiMessage {
@@ -175,10 +302,14 @@ model AiMessage {
   role        String   // 'user' atau 'assistant'
   content     String
   token_used  Int?
-  model_used  String?  // 'Claude' / 'GPT'
+  model_used  String?
   created_at  DateTime @default(now())
 
   session AiChatSession @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([session_id])
+  @@index([created_at])
+  @@index([role])
 }
 
 // ==================== LAPORAN & BUDGET ====================
@@ -192,6 +323,10 @@ model FinancialGoal {
   status         GoalStatus @default(active)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([status])
+  @@index([deadline])
 }
 
 model MonthlyBudget {
@@ -201,10 +336,14 @@ model MonthlyBudget {
   month           Int      // 1-12
   year            Int
   budget_amount   Float
-  alert_threshold Float    @default(80) // persentase
+  alert_threshold Float    @default(80)
 
   user     User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
   category TransactionCategory @relation(fields: [category_id], references: [id])
+
+  @@unique([user_id, category_id, month, year])
+  @@index([user_id])
+  @@index([year, month])
 }
 
 model AnomalyDetection {
@@ -219,6 +358,11 @@ model AnomalyDetection {
 
   user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([severity])
+  @@index([detected_at])
+  @@index([is_reviewed])
 }
 
 model FinancialForecast {
@@ -232,6 +376,10 @@ model FinancialForecast {
 
   user  User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   model AiModel? @relation(fields: [model_id], references: [id])
+
+  @@index([user_id])
+  @@index([forecast_date])
+  @@index([model_id])
 }
 
 model FinancialReport {
@@ -246,4 +394,8 @@ model FinancialReport {
   pdf_url       String?
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([period_start, period_end])
+  @@index([period_type])
 }
