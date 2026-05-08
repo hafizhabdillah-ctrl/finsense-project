@@ -88,13 +88,17 @@ function NewLog() {
         <span className="font-bold">
           Tipe:
         </span>
-        <input
+        <select
           type="text"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan tipe..."
+          placeholder="Masukan kasirnya..."
           value={tipe}
           onChange={(n) => setTipe(n.target.value)}
-        />
+        >
+          <option>Penyesuaian manual</option>
+          <option>Stok Masuk</option>
+          <option>Stok Keluar</option>
+        </select>
       </div>
 
       {/* input jumlah */}

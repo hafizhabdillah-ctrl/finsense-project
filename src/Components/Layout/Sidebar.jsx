@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 import { FiPlusCircle } from 'react-icons/fi';
 import { MdDashboard, MdInventory, MdContactSupport } from 'react-icons/md';
-import { FaCashRegister } from 'react-icons/fa';
+import { FaCashRegister, FaMoneyBill } from 'react-icons/fa';
 import { FaUserGroup } from 'react-icons/fa6';
 import { LuLogs } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
@@ -13,6 +13,7 @@ import logo from '../../../images/logo.png';
 function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', icon: <MdDashboard size={22}/>, path: '/dashboard' },
+    { name: 'Catatan Keuangan', icon: <FaMoneyBill size={22}/>, path: '/transaction' },
     { name: 'Manajemen Stok', icon: <MdInventory size={22}/>, path: '/stock' },
     { name: 'POS Terminal', icon: <FaCashRegister size={22}/>, path: '/pos' },
     { name: 'Hutang & Pelanggan', icon: <FaUserGroup size={22}/>, path: '/debt' },

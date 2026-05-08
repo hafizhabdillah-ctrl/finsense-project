@@ -21,7 +21,7 @@ function DetailStock() {
 
       {/* Header */}
       <h1 className="text-2xl font-bold text-gray-800">Detail Produk</h1>
-      <p className="mb-2 mt-2 text-sm text-gray-500">ID Barang: {id}</p>
+      <p className="mb-2 mt-2 text-sm text-gray-500">ID Produk: {id}</p>
 
       {/* Tabel detail */}
       <div className="grid grid-cols-2 gap-4 border-t pt-4">

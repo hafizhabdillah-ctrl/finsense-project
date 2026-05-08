@@ -38,7 +38,7 @@ function EditStock() {
 
       {/* Header */}
       <h1 className="text-2xl font-bold text-gray-800">Edit Produk</h1>
-      <p className="mb-2 mt-2 text-sm text-gray-500">ID Barang: {id}</p>
+      <p className="mb-2 mt-2 text-sm text-gray-500">ID Produk: {id}</p>
 
       <div className="grid grid-cols-2 gap-4 border-t pt-4">
         <p className="flex items-center font-semibold text-gray-600">Nama Produk:</p>

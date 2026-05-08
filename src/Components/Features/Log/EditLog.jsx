@@ -34,7 +34,7 @@ function EditLog() {
     event.preventDefault();
 
     if (waktu.trim() === '' || produk.trim() === '' || sku.trim() === '' || tipe.trim() === '' || jumlah === '' || oleh.trim() === '' || status === '') {
-      alert('Mohon lengkapi semua data sebelum mengubah data log');
+      alert('Mohon lengkapi semua data sebelum mengubah data');
       return;
     }
 
@@ -85,6 +85,18 @@ function EditLog() {
           onChange={(n) => setSku(n.target.value)}
           required
         />
+
+        <p className="flex items-center font-semibold text-gray-600">Tipe:</p>
+        <select
+          className="p-2 border border-gray-400 rounded"
+          value={tipe}
+          onChange={(n) => setTipe(n.target.value)}
+          required
+        >
+          <option>Penyesuaian Manual</option>
+          <option>Stok Masuk</option>
+          <option>Stok Keluar</option>
+        </select>
 
         <p className="flex items-center font-semibold text-gray-600">Jumlah:</p>
         <input

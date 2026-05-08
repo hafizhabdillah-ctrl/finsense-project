@@ -11,6 +11,11 @@ function NewItem() {
       link: '/new/newstock'
     },
     {
+      title: 'Tambah Transaksi',
+      description: 'Catat pemasukan atau pengeluaran yang dilakukan',
+      link: '/new/newtransaction'
+    },
+    {
       title: 'Tambah Log POS Terminal',
       description: 'Catat aktivitas terminal POS secara manual',
       link: '/new/newpos'
