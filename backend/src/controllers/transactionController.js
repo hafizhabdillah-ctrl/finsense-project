@@ -43,86 +43,6 @@ exports.getTransactions = async (req, res) => {
 };
 
 // CREATE transaction (manual or voice)
-// exports.createTransaction = async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     let { amount, description, transaction_date, type, source, items } =
-//       req.body;
-
-//     // Validasi amount
-//     if (!amount || isNaN(parseFloat(amount))) {
-//       return res.status(400).json({ error: 'Amount harus berupa angka' });
-//     }
-
-//     let categoryId = null;
-
-//     if (description) {
-//       // Coba klasifikasi via AI
-//       const aiResult = await aiClient.classifyText(description);
-//       categoryId = aiResult.categoryId;
-
-//       // Validasi apakah categoryId ada di database
-//       const categoryExists = await prisma.transactionCategory.findUnique({
-//         where: { id: categoryId },
-//       });
-//       if (!categoryExists) {
-//         console.warn(
-//           `Category ID ${categoryId} dari AI tidak valid, pakai default`,
-//         );
-//         categoryId = await getDefaultCategoryId();
-//       }
-//     } else {
-//       // fallback kategori default
-//       categoryId = await getDefaultCategoryId();
-//     }
-
-//     // Pastikan categoryId final valid
-//     const finalCategory = await prisma.transactionCategory.findUnique({
-//       where: { id: categoryId },
-//     });
-//     if (!finalCategory) {
-//       return res.status(500).json({ error: 'Kategori tidak valid' });
-//     }
-
-//     // Siapkan data untuk create
-//     const transactionData = {
-//       user_id: userId,
-//       category_id: categoryId,
-//       amount: parseFloat(amount),
-//       description: description || null,
-//       transaction_date: transaction_date
-//         ? new Date(transaction_date)
-//         : new Date(),
-//       type: type,
-//       source: source || 'manual',
-//     };
-
-//     // Jika ada items, tambahkan relasi create
-//     if (items && items.length) {
-//       transactionData.items = {
-//         create: items.map((item) => ({
-//           item_name: item.item_name,
-//           quantity: item.quantity,
-//           unit: item.unit || null,
-//           unit_price: item.unit_price,
-//           total_price: item.quantity * item.unit_price,
-//           category_id: item.category_id || categoryId,
-//           ai_confidence: item.ai_confidence || null,
-//         })),
-//       };
-//     }
-
-//     const transaction = await prisma.transaction.create({
-//       data: transactionData,
-//       include: { items: true },
-//     });
-
-//     res.status(201).json(transaction);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 exports.createTransaction = async (req, res) => {
   try {
     const userId = req.userId;
@@ -166,11 +86,9 @@ exports.createTransaction = async (req, res) => {
           isNaN(parseFloat(item.unit_price)) ||
           parseFloat(item.unit_price) < 0
         ) {
-          return res
-            .status(400)
-            .json({
-              error: `Unit price item ${item.item_name} harus angka >= 0`,
-            });
+          return res.status(400).json({
+            error: `Unit price item ${item.item_name} harus angka >= 0`,
+          });
         }
         // Konversi ke number
         item.quantity = parseFloat(item.quantity);
