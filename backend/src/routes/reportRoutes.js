@@ -10,10 +10,10 @@ const {
 const router = express.Router();
 
 router.use(auth);
-router.get('/trend', getMonthlyExpenseTrend);
-router.get('/correlation', getCategoryCorrelation);
+router.get('/trends', getMonthlyExpenseTrend);
+router.get('/correlations', getCategoryCorrelation);
 router.get('/anomaly-insights', getAnomalyInsights);
-router.get('/summary', getMonthlySummary);
-router.post('/generate', generateFinancialReport);
+router.get('/summaries', getMonthlySummary);
+router.post('/', generateFinancialReport);
 
 module.exports = router;
