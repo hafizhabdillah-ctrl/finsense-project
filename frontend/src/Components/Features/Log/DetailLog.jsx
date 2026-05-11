@@ -1,6 +1,7 @@
 import React from 'react';
 import { logs, deleteLog } from '../../../utils/local/log';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function DetailLog() {
   const { id } = useParams();
@@ -8,8 +9,31 @@ function DetailLog() {
   const log = logs.find((s) => s.id === Number(id));
 
   const onDeleteHandler = () => {
-    deleteLog(log.id);
-    navigate('/log');
+    Swal.fire({
+      title: 'Hapus Log Barang?',
+      text: `Apakah Anda yakin ingin menghapus Log "${log.produk}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        deleteLog(log.id);
+        navigate('/log');
+
+        // Feedback sukses
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Log Barang telah berhasil dihapus.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (

@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addLog } from '../../../utils/local/log';
+import Swal from 'sweetalert2';
 
 function NewLog() {
   const navigate = useNavigate();
   const [waktu, setWaktu] = useState('');
   const [produk, setProduk] = useState('');
   const [sku, setSku] = useState('');
-  const [tipe, setTipe] = useState('');
+  const [tipe, setTipe] = useState('Penyesuaian manual');
   const [jumlah, setJumlah] = useState('');
-  const [oleh, setOleh] = useState('');
+  const [oleh, setOleh] = useState('Admin');
 
   function onSubmitHandler(event) {
+    event.preventDefault();
 
     if (waktu.trim() === '' || produk.trim() === '' || sku.trim() === '' || tipe.trim() === '' || jumlah.trim() === '' || oleh.trim() === '') {
       event.preventDefault();
-      alert('Mohon isi semua data');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
 
     const format = `${waktu.replace('T', ' ')}:00`;
 
-    event.preventDefault();
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Sukses',
+      text: 'Log barang berhasil ditambahkan',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
     addLog({
       waktu: format,
       produk,

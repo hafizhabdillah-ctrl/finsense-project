@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { logs, updateLog } from '../../../utils/local/log';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function EditLog() {
   const { id } = useParams();
@@ -34,23 +35,48 @@ function EditLog() {
     event.preventDefault();
 
     if (waktu.trim() === '' || produk.trim() === '' || sku.trim() === '' || tipe.trim() === '' || jumlah === '' || oleh.trim() === '' || status === '') {
-      alert('Mohon lengkapi semua data sebelum mengubah data');
+      Swal.fire({
+        title: 'Data Belum Lengkap',
+        text: 'Mohon lengkapi semua data sebelum mengubah',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
       return;
     }
 
-    updateLog({
-      id: Number(id),
-      waktu: format,
-      produk,
-      sku,
-      tipe,
-      jumlah: Number(jumlah),
-      oleh,
-      status,
-    });
+    Swal.fire({
+      title: 'Konfirmasi Log Barang?',
+      text: `Anda akan mengubah data Log Barang dengan ID: ${id}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0c4a6e',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+      if (result.isConfirmed) {
 
-    alert('Log berhasil diperbarui');
-    navigate(`/log/${id}`);
+        updateLog({
+          id: Number(id),
+          waktu: format,
+          produk,
+          sku,
+          tipe,
+          jumlah: Number(jumlah),
+          oleh,
+          status,
+        });
+
+        navigate(`/log/${id}`);
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Data Log Barang telah diperbarui',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
   return (

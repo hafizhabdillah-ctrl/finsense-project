@@ -106,7 +106,7 @@ function TableDebt() {
             <span>
               {totalItems}
             </span>
-              produk
+              hutang
           </p>
           <div className="flex gap-2">
 

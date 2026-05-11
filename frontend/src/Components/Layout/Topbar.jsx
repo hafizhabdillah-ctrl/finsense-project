@@ -3,8 +3,7 @@ import SearchBarTop from './SearchBarTop';
 import { useNavigate } from 'react-router-dom';
 import { IoIosNotifications, IoIosSettings } from 'react-icons/io';
 
-{/* jangan lupa diganti aowkaowkoawk */}
-import bahlil from '../../../images/bahlil.jpg';
+import profile from '../../../images/profile.jpg';
 
 function Topbar() {
   const navigate = useNavigate();
@@ -49,7 +48,7 @@ function Topbar() {
           {/* Avatar */}
           <div className="flex flex items-center w-11 h-11 rounded-full border-2 border-sky-900 overflow-hidden bg-gray-100">
             <img
-              src={bahlil}
+              src={profile}
               className="w-full h-full object-cover"
             />
           </div>

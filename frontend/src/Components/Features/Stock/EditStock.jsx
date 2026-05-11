@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { stocks, updateStock } from '../../../utils/local/stock';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function EditStock() {
   const { id } = useParams();
@@ -22,15 +23,59 @@ function EditStock() {
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
-    updateStock({
-      id: Number(id),
-      name,
-      sku,
-      qty,
-    });
+    if (name.trim() === '' || sku.trim() === '' || qty === '') {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Data Belum Lengkap',
+        text: 'Mohon lengkapi semua data sebelum mengubah',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
+      return;
+    }
 
-    alert('Stok berhasil diperbarui');
-    navigate(`/stock/${id}`);
+    if (Number(qty) < 0) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Jumlah Stok',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Konfirmasi Edit Stok?',
+      text: `Anda akan mengubah data stok dengan ID: ${id}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0c4a6e',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+        updateStock({
+          id: Number(id),
+          name,
+          sku,
+          qty,
+        });
+
+        navigate(`/stock/${id}`);
+
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Data stok telah diperbarui',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
   return (
@@ -46,7 +91,6 @@ function EditStock() {
           className="p-2 border border-gray-400 rounded"
           value={name}
           onChange={(n) => setName(n.target.value)}
-          required
         />
 
         <p className="flex items-center font-semibold text-gray-600">SKU:</p>
@@ -54,15 +98,14 @@ function EditStock() {
           className="p-2 border border-gray-400 rounded"
           value={sku}
           onChange={(n) => setSku(n.target.value)}
-          required
         />
 
         <p className="flex items-center font-semibold text-gray-600">Jumlah Stok:</p>
         <input
+          type="number"
           className="p-2 border border-gray-400 rounded"
           value={qty}
           onChange={(n) => setQty(n.target.value)}
-          required
         />
       </div>
 

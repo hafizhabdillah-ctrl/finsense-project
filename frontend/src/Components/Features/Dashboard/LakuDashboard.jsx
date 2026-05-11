@@ -2,17 +2,17 @@ import React from 'react';
 
 function LakuDashboard() {
   const stockItems = [
-    { id: 1, name: 'Telur 1kg', terjual: 21, total: '63.000' },
-    { id: 2, name: 'Minyak Goreng 1L', terjual: 15, total: '150.000' },
-    { id: 3, name: 'Gula 1kg', terjual: 12, total: '144.000' },
-    { id: 4, name: 'Beras 1kg', terjual: 7, total: '35.000' },
+    { id: 1, name: 'Telur 1kg', terjual: 20, predict: '144' },
+    { id: 2, name: 'Minyak Goreng 1L', terjual: 50, predict: '134' },
+    { id: 3, name: 'Gula 1kg', terjual: 30, predict: '85' },
+    { id: 4, name: 'Beras 1kg', terjual: 80, predict: '94' },
   ];
 
   return (
     <div>
 
       {/* Header */}
-      <h1 className="text-gray-700 text-xl font-bold">Barang Paling Laku</h1>
+      <h1 className="text-gray-700 text-xl font-bold">Prediksi Barang Paling Laku</h1>
 
       {/* Tabel */}
       <div>
@@ -26,7 +26,7 @@ function LakuDashboard() {
             Terjual hari ini
           </div>
           <div className="flex-1 text-center">
-            Total Pendapatan
+            Prediksi Terjual
           </div>
         </div>
 
@@ -57,7 +57,7 @@ function LakuDashboard() {
               {/* Total */}
               <div className="flex-1 text-center text-gray-800 text-sm">
                 <span>
-                  {item.total}
+                  {item.predict}
                 </span>
               </div>
             </div>

@@ -119,7 +119,7 @@ function TableTransaction() {
             <span>
               {totalItems}
             </span>
-              produk
+              transaksi
           </p>
           <div className="flex gap-2">
 

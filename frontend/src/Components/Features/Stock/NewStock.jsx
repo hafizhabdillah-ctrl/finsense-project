@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addStock } from '../../../utils/local/stock.js';
+import Swal from 'sweetalert2';
 
 function NewStock() {
   const navigate = useNavigate();
@@ -10,22 +11,39 @@ function NewStock() {
 
   // submit handler
   function onSubmitHandler(event) {
+    event.preventDefault();
 
     // input gaboleh kosong
     if (name.trim() === '' || sku.trim() === '' || qty === '') {
       event.preventDefault();
-      alert('Mohon lengkapi semua data sebelum menambahkan barang');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
 
     // jumlah gaboleh negatif
     if (Number(qty) < 0) {
       event.preventDefault();
-      alert('Angka tidak boleh minus!');
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Jumlah Stok',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
       return;
     }
 
-    event.preventDefault();
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Sukses',
+      text: 'Stok berhasil ditambahkan',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
     addStock({ name, sku, qty });
     navigate('/stock');
   }

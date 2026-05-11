@@ -2,6 +2,7 @@ import React from 'react';
 import { debts } from '../../../utils/local/debt';
 import { deleteDebt } from '../../../utils/local/debt';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function DetailDebt() {
   const { id } = useParams();
@@ -17,12 +18,31 @@ function DetailDebt() {
   };
 
   const onDeleteHandler = () => {
-    const isConfirmed = window.confirm(`Konfirmasi hapus ${debt.name}?`);
+    Swal.fire({
+      title: 'Hapus Transaksi?',
+      text: `Apakah Anda yakin ingin menghapus hutang "${debt.name} - Rp. ${debt.hutang}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
 
-    if (isConfirmed) {
-      deleteDebt(debt.id);
-      navigate('/debt');
-    }
+        deleteDebt(debt.id);
+        navigate('/debt');
+
+        // Feedback sukses
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Hutang telah berhasil dihapus.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (

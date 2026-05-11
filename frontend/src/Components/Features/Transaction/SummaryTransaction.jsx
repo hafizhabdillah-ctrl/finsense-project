@@ -46,7 +46,7 @@ function SummaryTransaction() {
       <div className="flex flex-row ">
         {/* Grafik Pemasukan */}
         <div className="flex flex-1 flex-col items-center">
-          <p className="text-xs font-bold text-gray-500 mb-2 uppercase">PEMASUKAN</p>
+          <p className="text-xs font-bold text-gray-500 mb-2 uppercase">PREDIKSI PEMASUKAN</p>
           <div className="w-40 h-40 mt-6">
             <Doughnut data={incomeData} options={options} />
           </div>

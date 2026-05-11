@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addCart } from '../../../utils/local/pos';
+import Swal from 'sweetalert2';
 
 function NewPos() {
   const navigate = useNavigate();
@@ -9,19 +10,36 @@ function NewPos() {
   const [qty, setQty] = useState('');
 
   function onSubmitHandler(event) {
+    event.preventDefault();
+
     if (name.trim() === '' || price.trim() === '' || qty === '') {
       event.preventDefault();
-      alert('Mohon lengkapi semua data sebelum menambahkan barang');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
 
     if (Number(qty) < 0) {
       event.preventDefault();
-      alert('Angka tidak boleh minus!');
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Nominal',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
       return;
     }
 
-    event.preventDefault();
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Sukses',
+      text: 'POS berhasil ditambahkan ke keranjang',
+      showConfirmButton: false,
+      timer: 1500
+    });
     addCart({ name, price, qty });
     navigate('/pos');
   }

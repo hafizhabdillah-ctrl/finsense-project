@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { transactions, updateTransaction } from '../../../utils/local/transaction';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function EditTransaction() {
   const { id } = useParams();
@@ -25,24 +26,68 @@ function EditTransaction() {
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
+    const isAmountInvalid = amount === '' || amount === null || amount === undefined;
 
-    if (date.trim() === '' || category.trim() === '' || description.trim() === '' || amount.trim() === '' || type.trim() === '') {
-      alert('Mohon lengkapi semua data sebelum mengubah data');
+    if (date.trim() === '' || category.trim() === '' || description.trim() === '' || isAmountInvalid || type.trim() === '') {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Data Belum Lengkap',
+        text: 'Mohon lengkapi semua data sebelum mengubah',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
       return;
     }
 
-    updateTransaction({
-      id: Number(id),
-      date,
-      category,
-      description,
-      amount: Number(amount),
-      type,
-      source: 'manual',
-    });
+    if (Number(amount) < 0) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Nominal',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
+      return;
+    }
 
-    alert('Berhasil mengubah data transaksi');
-    navigate(`/transaction/${id}`);
+    // logika Konfirmasi
+    Swal.fire({
+      title: 'Konfirmasi Edit Transaksi?',
+      text: `Anda akan mengubah data Transaksi dengan ID: ${id}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0c4a6e',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+
+      // Hanya jalankan kode di bawah jika user menekan "Ya"
+      if (result.isConfirmed) {
+
+        // Eksekusi Update
+        updateTransaction({
+          id: Number(id),
+          date,
+          category,
+          description,
+          amount: Number(amount),
+          type,
+          source: 'manual',
+        });
+
+        navigate(`/transaction/${id}`);
+
+        // Tampilkan Pesan Sukses
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Data transaksi telah diperbarui',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
   return (
@@ -59,7 +104,6 @@ function EditTransaction() {
           className="p-2 border border-gray-400 rounded"
           value={date}
           onChange={(n) => setDate(n.target.value)}
-          required
         />
 
         <p className="flex items-center font-semibold text-gray-600">Kategori:</p>
@@ -67,7 +111,6 @@ function EditTransaction() {
           className="p-2 border border-gray-400 rounded"
           value={category}
           onChange={(n) => setCategory(n.target.value)}
-          required
         >
           <option>Penjualan</option>
           <option>Restok</option>
@@ -80,7 +123,6 @@ function EditTransaction() {
           className="p-2 border border-gray-400 rounded"
           value={description}
           onChange={(n) => setDescription(n.target.value)}
-          required
         />
 
         <p className="flex items-center font-semibold text-gray-600">Nominal:</p>
@@ -89,7 +131,6 @@ function EditTransaction() {
           className="p-2 border border-gray-400 rounded"
           value={amount}
           onChange={(n) => setAmount(n.target.value)}
-          required
         />
 
         <p className="flex items-center font-semibold text-gray-600">Tipe:</p>
@@ -97,7 +138,6 @@ function EditTransaction() {
           className="p-2 border border-gray-400 rounded"
           value={type}
           onChange={(n) => setType(n.target.value)}
-          required
         >
           <option>Masuk</option>
           <option>Keluar</option>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { debts, updateDebt } from '../../../utils/local/debt';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function EditDebt() {
   const { id } = useParams();
@@ -21,19 +22,61 @@ function EditDebt() {
     }
   }, [id]);
 
-  const onSubmitHandler = (n) => {
-    n.preventDefault();
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
 
-    updateDebt({
-      id: Number(id),
-      name,
-      hutang,
-      tempo,
-      status,
+    if (name.trim() === '' || hutang.trim() === '' || tempo.trim() === '') {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Data Belum Lengkap',
+        text: 'Mohon lengkapi semua data sebelum mengubah',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
+      return;
+    };
+
+    if (Number(hutang) < 0) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Total Hutang',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Konfirmasi Edit Hutang?',
+      text: `Anda akan mengubah data hutang dengan ID: ${id}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0c4a6e',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Konfirmasi',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        updateDebt({
+          id: Number(id),
+          name,
+          hutang,
+          tempo,
+          status,
+        });
+
+        navigate(`/debt/${id}`);
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Data hutang telah diperbarui',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
     });
-
-    alert('Data berhasil diperbarui');
-    navigate(`/debt/${id}`);
   };
 
   return (
@@ -55,6 +98,7 @@ function EditDebt() {
 
         <p className="flex items-center font-semibold text-gray-600">Total Hutang:</p>
         <input
+          type='number'
           className="p-2 border border-gray-400 rounded"
           value={hutang}
           onChange={(n) => setHutang(n.target.value)}

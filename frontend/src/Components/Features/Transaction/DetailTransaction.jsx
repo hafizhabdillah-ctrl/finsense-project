@@ -1,6 +1,7 @@
 import React from 'react';
 import { transactions, deleteTransaction } from '../../../utils/local/transaction';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function DetailTransaction() {
   const { id } = useParams();
@@ -17,12 +18,31 @@ function DetailTransaction() {
   }
 
   const onDeleteHandler = () => {
-    const isConfirmed = window.confirm(`Konfirmasi hapus ${transaction.description}?`);
+    Swal.fire({
+      title: 'Hapus Transaksi?',
+      text: `Apakah Anda yakin ingin menghapus "${transaction.description}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
 
-    if (isConfirmed) {
-      deleteTransaction(transaction.id);
-      navigate('/transaction');
-    }
+        deleteTransaction(transaction.id);
+        navigate('/transaction');
+
+        // Feedback sukses
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Transaksi telah berhasil dihapus.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (

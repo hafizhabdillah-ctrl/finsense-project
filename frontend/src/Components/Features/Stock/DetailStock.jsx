@@ -1,6 +1,7 @@
 import React from 'react';
 import { stocks, deleteStock } from '../../../utils/local/stock';
 import { useNavigate, useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function DetailStock() {
   const { id } = useParams();
@@ -8,12 +9,29 @@ function DetailStock() {
   const stock = stocks.find((s) => s.id === Number(id));
 
   const onDeleteHandler = () => {
-    const isConfirmed = window.confirm(`Konfirmasi hapus ${stock.name}?`);
+    Swal.fire({
+      title: 'Hapus Stok?',
+      text: `Apakah Anda yakin ingin menghapus "${stock.name}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
 
-    if (isConfirmed) {
-      deleteStock(stock.id);
-      navigate('/stock');
-    }
+        deleteStock(stock.id);
+        navigate('/stock');
+        Swal.fire({
+          title: 'Sukses',
+          text: 'Stok telah berhasil dihapus.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (

@@ -6,14 +6,14 @@ function NewItem() {
 
   const menuItems = [
     {
-      title: 'Tambah Barang',
-      description: 'Masukkan barang yang baru tiba atau restock',
-      link: '/new/newstock'
-    },
-    {
       title: 'Tambah Transaksi',
       description: 'Catat pemasukan atau pengeluaran yang dilakukan',
       link: '/new/newtransaction'
+    },
+    {
+      title: 'Tambah Barang',
+      description: 'Masukkan barang yang baru tiba atau restock',
+      link: '/new/newstock'
     },
     {
       title: 'Tambah Log POS Terminal',

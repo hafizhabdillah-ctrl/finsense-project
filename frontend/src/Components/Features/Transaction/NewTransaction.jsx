@@ -1,29 +1,47 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addTransaction } from '../../../utils/local/transaction';
+import Swal from 'sweetalert2';
 
 function NewTransaction() {
   const navigate = useNavigate();
   const [date, setDate] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState('Penjualan');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [type, setType] = useState('');
+  const [type, setType] = useState('Masuk');
 
   function onSubmitHandler(event) {
+    event.preventDefault();
     if (date.trim() === '' || category.trim() === '' || description.trim() === '' || amount.trim() === '' || type.trim() === '') {
       event.preventDefault();
-      alert('Mohon isi semua data');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
 
     if (Number(amount) < 0) {
       event.preventDefault();
-      alert('Angka tidak boleh minus!');
+      Swal.fire({
+        title: 'Invalid Data',
+        text: 'Mohon masukkan angka positif untuk Nominal',
+        icon: 'warning',
+        confirmButtonColor: '#0c4a6e',
+      });
       return;
     }
 
-    event.preventDefault();
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Sukses',
+      text: 'Transaksi berhasil ditambahkan',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
     addTransaction({
       date,
       category,
@@ -59,13 +77,18 @@ function NewTransaction() {
         <span className="font-bold">
           Ketegori:
         </span>
-        <input
+        <select
           type="text"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan kategori..."
           value={category}
           onChange={(n) => setCategory(n.target.value)}
-        />
+        >
+          <option>Penjualan</option>
+          <option>Restok</option>
+          <option>Operasional</option>
+          <option>Gaji Karyawan</option>
+        </select>
       </div>
 
       <div className="px-2 mt-4 relative flex flex-col gap-2">
@@ -99,7 +122,6 @@ function NewTransaction() {
           Tipe:
         </span>
         <select
-          type="text"
           className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
           placeholder="Masukan tipe..."
           value={type}
