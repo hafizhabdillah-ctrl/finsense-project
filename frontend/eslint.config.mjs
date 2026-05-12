@@ -11,9 +11,9 @@ export default [
       sourceType: 'module',
       globals: globals.browser,
       parserOptions: {
-        ecmaFeatures: { jsx: true }
-      }
-    }
+        ecmaFeatures: { jsx: true },
+      },
+    },
   },
   // ignore line-ending issues
   {

@@ -1,29 +1,72 @@
 const prisma = require('../config/prisma');
 
+// Helper untuk update status overdue
+const updateOverdueStatus = (debts) => {
+  const now = new Date();
+  return debts.map((debt) => {
+    if (debt.status !== 'paid' && debt.due_date < now) {
+      debt.status = 'overdue';
+    }
+    return debt;
+  });
+};
+
+// GET /debts - semua hutang milik user
 exports.getDebts = async (req, res) => {
   try {
     const userId = req.userId;
-    const debts = await prisma.debt.findMany({
+    let debts = await prisma.debt.findMany({
       where: { user_id: userId },
       include: { payments: true },
       orderBy: { due_date: 'asc' },
     });
-    // Update status overdue jika melewati deadline
-    const now = new Date();
-    const updatedDebts = debts.map((d) => {
-      if (d.status !== 'paid' && d.due_date < now) d.status = 'overdue';
-      return d;
-    });
-    res.json(updatedDebts);
+    debts = updateOverdueStatus(debts);
+    res.json(debts);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
 
+// GET /debts/:id - detail hutang by id
+exports.getDebtById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    let debt = await prisma.debt.findFirst({
+      where: { id, user_id: userId },
+      include: { payments: true },
+    });
+    if (!debt) {
+      return res.status(404).json({ error: 'Debt not found' });
+    }
+    // Update status overdue jika perlu
+    const now = new Date();
+    if (debt.status !== 'paid' && debt.due_date < now) {
+      debt = await prisma.debt.update({
+        where: { id },
+        data: { status: 'overdue' },
+        include: { payments: true },
+      });
+    }
+    res.json(debt);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST /debts - tambah hutang baru
 exports.createDebt = async (req, res) => {
   try {
     const userId = req.userId;
     const { customer_name, total_debt, due_date, note } = req.body;
+
+    if (!customer_name || !total_debt || !due_date) {
+      return res
+        .status(400)
+        .json({ error: 'customer_name, total_debt, due_date are required' });
+    }
 
     const debt = await prisma.debt.create({
       data: {
@@ -33,6 +76,7 @@ exports.createDebt = async (req, res) => {
         due_date: new Date(due_date),
         note: note || null,
         status: 'pending',
+        paid_amount: 0,
       },
     });
     res.status(201).json(debt);
@@ -42,11 +86,56 @@ exports.createDebt = async (req, res) => {
   }
 };
 
+// PUT /debts/:id - update hutang (edit)
+exports.updateDebt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { customer_name, total_debt, due_date, status, note } = req.body;
+
+    // Cek kepemilikan
+    const existing = await prisma.debt.findFirst({
+      where: { id, user_id: userId },
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'Debt not found' });
+    }
+
+    // Siapkan data update
+    const updateData = {};
+    if (customer_name !== undefined) updateData.customer_name = customer_name;
+    if (total_debt !== undefined)
+      updateData.total_debt = parseFloat(total_debt);
+    if (due_date !== undefined) updateData.due_date = new Date(due_date);
+    if (status !== undefined) updateData.status = status;
+    if (note !== undefined) updateData.note = note;
+
+    // Jika status diubah menjadi paid, pastikan paid_amount = total_debt
+    if (status === 'paid' && existing.paid_amount < existing.total_debt) {
+      updateData.paid_amount = existing.total_debt;
+    }
+
+    const updated = await prisma.debt.update({
+      where: { id },
+      data: updateData,
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST /debts/:id/pay - catat pembayaran
 exports.addPayment = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
     const { amount, note } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Amount must be positive' });
+    }
 
     const debt = await prisma.debt.findFirst({
       where: { id, user_id: userId },
@@ -91,6 +180,7 @@ exports.addPayment = async (req, res) => {
   }
 };
 
+// DELETE /debts/:id - hapus hutang
 exports.deleteDebt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,6 +193,7 @@ exports.deleteDebt = async (req, res) => {
     await prisma.debt.delete({ where: { id } });
     res.json({ message: 'Debt deleted' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };

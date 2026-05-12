@@ -1,132 +1,95 @@
 import React, { useState } from 'react';
-import { debts } from '../../../utils/local/debt';
 import { useNavigate } from 'react-router-dom';
+import { useDebts } from '../../../hooks/useDebts';
 
 function TableDebt() {
   const navigate = useNavigate();
-
+  const { debts, loading } = useDebts();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = debts.slice(indexOfFirstItem, indexOfLastItem);
-
   const totalItems = debts.length;
   const startRange = indexOfFirstItem + 1;
-
   const endRange = Math.min(indexOfLastItem, totalItems);
 
-
-  {/* Fungsi ganti halaman tabel */}
   const goToNextPage = () => {
-    if (indexOfLastItem < totalItems)
-      setCurrentPage(currentPage + 1);
+    if (indexOfLastItem < totalItems) setCurrentPage(currentPage + 1);
   };
-
   const goToPrevPage = () => {
-    if (currentPage > 1)
-      setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  if (loading) return <div className='p-4'>Memuat daftar hutang...</div>;
 
   return (
     <div>
-
-      {/* Tabel */}
-      {/* Header Tabel */}
-      <div className="bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold">
-        <div className="flex-1 text-center">
-          No
-        </div>
-        <div className="flex-8 text-center">
-          Nama Pelanggan
-        </div>
-        <div className="flex-8 text-center">
-          Total Hutang
-        </div>
-        <div className="flex-8 text-center">
-          Jatuh Tempo
-        </div>
-        <div className="flex-8 text-center">
-          Status
-        </div>
+      <div className='bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold'>
+        <div className='flex-1 text-center'>No</div>
+        <div className='flex-8 text-center'>Nama Pelanggan</div>
+        <div className='flex-8 text-center'>Total Hutang</div>
+        <div className='flex-8 text-center'>Jatuh Tempo</div>
+        <div className='flex-8 text-center'>Status</div>
       </div>
 
-      {/* Daftar hutang */}
-      <div className="flex flex-col">
-        {currentItems.map((debts, index) => {
-          return (
+      <div className='flex flex-col'>
+        {currentItems.length === 0 ? (
+          <div className='p-4 text-center text-gray-500'>Tidak ada hutang</div>
+        ) : (
+          currentItems.map((debt, idx) => (
             <div
-              key={debts.id}
-              onClick={() => navigate(`/debts/${debts.id}`)}
-              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
+              key={debt.id}
+              onClick={() => navigate(`/debts/${debt.id}`)}
+              className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
             >
-              {/* Nomor */}
-              <div className="flex-1 text-center text-gray-800 text-sm">
-                {indexOfFirstItem + index + 1}
+              <div className='flex-1 text-center text-gray-800 text-sm'>
+                {indexOfFirstItem + idx + 1}
               </div>
-
-              {/* Nama Produk */}
-              <div className="flex-8 text-center text-gray-800 text-sm font-bold">
-                {debts.name}
+              <div className='flex-8 text-center text-gray-800 text-sm font-bold'>
+                {debt.customer_name}
               </div>
-
-              {/* Total */}
-              <div className="flex-8 text-center text-gray-500 text-sm">
-                {debts.hutang}
+              <div className='flex-8 text-center text-gray-500 text-sm'>
+                Rp {debt.total_debt?.toLocaleString()}
               </div>
-
-              {/* Tempo */}
-              <div className="flex-8 text-center text-gray-500 text-sm">
-                {debts.tempo}
+              <div className='flex-8 text-center text-gray-500 text-sm'>
+                {new Date(debt.due_date).toLocaleDateString('id-ID')}
               </div>
-
-              {/* Status */}
-              <div className="flex-8 text-center text-gray-800 text-sm">
-                {debts.status}
+              <div className='flex-8 text-center text-gray-800 text-sm'>
+                {debt.status}
               </div>
             </div>
-          );
-        })}
+          ))
+        )}
 
-        {/* Footer tabel */}
-        {/* Menampilkan informasi total stok */}
-        <div className="p-2 border-t border-gray-200 flex justify-between">
-          <p className="text-sm text-gray-500 flex gap-1">
-            Menampilkan
-            <span>
-              {startRange}-{endRange}
-            </span>
-              dari
-            <span>
-              {totalItems}
-            </span>
-              hutang
+        <div className='p-2 border-t border-gray-200 flex justify-between'>
+          <p className='text-sm text-gray-500 flex gap-1'>
+            Menampilkan {startRange}-{endRange} dari {totalItems} hutang
           </p>
-          <div className="flex gap-2">
-
-            {/* Button buat ganti halaman tabel*/}
-            {/* Button Sebelumnya */}
+          <div className='flex gap-2'>
             <button
               onClick={goToPrevPage}
               disabled={currentPage === 1}
               className={`px-3 py-1 text-sm border rounded-md font-medium transition-all ${
-                currentPage === 1 ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white active:bg-gray-100'
-              }`}>
+                currentPage === 1
+                  ? 'text-gray-300 border-gray-200'
+                  : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'
+              }`}
+            >
               Sebelumnya
             </button>
-
-            {/* Button Selanjutnya */}
             <button
               onClick={goToNextPage}
               disabled={indexOfLastItem >= totalItems}
               className={`px-3 py-1 text-sm border rounded-md font-medium transition-all ${
-                indexOfLastItem >= totalItems ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white active:bg-gray-100'
-              }`}>
+                indexOfLastItem >= totalItems
+                  ? 'text-gray-300 border-gray-200'
+                  : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'
+              }`}
+            >
               Selanjutnya
             </button>
-
           </div>
         </div>
       </div>
