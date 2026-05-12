@@ -18,7 +18,7 @@ const debtRoutes = require('./routes/debtRoutes');
 const app = express();
 app.use(
   cors({
-    origin: '*',
+    origin: 'http://localhost:5137',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   }),
