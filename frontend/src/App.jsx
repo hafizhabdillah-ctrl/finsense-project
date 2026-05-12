@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
 
 import MainPage from './Pages/MainPage';
 import LoginPage from './Pages/Auth/LoginPage';
