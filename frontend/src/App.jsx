@@ -38,14 +38,7 @@ function App() {
     <main>
       <Routes>
         <Route path='/' element={<MainPage />} />
-        <Route
-          path='/login'
-          element={
-            <AuthProvider>
-              <LoginPage />
-            </AuthProvider>
-          }
-        />
+        <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
 
         <Route element={<MainLayout />}>
