@@ -76,7 +76,7 @@ function EditTransaction() {
           source: 'manual',
         });
 
-        navigate(`/transaction/${id}`);
+        navigate(`/transactions/${id}`);
 
         // Tampilkan Pesan Sukses
         Swal.fire({

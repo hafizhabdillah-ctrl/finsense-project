@@ -67,7 +67,7 @@ function EditDebt() {
           status,
         });
 
-        navigate(`/debt/${id}`);
+        navigate(`/debts/${id}`);
         Swal.fire({
           title: 'Sukses',
           text: 'Data hutang telah diperbarui',

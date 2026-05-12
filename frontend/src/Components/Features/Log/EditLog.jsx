@@ -67,7 +67,7 @@ function EditLog() {
           status,
         });
 
-        navigate(`/log/${id}`);
+        navigate(`/logs/${id}`);
         Swal.fire({
           title: 'Sukses',
           text: 'Data Log Barang telah diperbarui',

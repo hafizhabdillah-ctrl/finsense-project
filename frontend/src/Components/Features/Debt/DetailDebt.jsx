@@ -31,7 +31,7 @@ function DetailDebt() {
       if (result.isConfirmed) {
 
         deleteDebt(debt.id);
-        navigate('/debt');
+        navigate('/debts');
 
         // Feedback sukses
         Swal.fire({
@@ -71,7 +71,7 @@ function DetailDebt() {
       {/* Button */}
       <div className="flex gap-4">
         <button
-          onClick={() => navigate(`/debt/editdebt/${id}`)}
+          onClick={() => navigate(`/debts/edit/${id}`)}
           className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
           <span>
             Edit

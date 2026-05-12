@@ -31,7 +31,7 @@ function TableLog() {
   };
 
   async function onAddHandler() {
-    navigate('/new/newlog');
+    navigate('/logs/new');
   }
 
 
@@ -70,7 +70,7 @@ function TableLog() {
           return (
             <div
               key={logs.id}
-              onClick={() => navigate(`/log/${logs.id}`)}
+              onClick={() => navigate(`/logs/${logs.id}`)}
               className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Waktu */}
@@ -151,18 +151,6 @@ function TableLog() {
           </div>
         </div>
       </div>
-
-      {/* Button tambah log barang */}
-      <button
-        onClick={() => onAddHandler()}
-        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          <FaCirclePlus  size={16}/>
-        </span>
-        <span>
-          Tambah Log Barang
-        </span>
-      </button>
     </div>
   );
 }

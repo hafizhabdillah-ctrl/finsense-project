@@ -51,7 +51,7 @@ function NewTransaction() {
       source: 'manual',
     });
 
-    navigate('/transaction');
+    navigate('/transactions');
   }
 
   return (

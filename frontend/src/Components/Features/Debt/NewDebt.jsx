@@ -42,7 +42,7 @@ function NewDebt() {
     });
 
     addDebt({ name, hutang, tempo });
-    navigate('/debt');
+    navigate('/debts');
   }
 
   return (

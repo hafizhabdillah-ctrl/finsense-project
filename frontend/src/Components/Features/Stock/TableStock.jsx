@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { stocks } from '../../../utils/local/stock.js';
 
-import { FaCirclePlus } from 'react-icons/fa6';
 
 function TableStock() {
   const navigate = useNavigate();
@@ -40,10 +39,6 @@ function TableStock() {
       setCurrentPage(currentPage - 1);
   };
 
-  async function onAddHandler() {
-    navigate('/new/newstock');
-  }
-
   return (
     <div>
 
@@ -73,7 +68,7 @@ function TableStock() {
           return (
             <div
               key={stocks.id}
-              onClick={() => navigate(`/stock/${stocks.id}`)}
+              onClick={() => navigate(`/stocks/${stocks.id}`)}
               className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Nomor biar urut kalau ada yang dihapus */}
@@ -144,18 +139,6 @@ function TableStock() {
           </div>
         </div>
       </div>
-
-      {/* Button Tambah Barang */}
-      <button
-        onClick={() => onAddHandler()}
-        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          <FaCirclePlus  size={16}/>
-        </span>
-        <span>
-          Tambah Barang
-        </span>
-      </button>
     </div>
   );
 }

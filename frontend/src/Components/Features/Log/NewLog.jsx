@@ -45,7 +45,7 @@ function NewLog() {
       status: 'Menunggu audit',
     });
 
-    navigate('/log');
+    navigate('/logs');
   }
 
   return (

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { transactions } from '../../../utils/local/transaction.js';
 
-import { FaCirclePlus } from 'react-icons/fa6';
-
 function TableTransaction() {
   const navigate = useNavigate();
 
@@ -15,7 +13,7 @@ function TableTransaction() {
   const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalItems = transactions.length;
-  const startRange = indexOfFirstItem + 1;
+  const startRange = totalItems === 0 ? 0 : indexOfFirstItem + 1;
   const endRange = Math.min(indexOfLastItem, totalItems);
 
 
@@ -28,10 +26,6 @@ function TableTransaction() {
     if (currentPage > 1)
       setCurrentPage(currentPage - 1);
   };
-
-  async function onAddHandler() {
-    navigate('/new/newtransaction');
-  }
 
   return (
     <div>
@@ -61,11 +55,15 @@ function TableTransaction() {
 
       {/* Daftar Produk dalam Tabel */}
       <div className="flex flex-col">
-        {currentItems.map((transactions, index) => {
+        {totalItems === 0 ? (
+          <div className="p-8 text-center text-gray-500 border-b border-s border-r border-gray-300">
+            Belum ada catatan transaksi.
+          </div>
+        ) : (currentItems.map((transactions, index) => {
           return (
             <div
               key={transactions.id}
-              onClick={() => navigate(`/transaction/${transactions.id}`)}
+              onClick={() => navigate(`/transactions/${transactions.id}`)}
               className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Nomor biar urut kalau ada yang dihapus */}
@@ -105,7 +103,7 @@ function TableTransaction() {
               </div>
             </div>
           );
-        })}
+        }))}
 
         {/* Footer tabel */}
         {/* Menampilkan informasi total stok */}
@@ -147,18 +145,6 @@ function TableTransaction() {
           </div>
         </div>
       </div>
-
-      {/* Button Tambah Barang */}
-      <button
-        onClick={() => onAddHandler()}
-        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          <FaCirclePlus  size={16}/>
-        </span>
-        <span>
-          Tambah Transaksi baru
-        </span>
-      </button>
     </div>
   );
 }

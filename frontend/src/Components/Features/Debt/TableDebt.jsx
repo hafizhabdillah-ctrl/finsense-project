@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { debts } from '../../../utils/local/debt';
-import { FaCirclePlus } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 
 function TableDebt() {
@@ -30,9 +29,6 @@ function TableDebt() {
       setCurrentPage(currentPage - 1);
   };
 
-  async function onAddHandler() {
-    navigate('/new/newdebt');
-  };
 
   return (
     <div>
@@ -63,7 +59,7 @@ function TableDebt() {
           return (
             <div
               key={debts.id}
-              onClick={() => navigate(`/debt/${debts.id}`)}
+              onClick={() => navigate(`/debts/${debts.id}`)}
               className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
             >
               {/* Nomor */}
@@ -134,18 +130,6 @@ function TableDebt() {
           </div>
         </div>
       </div>
-
-      {/* Button tambah piutang */}
-      <button
-        onClick={() => onAddHandler()}
-        className="flex items-center gap-2 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          <FaCirclePlus  size={16}/>
-        </span>
-        <span>
-          Tambah Piutang
-        </span>
-      </button>
     </div>
   );
 }

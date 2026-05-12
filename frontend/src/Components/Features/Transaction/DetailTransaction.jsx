@@ -12,7 +12,7 @@ function DetailTransaction() {
     return (
       <div className="p-6">
         <p className="text-red-500 font-bold">Data transaksi tidak ditemukan!</p>
-        <button onClick={() => navigate('/transaction')} className="mt-4 underline">Kembali</button>
+        <button onClick={() => navigate('/transactions')} className="mt-4 underline">Kembali</button>
       </div>
     );
   }
@@ -31,7 +31,7 @@ function DetailTransaction() {
       if (result.isConfirmed) {
 
         deleteTransaction(transaction.id);
-        navigate('/transaction');
+        navigate('/transactions');
 
         // Feedback sukses
         Swal.fire({
@@ -73,7 +73,7 @@ function DetailTransaction() {
       {/* Button */}
       <div className="flex gap-4">
         <button
-          onClick={() => navigate(`/transaction/edittransaction/${id}`)}
+          onClick={() => navigate(`/transactions/edit/${id}`)}
           className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
           <span>
             Edit

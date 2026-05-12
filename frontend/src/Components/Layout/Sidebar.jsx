@@ -13,11 +13,11 @@ import logo from '../../../images/logo.png';
 function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', icon: <MdDashboard size={22}/>, path: '/dashboard' },
-    { name: 'Catatan Keuangan', icon: <FaMoneyBill size={22}/>, path: '/transaction' },
-    { name: 'Manajemen Stok', icon: <MdInventory size={22}/>, path: '/stock' },
+    { name: 'Catatan Keuangan', icon: <FaMoneyBill size={22}/>, path: '/transactions' },
+    { name: 'Manajemen Stok', icon: <MdInventory size={22}/>, path: '/stocks' },
     { name: 'POS Terminal', icon: <FaCashRegister size={22}/>, path: '/pos' },
-    { name: 'Hutang & Pelanggan', icon: <FaUserGroup size={22}/>, path: '/debt' },
-    { name: 'Log Inventori', icon: <LuLogs size={22}/>, path: '/log' },
+    { name: 'Hutang & Pelanggan', icon: <FaUserGroup size={22}/>, path: '/debts' },
+    { name: 'Log Inventori', icon: <LuLogs size={22}/>, path: '/logs' },
   ];
 
   return (

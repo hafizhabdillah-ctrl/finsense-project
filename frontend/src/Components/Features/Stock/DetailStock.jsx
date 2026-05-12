@@ -22,7 +22,7 @@ function DetailStock() {
       if (result.isConfirmed) {
 
         deleteStock(stock.id);
-        navigate('/stock');
+        navigate('/stocks');
         Swal.fire({
           title: 'Sukses',
           text: 'Stok telah berhasil dihapus.',
@@ -61,7 +61,7 @@ function DetailStock() {
       {/* Button */}
       <div className="flex gap-4">
         <button
-          onClick={() => navigate(`/stock/editstock/${id}`)}
+          onClick={() => navigate(`/stocks/edit/${id}`)}
           className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
           <span>
             Edit

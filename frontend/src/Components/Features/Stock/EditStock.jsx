@@ -65,7 +65,7 @@ function EditStock() {
           qty,
         });
 
-        navigate(`/stock/${id}`);
+        navigate(`/stocks/${id}`);
 
         Swal.fire({
           title: 'Berhasil!',

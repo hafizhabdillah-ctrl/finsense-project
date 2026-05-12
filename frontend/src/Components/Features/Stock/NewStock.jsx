@@ -45,7 +45,7 @@ function NewStock() {
     });
 
     addStock({ name, sku, qty });
-    navigate('/stock');
+    navigate('/stocks');
   }
 
   return (

@@ -56,35 +56,32 @@ function App() {
           <Route path='/new' element={<NewPage />} />
 
           {/* Transaction */}
-          <Route path='/transaction' element={<TransactionPage />} />
-          <Route path='/new/newtransaction/' element={<NewTransaction />} />
-          <Route path='/transaction/:id' element={<DetailTransaction />} />
-          <Route
-            path='/transaction/edittransaction/:id'
-            element={<EditTransaction />}
-          />
+          <Route path='/transactions' element={<TransactionPage />} />
+          <Route path='/transactions/new/' element={<NewTransaction />} />
+          <Route path='/transactions/:id' element={<DetailTransaction />} />
+          <Route path='/transactions/edit/:id' element={<EditTransaction />} />
 
           {/* Stock */}
-          <Route path='/stock' element={<StockPage />} />
-          <Route path='/new/newstock' element={<NewStock />} />
-          <Route path='/stock/:id' element={<DetailStock />} />
-          <Route path='/stock/editstock/:id' element={<EditStock />} />
+          <Route path='/stocks' element={<StockPage />} />
+          <Route path='/stocks/new' element={<NewStock />} />
+          <Route path='/stocks/:id' element={<DetailStock />} />
+          <Route path='/stocks/edit/:id' element={<EditStock />} />
 
           {/* POS */}
           <Route path='/pos' element={<PosPage />} />
-          <Route path='/new/newpos' element={<NewPos />} />
+          <Route path='/pos/new' element={<NewPos />} />
 
           {/* Debt */}
-          <Route path='/debt' element={<DebtPage />} />
-          <Route path='/new/newdebt' element={<NewDebt />} />
-          <Route path='debt/:id' element={<DetailDebt />} />
-          <Route path='/debt/editdebt/:id' element={<EditDebt />} />
+          <Route path='/debts' element={<DebtPage />} />
+          <Route path='/debts/new' element={<NewDebt />} />
+          <Route path='debts/:id' element={<DetailDebt />} />
+          <Route path='/debts/edit/:id' element={<EditDebt />} />
 
           {/* Log */}
-          <Route path='/log' element={<LogPage />} />
-          <Route path='/new/newlog' element={<NewLog />} />
-          <Route path='/log/:id' element={<DetailLog />} />
-          <Route path='/log/editlog/:id' element={<EditLog />} />
+          <Route path='/logs' element={<LogPage />} />
+          <Route path='/logs/new' element={<NewLog />} />
+          <Route path='/logs/:id' element={<DetailLog />} />
+          <Route path='/logs/edit/:id' element={<EditLog />} />
         </Route>
 
         <Route path='*' element={<ErrorPage />} />
