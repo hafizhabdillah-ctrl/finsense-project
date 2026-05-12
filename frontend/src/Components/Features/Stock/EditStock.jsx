@@ -1,124 +1,101 @@
-import React, { useEffect, useState } from 'react';
-import { stocks, updateStock } from '../../../utils/local/stock';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useProducts } from '../../../hooks/useProducts';
 
 function EditStock() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const { products, editProduct } = useProducts();
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
-  const [qty, setQty] = useState('');
+  const [unit, setUnit] = useState('');
+  const [price, setPrice] = useState('');
+  const [min_stock, setMinStock] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const stockToEdit = stocks.find((s) => s.id === Number(id));
-    if (stockToEdit) {
-      setName(stockToEdit.name);
-      setSku(stockToEdit.sku);
-      setQty(stockToEdit.qty);
+    const product = products.find((p) => p.id === id);
+    if (product) {
+      setName(product.name);
+      setSku(product.sku);
+      setUnit(product.unit || '');
+      setPrice(product.price || '');
+      setMinStock(product.min_stock || 10);
+      setLoading(false);
+    } else if (products.length > 0) {
+      setLoading(false);
     }
-  }, [id]);
+  }, [products, id]);
 
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
-
-    if (name.trim() === '' || sku.trim() === '' || qty === '') {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Data Belum Lengkap',
-        text: 'Mohon lengkapi semua data sebelum mengubah',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    if (Number(qty) < 0) {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Invalid Data',
-        text: 'Mohon masukkan angka positif untuk Jumlah Stok',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    Swal.fire({
-      title: 'Konfirmasi Edit Stok?',
-      text: `Anda akan mengubah data stok dengan ID: ${id}`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#0c4a6e',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Konfirmasi',
-      cancelButtonText: 'Batal',
-    }).then((result) => {
-
-      if (result.isConfirmed) {
-
-        updateStock({
-          id: Number(id),
-          name,
-          sku,
-          qty,
-        });
-
-        navigate(`/stocks/${id}`);
-
-        Swal.fire({
-          title: 'Berhasil!',
-          text: 'Data stok telah diperbarui',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-        });
-      }
-    });
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const data = {
+      name,
+      sku,
+      unit: unit || null,
+      price: price ? parseFloat(price) : null,
+      min_stock: parseInt(min_stock),
+    };
+    const result = await editProduct(id, data);
+    setSubmitting(false);
+    if (result) navigate(`/stocks/${id}`);
   };
 
+  if (loading) return <div className='p-6'>Memuat data...</div>;
+
   return (
-    <form className="p-6" onSubmit={onSubmitHandler}>
-
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-gray-800">Edit Produk</h1>
-      <p className="mb-2 mt-2 text-sm text-gray-500">ID Produk: {id}</p>
-
-      <div className="grid grid-cols-2 gap-4 border-t pt-4">
-        <p className="flex items-center font-semibold text-gray-600">Nama Produk:</p>
+    <form className='p-6' onSubmit={onSubmitHandler}>
+      <h1 className='text-2xl font-bold text-gray-800'>Edit Produk</h1>
+      <p className='mb-2 mt-2 text-sm text-gray-500'>ID Produk: {id}</p>
+      <div className='grid grid-cols-2 gap-4 border-t pt-4'>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Nama Produk:
+        </p>
         <input
-          className="p-2 border border-gray-400 rounded"
+          className='p-2 border border-gray-400 rounded'
           value={name}
-          onChange={(n) => setName(n.target.value)}
+          onChange={(e) => setName(e.target.value)}
+          required
         />
-
-        <p className="flex items-center font-semibold text-gray-600">SKU:</p>
+        <p className='flex items-center font-semibold text-gray-600'>SKU:</p>
         <input
-          className="p-2 border border-gray-400 rounded"
+          className='p-2 border border-gray-400 rounded'
           value={sku}
-          onChange={(n) => setSku(n.target.value)}
+          onChange={(e) => setSku(e.target.value)}
+          required
         />
-
-        <p className="flex items-center font-semibold text-gray-600">Jumlah Stok:</p>
+        <p className='flex items-center font-semibold text-gray-600'>Satuan:</p>
         <input
-          type="number"
-          className="p-2 border border-gray-400 rounded"
-          value={qty}
-          onChange={(n) => setQty(n.target.value)}
+          className='p-2 border border-gray-400 rounded'
+          value={unit}
+          onChange={(e) => setUnit(e.target.value)}
+        />
+        <p className='flex items-center font-semibold text-gray-600'>Harga:</p>
+        <input
+          type='number'
+          className='p-2 border border-gray-400 rounded'
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <p className='flex items-center font-semibold text-gray-600'>
+          Minimal Stok:
+        </p>
+        <input
+          type='number'
+          className='p-2 border border-gray-400 rounded'
+          value={min_stock}
+          onChange={(e) => setMinStock(e.target.value)}
         />
       </div>
-
-      {/* Button */}
-      <div className="flex gap-4 mt-4">
-        <button
-          type="submit"
-          className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-          <span>
-            Konfirmasi
-          </span>
-        </button>
-      </div>
+      <button
+        type='submit'
+        disabled={submitting}
+        className='flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 transition-all'
+      >
+        {submitting ? 'Menyimpan...' : 'Konfirmasi'}
+      </button>
     </form>
   );
 }
