@@ -1,171 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { logs, updateLog } from '../../../utils/local/log';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useStockLogs } from '../../../hooks/useStockLogs';
 
 function EditLog() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [waktu, setWaktu] = useState('');
-  const [produk, setProduk] = useState('');
-  const [sku, setSku] = useState('');
-  const [tipe, setTipe] = useState('');
-  const [jumlah, setJumlah] = useState('');
-  const [oleh, setOleh] = useState('');
+  const { logs, editLog } = useStockLogs();
   const [status, setStatus] = useState('');
-
+  const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const logToEdit = logs.find((s) => s.id === Number(id));
-    if (logToEdit) {
-      setWaktu(logToEdit.waktu);
-      setProduk(logToEdit.produk);
-      setSku(logToEdit.sku);
-      setTipe(logToEdit.tipe);
-      setJumlah(logToEdit.jumlah);
-      setOleh(logToEdit.oleh);
-      setStatus(logToEdit.status);
+    const log = logs.find((l) => l.id === id);
+    if (log) {
+      setStatus(log.status);
+      setNote(log.note || '');
+      setLoading(false);
+    } else if (logs.length > 0) {
+      setLoading(false);
     }
-  }, [id]);
+  }, [logs, id]);
 
-  const format = `${waktu.replace('T', ' ')}:00`;
-
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
-
-    if (waktu.trim() === '' || produk.trim() === '' || sku.trim() === '' || tipe.trim() === '' || jumlah === '' || oleh.trim() === '' || status === '') {
-      Swal.fire({
-        title: 'Data Belum Lengkap',
-        text: 'Mohon lengkapi semua data sebelum mengubah',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    Swal.fire({
-      title: 'Konfirmasi Log Barang?',
-      text: `Anda akan mengubah data Log Barang dengan ID: ${id}`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#0c4a6e',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Konfirmasi',
-      cancelButtonText: 'Batal',
-    }).then((result) => {
-      if (result.isConfirmed) {
-
-        updateLog({
-          id: Number(id),
-          waktu: format,
-          produk,
-          sku,
-          tipe,
-          jumlah: Number(jumlah),
-          oleh,
-          status,
-        });
-
-        navigate(`/logs/${id}`);
-        Swal.fire({
-          title: 'Sukses',
-          text: 'Data Log Barang telah diperbarui',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-        });
-      }
-    });
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const result = await editLog(id, { status, note });
+    setSubmitting(false);
+    if (result) navigate(`/logs/${id}`);
   };
 
+  if (loading) return <div className='p-6'>Memuat data...</div>;
+
   return (
-    <form className="p-6" onSubmit={onSubmitHandler}>
-
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-gray-800">Edit Log</h1>
-      <p className="mb-2 mt-2 text-sm text-gray-500">ID Log: {id}</p>
-
-      <div className="grid grid-cols-2 gap-4 border-t pt-4">
-        <p className="flex items-center font-semibold text-gray-600">Waktu:</p>
-        <input
-          type="datetime-local"
-          className="p-2 border border-gray-400 rounded"
-          value={waktu}
-          onChange={(n) => setWaktu(n.target.value)}
-          required
-        />
-
-        <p className="flex items-center font-semibold text-gray-600">Nama Produk:</p>
-        <input
-          className="p-2 border border-gray-400 rounded"
-          value={produk}
-          onChange={(n) => setProduk(n.target.value)}
-          required
-        />
-
-        <p className="flex items-center font-semibold text-gray-600">SKU:</p>
-        <input
-          className="p-2 border border-gray-400 rounded"
-          value={sku}
-          onChange={(n) => setSku(n.target.value)}
-          required
-        />
-
-        <p className="flex items-center font-semibold text-gray-600">Tipe:</p>
+    <form className='p-6' onSubmit={onSubmitHandler}>
+      <h1 className='text-2xl font-bold text-gray-800'>Edit Log</h1>
+      <p className='mb-2 mt-2 text-sm text-gray-500'>ID Log: {id}</p>
+      <div className='grid grid-cols-2 gap-4 border-t pt-4'>
+        <p className='flex items-center font-semibold text-gray-600'>Status:</p>
         <select
-          className="p-2 border border-gray-400 rounded"
-          value={tipe}
-          onChange={(n) => setTipe(n.target.value)}
-          required
-        >
-          <option>Penyesuaian Manual</option>
-          <option>Stok Masuk</option>
-          <option>Stok Keluar</option>
-        </select>
-
-        <p className="flex items-center font-semibold text-gray-600">Jumlah:</p>
-        <input
-          className="p-2 border border-gray-400 rounded"
-          value={jumlah}
-          onChange={(n) => setJumlah(n.target.value)}
-          required
-        />
-
-        <p className="flex items-center font-semibold text-gray-600">Oleh:</p>
-        <select
-          className="p-2 border border-gray-400 rounded"
-          value={oleh}
-          onChange={(n) => setOleh(n.target.value)}
-          required
-        >
-          <option>Admin</option>
-          <option>Kasir</option>
-          <option>Gudang</option>
-        </select>
-
-        <p className="flex items-center font-semibold text-gray-600">Status:</p>
-        <select
-          className="p-2 border border-gray-400 rounded"
+          className='p-2 border border-gray-400 rounded'
           value={status}
-          onChange={(n) => setStatus(n.target.value)}
-          required
+          onChange={(e) => setStatus(e.target.value)}
         >
-          <option>Selesai</option>
-          <option>Menunggu audit</option>
+          <option value='completed'>Selesai</option>
+          <option value='pending_audit'>Menunggu audit</option>
         </select>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Catatan:
+        </p>
+        <input
+          className='p-2 border border-gray-400 rounded'
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
       </div>
-
-      {/* Button */}
-      <div className="flex gap-4 mt-4">
-        <button
-          type="submit"
-          className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-          <span>
-            Konfirmasi
-          </span>
-        </button>
-      </div>
+      <button
+        type='submit'
+        disabled={submitting}
+        className='flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 transition-all'
+      >
+        {submitting ? 'Menyimpan...' : 'Konfirmasi'}
+      </button>
     </form>
   );
 }

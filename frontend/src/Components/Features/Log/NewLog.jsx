@@ -1,155 +1,134 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addLog } from '../../../utils/local/log';
+import { useStockLogs } from '../../../hooks/useStockLogs';
+import { getProducts } from '../../../services/productService';
 import Swal from 'sweetalert2';
 
 function NewLog() {
   const navigate = useNavigate();
-  const [waktu, setWaktu] = useState('');
-  const [produk, setProduk] = useState('');
-  const [sku, setSku] = useState('');
-  const [tipe, setTipe] = useState('Penyesuaian manual');
-  const [jumlah, setJumlah] = useState('');
-  const [oleh, setOleh] = useState('Admin');
+  const { addLog } = useStockLogs();
+  const [products, setProducts] = useState([]);
+  const [product_id, setProductId] = useState('');
+  const [type, setType] = useState('in');
+  const [quantity, setQuantity] = useState('');
+  const [note, setNote] = useState('');
+  const [operator, setOperator] = useState('Admin');
+  const [status, setStatus] = useState('completed');
+  const [submitting, setSubmitting] = useState(false);
 
-  function onSubmitHandler(event) {
-    event.preventDefault();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await getProducts();
+        setProducts(res.data);
+      } catch (err) {
+        Swal.fire('Error', 'Gagal memuat daftar produk', 'error');
+      }
+    };
+    fetchProducts();
+  }, []);
 
-    if (waktu.trim() === '' || produk.trim() === '' || sku.trim() === '' || tipe.trim() === '' || jumlah.trim() === '' || oleh.trim() === '') {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Mohon isi seluruh data',
-        icon: 'info',
-      });
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (!product_id || !quantity) {
+      Swal.fire('Perhatian', 'Pilih produk dan isi jumlah', 'info');
       return;
     }
-
-    const format = `${waktu.replace('T', ' ')}:00`;
-
-    Swal.fire({
-      position: 'top-end',
-      icon: 'success',
-      title: 'Sukses',
-      text: 'Log barang berhasil ditambahkan',
-      showConfirmButton: false,
-      timer: 1500
-    });
-
-    addLog({
-      waktu: format,
-      produk,
-      sku,
-      tipe,
-      jumlah,
-      oleh,
-      status: 'Menunggu audit',
-    });
-
-    navigate('/logs');
-  }
+    setSubmitting(true);
+    const logData = {
+      product_id,
+      type,
+      quantity: parseInt(quantity),
+      note: note || null,
+      operator,
+      status,
+    };
+    const result = await addLog(logData);
+    setSubmitting(false);
+    if (result) navigate('/logs');
+  };
 
   return (
-    <form className="py-2 px-4" onSubmit={onSubmitHandler}>
-
-      {/* Header */}
-      <h1 className="p-2 text-gray-700 text-2xl font-bold">Tambah Log Barang</h1>
-
-      {/* input waktu */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Waktu:
-        </span>
-        <input
-          type="datetime-local"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan waktu..."
-          value={waktu}
-          onChange={(n) => setWaktu(n.target.value)}
-        />
-      </div>
-
-      {/* input produk */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Nama Produk:
-        </span>
-        <input
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan produk..."
-          value={produk}
-          onChange={(n) => setProduk(n.target.value)}
-        />
-      </div>
-
-      {/* input sku */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          SKU:
-        </span>
-        <input
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan SKU..."
-          value={sku}
-          onChange={(n) => setSku(n.target.value)}
-        />
-      </div>
-
-      {/* input tipe */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Tipe:
-        </span>
+    <form className='py-2 px-4' onSubmit={onSubmitHandler}>
+      <h1 className='p-2 text-gray-700 text-2xl font-bold'>
+        Tambah Log Barang
+      </h1>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Produk:</span>
         <select
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan kasirnya..."
-          value={tipe}
-          onChange={(n) => setTipe(n.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={product_id}
+          onChange={(e) => setProductId(e.target.value)}
+          required
         >
-          <option>Penyesuaian manual</option>
-          <option>Stok Masuk</option>
-          <option>Stok Keluar</option>
+          <option value=''>Pilih produk</option>
+          {products.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name} (SKU: {p.sku})
+            </option>
+          ))}
         </select>
       </div>
-
-      {/* input jumlah */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Jumlah:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Tipe:</span>
+        <select
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        >
+          <option value='in'>Stok Masuk</option>
+          <option value='out'>Stok Keluar</option>
+          <option value='adjust'>Penyesuaian Manual</option>
+        </select>
+      </div>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Jumlah:</span>
         <input
-          type="number"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan jumlah..."
-          value={jumlah}
-          onChange={(n) => setJumlah(n.target.value)}
+          type='number'
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          required
         />
       </div>
-
-      {/* input by: */}
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Oleh:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Catatan (opsional):</span>
+        <input
+          type='text'
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </div>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Oleh:</span>
         <select
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan kasirnya..."
-          value={oleh}
-          onChange={(n) => setOleh(n.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={operator}
+          onChange={(e) => setOperator(e.target.value)}
         >
           <option>Admin</option>
           <option>Kasir</option>
           <option>Gudang</option>
         </select>
       </div>
-
-      <button className="flex items-center py-2 px-4 mx-2 mt-4 gap-2 cursor-pointer bg-sky-950 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          Konfirmasi
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Status:</span>
+        <select
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value='completed'>Selesai</option>
+          <option value='pending_audit'>Menunggu audit</option>
+        </select>
+      </div>
+      <button
+        type='submit'
+        disabled={submitting}
+        className='flex items-center py-2 px-4 mx-2 mt-4 gap-2 cursor-pointer bg-sky-950 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 transition-all'
+      >
+        {submitting ? 'Menyimpan...' : 'Konfirmasi'}
       </button>
     </form>
   );

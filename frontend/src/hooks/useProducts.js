@@ -1,4 +1,3 @@
-// hooks/useProducts.js
 import { useState, useEffect, useCallback } from 'react';
 import {
   getProducts,

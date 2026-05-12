@@ -1,4 +1,3 @@
-// controllers/productController.js
 const prisma = require('../config/prisma');
 
 // GET /products - semua produk milik user

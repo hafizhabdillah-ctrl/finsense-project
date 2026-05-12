@@ -1,4 +1,3 @@
-// services/productService.js
 import api from './api';
 
 export const getProducts = () => api.get('/products');

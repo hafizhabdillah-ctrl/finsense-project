@@ -28,6 +28,7 @@ function DetailStock() {
       showCancelButton: true,
       confirmButtonColor: '#7f1d1d',
       confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
     });
     if (result.isConfirmed) {
       const success = await removeProduct(id);

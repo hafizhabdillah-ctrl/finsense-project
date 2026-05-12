@@ -1,153 +1,99 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logs } from '../../../utils/local/log';
-
-import { FaCirclePlus } from 'react-icons/fa6';
+import { useStockLogs } from '../../../hooks/useStockLogs';
 
 function TableLog() {
   const navigate = useNavigate();
-
+  const { logs, loading } = useStockLogs(); // tanpa filter, tampilkan semua
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = logs.slice(indexOfFirstItem, indexOfLastItem);
-
   const totalItems = logs.length;
   const startRange = indexOfFirstItem + 1;
-
   const endRange = Math.min(indexOfLastItem, totalItems);
 
-  {/* Fungsi ganti halaman tabel */}
   const goToNextPage = () => {
-    if (indexOfLastItem < totalItems)
-      setCurrentPage(currentPage + 1);
+    if (indexOfLastItem < totalItems) setCurrentPage(currentPage + 1);
   };
-
   const goToPrevPage = () => {
-    if (currentPage > 1)
-      setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  async function onAddHandler() {
-    navigate('/logs/new');
-  }
-
+  // if (loading) return <div className='p-4'>Memuat data log...</div>;
 
   return (
     <div>
-
-      {/* Tabel */}
-      {/* Header Tabel */}
-      <div className="bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold">
-        <div className="flex-1 text-center">
-          Waktu
-        </div>
-        <div className="flex-1 text-center">
-          Produk
-        </div>
-        <div className="flex-1 text-center">
-          SKU
-        </div>
-        <div className="flex-1 text-center">
-          Tipe
-        </div>
-        <div className="flex-1 text-center">
-          Jumlah
-        </div>
-        <div className="flex-1 text-center">
-          Oleh
-        </div>
-        <div className="flex-1 text-center">
-          Status
-        </div>
+      <div className='bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold'>
+        <div className='flex-1 text-center'>Waktu</div>
+        <div className='flex-1 text-center'>Produk</div>
+        <div className='flex-1 text-center'>SKU</div>
+        <div className='flex-1 text-center'>Tipe</div>
+        <div className='flex-1 text-center'>Jumlah</div>
+        <div className='flex-1 text-center'>Oleh</div>
+        <div className='flex-1 text-center'>Status</div>
       </div>
-
-      {/* Daftar hutang */}
-      <div className="flex flex-col">
-        {currentItems.map((logs) => {
-          return (
+      <div className='flex flex-col'>
+        {currentItems.length === 0 ? (
+          <div className='p-4 text-center text-gray-500'>
+            Tidak ada data log barang
+          </div>
+        ) : (
+          currentItems.map((log) => (
             <div
-              key={logs.id}
-              onClick={() => navigate(`/logs/${logs.id}`)}
-              className="flex items-center w-full p-2 border-b border-s border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all"
+              key={log.id}
+              onClick={() => navigate(`/logs/${log.id}`)}
+              className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
             >
-              {/* Waktu */}
-              <div className="flex-1 text-center text-gray-800 text-sm">
-                {logs.waktu}
+              <div className='flex-1 text-center text-gray-800 text-sm'>
+                {new Date(log.created_at).toLocaleString()}
               </div>
-
-              {/* Nama Produk */}
-              <div className="flex-1 text-center text-gray-800 text-sm font-bold">
-                {logs.produk}
+              <div className='flex-1 text-center text-gray-800 text-sm font-bold'>
+                {log.product?.name}
               </div>
-
-              {/* SKU */}
-              <div className="flex-1 text-center text-gray-500 text-sm">
-                {logs.sku}
+              <div className='flex-1 text-center text-gray-500 text-sm'>
+                {log.product?.sku}
               </div>
-
-              {/* tipe */}
-              <div className="flex-1 text-center text-gray-500 text-sm">
-                {logs.tipe}
+              <div className='flex-1 text-center text-gray-500 text-sm'>
+                {log.type === 'in'
+                  ? 'Stok Masuk'
+                  : log.type === 'out'
+                    ? 'Stok Keluar'
+                    : 'Penyesuaian'}
               </div>
-
-              {/* jumlah */}
-              <div className="flex-1 text-center text-gray-800 text-sm">
-                {logs.jumlah}
+              <div className='flex-1 text-center text-gray-800 text-sm'>
+                {log.quantity}
               </div>
-
-              {/* oleh */}
-              <div className="flex-1 text-center text-gray-800 text-sm">
-                {logs.oleh}
+              <div className='flex-1 text-center text-gray-800 text-sm'>
+                {log.operator}
               </div>
-
-              {/* status */}
-              <div className="flex-1 text-center text-gray-800 text-sm">
-                {logs.status}
+              <div className='flex-1 text-center text-gray-800 text-sm'>
+                {log.status === 'completed' ? 'Selesai' : 'Menunggu audit'}
               </div>
             </div>
-          );
-        })}
-
-        {/* Footer tabel */}
-        {/* Menampilkan informasi total stok */}
-        <div className="p-2 border-t border-gray-200 flex justify-between">
-          <p className="text-sm text-gray-500 flex gap-1">
-            Menampilkan
-            <span>
-              {startRange}-{endRange}
-            </span>
-              dari
-            <span>
-              {totalItems}
-            </span>
-              produk
+          ))
+        )}
+        <div className='p-2 border-t border-gray-200 flex justify-between'>
+          <p className='text-sm text-gray-500'>
+            Menampilkan {startRange}-{endRange} dari {totalItems} log
           </p>
-          <div className="flex gap-2">
-
-            {/* Button buat ganti halaman tabel*/}
-            {/* Button Sebelumnya */}
+          <div className='flex gap-2'>
             <button
               onClick={goToPrevPage}
               disabled={currentPage === 1}
-              className={`px-3 py-1 text-sm border rounded-md font-medium transition-all ${
-                currentPage === 1 ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white active:bg-gray-100'
-              }`}>
+              className={`px-3 py-1 text-sm border rounded-md font-medium ${currentPage === 1 ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
+            >
               Sebelumnya
             </button>
-
-            {/* Button Selanjutnya */}
             <button
               onClick={goToNextPage}
               disabled={indexOfLastItem >= totalItems}
-              className={`px-3 py-1 text-sm border rounded-md font-medium transition-all ${
-                indexOfLastItem >= totalItems ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white active:bg-gray-100'
-              }`}>
+              className={`px-3 py-1 text-sm border rounded-md font-medium ${indexOfLastItem >= totalItems ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
+            >
               Selanjutnya
             </button>
-
           </div>
         </div>
       </div>
