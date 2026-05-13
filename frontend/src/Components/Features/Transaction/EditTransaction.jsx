@@ -139,8 +139,8 @@ function EditTransaction() {
           value={type}
           onChange={(n) => setType(n.target.value)}
         >
-          <option>Masuk</option>
-          <option>Keluar</option>
+          <option value="Masuk">Masuk</option>
+          <option value="Keluar">Keluar</option>
         </select>
       </div>
 

@@ -8,30 +8,63 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 function SummaryTransaction() {
 
-  // Fungsi untuk mendapatkan data berdasarkan tipe
+  // Dapatkan bulan dan tahun saat ini
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0 = Januari, 4 = Mei, dst.
+  const currentYear = now.getFullYear();
+
   const getChartData = (type) => {
-    const filtered = transactions.filter((t) => t.type === type);
-    // Ambil kategori unik
-    const labels = [...new Set(filtered.map((t) => t.category))];
-    // Hitung total per kategori
-    const dataPoints = labels.map((label) =>
-      filtered.filter((t) => t.category === label).reduce((sum, t) => sum + t.amount, 0)
-    );
+    // Filter berdasarkan tipe dan bulan/tahun
+    const filtered = transactions.filter((t) => {
+      const transactionDate = new Date(t.date);
+      return (
+        t.type === type &&
+        transactionDate.getMonth() === currentMonth &&
+        transactionDate.getFullYear() === currentYear
+      );
+    });
+
+    // REDUCE untuk mengelompokkan & menjumlahkan (Grouping)
+    const grouped = filtered.reduce((acc, t) => {
+      const categoryName = t.category.trim();
+
+      if (!acc[categoryName]) {
+        acc[categoryName] = 0;
+      }
+
+      acc[categoryName] += Number(t.amount);
+      return acc;
+    }, {});
+
+    // Ambil hasil grouping untuk Chart
+    const labels = Object.keys(grouped);
+    const dataPoints = Object.values(grouped);
 
     return {
       labels,
       datasets: [{
         data: dataPoints,
-        backgroundColor: [
-          '#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
-        ],
+        backgroundColor: ['#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
         borderWidth: 1,
       }]
     };
   };
 
-  const incomeData = getChartData('income');
-  const expenseData = getChartData('expense');
+  const incomeData = getChartData('Masuk');
+  const expenseData = getChartData('Keluar');
+
+  const hasIncomeData = incomeData.datasets[0].data.length > 0;
+  const hasExpenseData = expenseData.datasets[0].data.length > 0;
+
+  // Data placeholder jika kosong
+  const emptyData = {
+    labels: ['Tidak ada data'],
+    datasets: [{
+      data: [1],
+      backgroundColor: ['#e5e7eb'],
+      borderWidth: 0,
+    }]
+  };
 
   const options = {
     plugins: {
@@ -44,19 +77,36 @@ function SummaryTransaction() {
     <div className="flex flex-col bg-white p-4">
 
       <div className="flex flex-row ">
-        {/* Grafik Pemasukan */}
         <div className="flex flex-1 flex-col items-center">
           <p className="text-xs font-bold text-gray-500 mb-2 uppercase">PREDIKSI PEMASUKAN</p>
           <div className="w-40 h-40 mt-6">
-            <Doughnut data={incomeData} options={options} />
+            {hasIncomeData ? (
+              <Doughnut data={incomeData} options={options} />
+            ) : (
+              <div className="relative">
+                <Doughnut data={emptyData} options={options} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] text-gray-400 font-semibold">KOSONG</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Grafik Pengeluaran */}
         <div className="flex flex-1 flex-col items-center">
-          <p className="text-xs font-bold text-gray-500 mb-2">PENGELUARAN</p>
+          <p className="text-xs font-bold text-gray-500 mb-2 uppercase">ALOKASI PENGELUARAN</p>
           <div className="w-40 h-40 mt-6">
-            <Doughnut data={expenseData} options={options} />
+            {hasExpenseData ? (
+              <Doughnut data={expenseData} options={options} />
+            ) : (
+              <div className="relative">
+                <Doughnut data={emptyData} options={options} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[10px] text-gray-400 font-semibold">KOSONG</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

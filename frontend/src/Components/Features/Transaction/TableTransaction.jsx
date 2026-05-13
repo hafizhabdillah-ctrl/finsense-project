@@ -94,11 +94,11 @@ function TableTransaction() {
               {/* Tipe */}
               <div className="flex-4 text-center text-gray-800 text-sm">
                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-                  transactions.type === 'income'
+                  transactions.type === 'Masuk'
                     ? 'text-green-700'
                     : 'text-red-700'
                 }`}>
-                  {transactions.type === 'income' ? 'Masuk' : 'Keluar'}
+                  {transactions.type === 'Masuk' ? 'Masuk' : 'Keluar'}
                 </span>
               </div>
             </div>
