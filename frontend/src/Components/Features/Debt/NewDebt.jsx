@@ -35,6 +35,7 @@ function NewDebt() {
         <span className='font-bold'>Nama Orang:</span>
         <input
           type='text'
+          placeholder='Masukan nama orang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={customer_name}
           onChange={(e) => setCustomerName(e.target.value)}
@@ -45,6 +46,7 @@ function NewDebt() {
         <span className='font-bold'>Total Hutang:</span>
         <input
           type='number'
+          placeholder='Masukan total hutang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={total_debt}
           onChange={(e) => setTotalDebt(e.target.value)}

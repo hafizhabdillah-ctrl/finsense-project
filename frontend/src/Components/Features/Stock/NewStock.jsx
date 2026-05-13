@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProducts } from '../../../hooks/useProducts';
 
+/* eslint-disable camelcase */
+
 function NewStock() {
   const navigate = useNavigate();
   const { addProduct } = useProducts();
@@ -40,6 +42,7 @@ function NewStock() {
         <span className='font-bold'>Nama Barang:</span>
         <input
           type='text'
+          placeholder='Masukan nama barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -50,6 +53,7 @@ function NewStock() {
         <span className='font-bold'>SKU Barang:</span>
         <input
           type='text'
+          placeholder='Masukan SKU...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={sku}
           onChange={(e) => setSku(e.target.value)}
@@ -60,6 +64,7 @@ function NewStock() {
         <span className='font-bold'>Jumlah Stok:</span>
         <input
           type='number'
+          placeholder='Masukan jumlah barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={stock}
           onChange={(e) => setStock(e.target.value)}
@@ -69,6 +74,7 @@ function NewStock() {
         <span className='font-bold'>Satuan (opsional):</span>
         <input
           type='text'
+          placeholder='Masukan satuan barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
@@ -78,6 +84,7 @@ function NewStock() {
         <span className='font-bold'>Harga (opsional):</span>
         <input
           type='number'
+          placeholder='Masukan harga barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={price}
           onChange={(e) => setPrice(e.target.value)}
@@ -87,6 +94,7 @@ function NewStock() {
         <span className='font-bold'>Minimal Stok (default 10):</span>
         <input
           type='number'
+          placeholder='Masukan jumlah minimal barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={min_stock}
           onChange={(e) => setMinStock(e.target.value)}
