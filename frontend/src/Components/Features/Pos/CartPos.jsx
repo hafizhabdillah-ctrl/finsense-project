@@ -75,7 +75,7 @@ function CartPos() {
               </div>
             </div>
           );
-        }) : <p className="text-gray-500 text-center py-4">Keranjang kosong</p>}
+        }) : <p className="text-gray-500 text-center py-4">Keranjang masih kosong</p>}
       </div>
 
       {/* Tombol konfirmasi */}
