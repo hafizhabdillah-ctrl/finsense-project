@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { carts, deleteCart } from '../../../utils/local/pos';
+import Swal from 'sweetalert2';
 
 function CartPos() {
   const [cartItems, setCartItems] = useState(carts);
@@ -9,12 +10,31 @@ function CartPos() {
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
   const onDeleteHandler = (item) => {
-    const isConfirmed = window.confirm(`Konfirmasi hapus ${item.name}?`);
 
-    if (isConfirmed) {
-      deleteCart(item.id);
-      setCartItems(carts);
-    }
+    Swal.fire({
+      title: 'Hapus Transaksi?',
+      text: `Apakah Anda yakin ingin menghapus "${item.name}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        deleteCart(item.id);
+        setCartItems(carts);
+
+        Swal.fire({
+          title: 'Sukses',
+          text: `${item.name} telah berhasil dihapus.`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   };
 
   return (

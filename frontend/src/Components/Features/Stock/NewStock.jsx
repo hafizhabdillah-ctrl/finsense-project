@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProducts } from '../../../hooks/useProducts';
+import Swal from 'sweetalert2';
 
 /* eslint-disable camelcase */
 
@@ -18,7 +19,10 @@ function NewStock() {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (!name || !sku) {
-      alert('Nama dan SKU wajib diisi');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
     setSubmitting(true);

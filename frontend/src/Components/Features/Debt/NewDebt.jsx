@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebts } from '../../../hooks/useDebts';
+import Swal from 'sweetalert2';
 
 function NewDebt() {
   const navigate = useNavigate();
@@ -13,7 +14,10 @@ function NewDebt() {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (!customer_name || !total_debt || !due_date) {
-      alert('Mohon isi semua data');
+      Swal.fire({
+        title: 'Mohon isi seluruh data',
+        icon: 'info',
+      });
       return;
     }
     setSubmitting(true);
