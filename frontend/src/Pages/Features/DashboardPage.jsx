@@ -5,32 +5,27 @@ import StokDashboard from '../../Components/Features/Dashboard/StokDashboard';
 import LakuDashboard from '../../Components/Features/Dashboard/LakuDashboard';
 
 function DashboardPage() {
-
   return (
-    <div className="py-2 px-4">
-
-      {/* Header */}
-      <h1 className="p-2 text-gray-700 text-2xl font-bold">Ringkasan Penjualan Hari Ini</h1>
-
-      {/* Tanggal dibawah */}
-      <p className="mx-2 mb-6 text-gray-500">
-        Kamis, 30 April 2026
+    <div className='py-2 px-4'>
+      <h1 className='p-2 text-gray-700 text-2xl font-bold'>
+        Ringkasan Penjualan Hari Ini
+      </h1>
+      <p className='mx-2 mb-6 text-gray-500'>
+        {new Date().toLocaleDateString('id-ID', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
       </p>
-
-      {/* Display Pemasukan, Transaksi, Rerata Order */}
       <StatDashboard />
-
-      {/* Grafik & Stok */}
-      <div className="flex flex-row w-full gap-4 items-stretch mt-4">
+      <div className='flex flex-row w-full gap-4 items-stretch mt-4'>
         <GrafikDashboard />
         <StokDashboard />
       </div>
-
-      {/* Barang paling laku */}
-      <div className="mt-6">
+      <div className='mt-6'>
         <LakuDashboard />
       </div>
-
     </div>
   );
 }
