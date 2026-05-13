@@ -1,141 +1,109 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addTransaction } from '../../../utils/local/transaction';
+import { useTransactions } from '../../../hooks/useTransactions';
 import Swal from 'sweetalert2';
 
 function NewTransaction() {
   const navigate = useNavigate();
+  const { addTransaction } = useTransactions();
   const [date, setDate] = useState('');
-  const [category, setCategory] = useState('Penjualan');
+  const [category_id, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [type, setType] = useState('Masuk');
+  const [type, setType] = useState('income');
+  const [submitting, setSubmitting] = useState(false);
+  const [categories] = useState([
+    { id: 1, name: 'Penjualan' },
+    { id: 2, name: 'Restok' },
+    { id: 3, name: 'Operasional' },
+    { id: 4, name: 'Gaji Karyawan' },
+  ]);
 
-  function onSubmitHandler(event) {
-    event.preventDefault();
-    if (date.trim() === '' || category.trim() === '' || description.trim() === '' || amount.trim() === '' || type.trim() === '') {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Mohon isi seluruh data',
-        icon: 'info',
-      });
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (!category_id || !amount) {
+      Swal.fire('Perhatian', 'Lengkapi data kategori dan nominal', 'info');
       return;
     }
-
-    if (Number(amount) < 0) {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Invalid Data',
-        text: 'Mohon masukkan angka positif untuk Nominal',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    Swal.fire({
-      position: 'top-end',
-      icon: 'success',
-      title: 'Sukses',
-      text: 'Transaksi berhasil ditambahkan',
-      showConfirmButton: false,
-      timer: 1500
-    });
-
-    addTransaction({
-      date,
-      category,
+    setSubmitting(true);
+    const payload = {
+      category_id: parseInt(category_id),
+      amount: parseFloat(amount),
       description,
-      amount,
+      transaction_date: date,
       type,
       source: 'manual',
-    });
-
-    navigate('/transactions');
-  }
+    };
+    const result = await addTransaction(payload);
+    setSubmitting(false);
+    if (result) navigate('/transactions');
+  };
 
   return (
-    <form className="py-2 px-4" onSubmit={onSubmitHandler}>
-
-      {/* Header */}
-      <h1 className="p-2 text-gray-700 text-2xl font-bold">Tambah Transaksi</h1>
-
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Waktu:
-        </span>
+    <form className='py-2 px-4' onSubmit={onSubmitHandler}>
+      <h1 className='p-2 text-gray-700 text-2xl font-bold'>Tambah Transaksi</h1>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Waktu:</span>
         <input
-          type="date"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan waktu..."
+          type='date'
           value={date}
-          onChange={(n) => setDate(n.target.value)}
+          onChange={(e) => setDate(e.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          required
         />
       </div>
-
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Ketegori:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Kategori:</span>
         <select
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan kategori..."
-          value={category}
-          onChange={(n) => setCategory(n.target.value)}
+          value={category_id}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          required
         >
-          <option>Penjualan</option>
-          <option>Restok</option>
-          <option>Operasional</option>
-          <option>Gaji Karyawan</option>
+          <option value=''>Pilih kategori</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
-
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Keterangan:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Keterangan:</span>
         <input
-          type="text"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan keterangan..."
+          type='text'
           value={description}
-          onChange={(n) => setDescription(n.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
         />
       </div>
-
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Nominal:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Nominal:</span>
         <input
-          type="number"
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan tipe..."
+          type='number'
           value={amount}
-          onChange={(n) => setAmount(n.target.value)}
+          onChange={(e) => setAmount(e.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          required
         />
       </div>
-
-      <div className="px-2 mt-4 relative flex flex-col gap-2">
-        <span className="font-bold">
-          Tipe:
-        </span>
+      <div className='px-2 mt-4 relative flex flex-col gap-2'>
+        <span className='font-bold'>Tipe:</span>
         <select
-          className="w-128 p-2 border-2 border-solid border-gray-200 rounded-lg"
-          placeholder="Masukan tipe..."
           value={type}
-          onChange={(n) => setType(n.target.value)}
+          onChange={(e) => setType(e.target.value)}
+          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
         >
-          <option>Masuk</option>
-          <option>Keluar</option>
+          <option value='income'>Masuk</option>
+          <option value='expense'>Keluar</option>
         </select>
       </div>
-
-      <button className="flex items-center py-2 px-4 mx-2 mt-4 gap-2 cursor-pointer bg-sky-950 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-        <span>
-          Konfirmasi
-        </span>
+      <button
+        type='submit'
+        disabled={submitting}
+        className='flex items-center py-2 px-4 mx-2 mt-4 gap-2 cursor-pointer bg-sky-950 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 transition-all'
+      >
+        {submitting ? 'Menyimpan...' : 'Konfirmasi'}
       </button>
     </form>
   );

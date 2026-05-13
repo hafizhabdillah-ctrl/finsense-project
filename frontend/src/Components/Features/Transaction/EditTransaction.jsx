@@ -1,159 +1,167 @@
-import React, { useEffect, useState } from 'react';
-import { transactions, updateTransaction } from '../../../utils/local/transaction';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import {
+  getTransactionById,
+  updateTransaction,
+} from '../../../services/transactionService';
 import Swal from 'sweetalert2';
 
 function EditTransaction() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [date, setDate] = useState('');
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [type, setType] = useState('');
+  const [formData, setFormData] = useState({
+    date: '',
+    category_id: '',
+    description: '',
+    amount: '',
+    type: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [categories, setCategories] = useState([
+    { id: 1, name: 'Penjualan' },
+    { id: 2, name: 'Restok' },
+    { id: 3, name: 'Operasional' },
+    { id: 4, name: 'Gaji Karyawan' },
+  ]);
 
   useEffect(() => {
-    const transactionToEdit = transactions.find((s) => s.id == id);
-    if (transactionToEdit) {
-      setDate(transactionToEdit.date);
-      setCategory(transactionToEdit.category);
-      setDescription(transactionToEdit.description);
-      setAmount(transactionToEdit.amount);
-      setType(transactionToEdit.type);
-    }
-  }, [id]);
-
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
-    const isAmountInvalid = amount === '' || amount === null || amount === undefined;
-
-    if (date.trim() === '' || category.trim() === '' || description.trim() === '' || isAmountInvalid || type.trim() === '') {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Data Belum Lengkap',
-        text: 'Mohon lengkapi semua data sebelum mengubah',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    if (Number(amount) < 0) {
-      event.preventDefault();
-      Swal.fire({
-        title: 'Invalid Data',
-        text: 'Mohon masukkan angka positif untuk Nominal',
-        icon: 'warning',
-        confirmButtonColor: '#0c4a6e',
-      });
-      return;
-    }
-
-    // logika Konfirmasi
-    Swal.fire({
-      title: 'Konfirmasi Edit Transaksi?',
-      text: `Anda akan mengubah data Transaksi dengan ID: ${id}`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#0c4a6e',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Konfirmasi',
-      cancelButtonText: 'Batal',
-    }).then((result) => {
-
-      // Hanya jalankan kode di bawah jika user menekan "Ya"
-      if (result.isConfirmed) {
-
-        // Eksekusi Update
-        updateTransaction({
-          id: Number(id),
-          date,
-          category,
-          description,
-          amount: Number(amount),
-          type,
-          source: 'manual',
+    const fetchData = async () => {
+      try {
+        const response = await getTransactionById(id);
+        const tx = response.data;
+        setFormData({
+          date: tx.transaction_date ? tx.transaction_date.split('T')[0] : '',
+          category_id: tx.category_id,
+          description: tx.description || '',
+          amount: tx.amount,
+          type: tx.type,
         });
-
-        navigate(`/transactions/${id}`);
-
-        // Tampilkan Pesan Sukses
-        Swal.fire({
-          title: 'Sukses',
-          text: 'Data transaksi telah diperbarui',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-        });
+      } catch (err) {
+        Swal.fire('Error', 'Gagal memuat data transaksi', 'error');
+        navigate('/transactions');
+      } finally {
+        setLoading(false);
       }
-    });
+    };
+    fetchData();
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (!formData.category_id || !formData.amount || !formData.type) {
+      Swal.fire('Perhatian', 'Lengkapi semua data', 'info');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const payload = {
+        category_id: parseInt(formData.category_id),
+        amount: parseFloat(formData.amount),
+        description: formData.description,
+        transaction_date: formData.date,
+        type: formData.type,
+        source: 'manual',
+      };
+      await updateTransaction(id, payload);
+      Swal.fire('Sukses', 'Transaksi berhasil diperbarui', 'success');
+      navigate(`/transactions/${id}`);
+    } catch (err) {
+      Swal.fire(
+        'Gagal',
+        err.response?.data?.error || 'Gagal memperbarui transaksi',
+        'error',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <div className='p-6'>Memuat data...</div>;
+
   return (
-    <form className="p-6" onSubmit={onSubmitHandler}>
+    <form className='p-6' onSubmit={onSubmitHandler}>
+      <h1 className='text-2xl font-bold text-gray-800'>Edit Transaksi</h1>
+      <p className='mb-2 mt-2 text-sm text-gray-500'>ID Transaksi: {id}</p>
 
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-gray-800">Edit Transaksi</h1>
-      <p className="mb-2 mt-2 text-sm text-gray-500">ID Transaksi: {id}</p>
-
-      <div className="grid grid-cols-2 gap-4 border-t pt-4">
-        <p className="flex items-center font-semibold text-gray-600">Tanggal:</p>
+      <div className='grid grid-cols-2 gap-4 border-t pt-4'>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Tanggal:
+        </p>
         <input
-          type="date"
-          className="p-2 border border-gray-400 rounded"
-          value={date}
-          onChange={(n) => setDate(n.target.value)}
+          type='date'
+          name='date'
+          value={formData.date}
+          onChange={handleChange}
+          className='p-2 border border-gray-400 rounded'
+          required
         />
 
-        <p className="flex items-center font-semibold text-gray-600">Kategori:</p>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Kategori:
+        </p>
         <select
-          className="p-2 border border-gray-400 rounded"
-          value={category}
-          onChange={(n) => setCategory(n.target.value)}
+          name='category_id'
+          value={formData.category_id}
+          onChange={handleChange}
+          className='p-2 border border-gray-400 rounded'
+          required
         >
-          <option>Penjualan</option>
-          <option>Restok</option>
-          <option>Operasional</option>
-          <option>Gaji Karyawan</option>
+          <option value=''>Pilih Kategori</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
 
-        <p className="flex items-center font-semibold text-gray-600">Keterangan:</p>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Keterangan:
+        </p>
         <input
-          className="p-2 border border-gray-400 rounded"
-          value={description}
-          onChange={(n) => setDescription(n.target.value)}
+          type='text'
+          name='description'
+          value={formData.description}
+          onChange={handleChange}
+          className='p-2 border border-gray-400 rounded'
         />
 
-        <p className="flex items-center font-semibold text-gray-600">Nominal:</p>
+        <p className='flex items-center font-semibold text-gray-600'>
+          Nominal:
+        </p>
         <input
-          type="number"
-          className="p-2 border border-gray-400 rounded"
-          value={amount}
-          onChange={(n) => setAmount(n.target.value)}
+          type='number'
+          name='amount'
+          value={formData.amount}
+          onChange={handleChange}
+          className='p-2 border border-gray-400 rounded'
+          required
         />
 
-        <p className="flex items-center font-semibold text-gray-600">Tipe:</p>
+        <p className='flex items-center font-semibold text-gray-600'>Tipe:</p>
         <select
-          className="p-2 border border-gray-400 rounded"
-          value={type}
-          onChange={(n) => setType(n.target.value)}
+          name='type'
+          value={formData.type}
+          onChange={handleChange}
+          className='p-2 border border-gray-400 rounded'
+          required
         >
-          <option>Masuk</option>
-          <option>Keluar</option>
+          <option value='income'>Masuk</option>
+          <option value='expense'>Keluar</option>
         </select>
       </div>
 
-      {/* Button */}
-      <div className="flex gap-4 mt-4">
-        <button
-          type="submit"
-          className="flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 hover:border hover:rounded-lg hover:border-sky-950 transition-all">
-          <span>
-            Konfirmasi
-          </span>
-        </button>
-      </div>
+      <button
+        type='submit'
+        disabled={submitting}
+        className='flex items-center gap-2 mt-4 cursor-pointer bg-sky-950 p-2 text-white font-semibold border rounded-lg hover:bg-white hover:text-sky-950 transition-all'
+      >
+        {submitting ? 'Menyimpan...' : 'Konfirmasi'}
+      </button>
     </form>
   );
 }
