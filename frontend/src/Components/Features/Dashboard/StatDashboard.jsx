@@ -10,7 +10,7 @@ function StatDashboard() {
       <div className="relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm">
         <div>
           <h1 className="text-gray-500 font-bold text-sm uppercase tracking-wider">
-            TOTAL PEMASUKAN
+            PREDIKSI PEMASUKAN
           </h1>
           <p className="text-2xl font-bold text-sky-950">
             Rp 1.500.000

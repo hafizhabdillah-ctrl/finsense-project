@@ -2,12 +2,7 @@ import React from 'react';
 import { FaBox } from 'react-icons/fa';
 
 function StokDashboard() {
-  const stockItems = [
-    { id: 1, name: 'Beras', stock: 100 },
-    { id: 2, name: 'Gula', stock: 50 },
-    { id: 3, name: 'Minyak Goreng', stock: 30 },
-    { id: 4, name: 'Telur', stock: 20 },
-  ];
+  const stockItems = [];
 
   return (
     <div className="flex-1 p-4 border rounded-md border-gray-300 shadow-sm">
@@ -24,7 +19,7 @@ function StokDashboard() {
       {/* List Stok */}
       <div>
         <div className="flex flex-col gap-3 overflow-y-auto">
-          {stockItems.map((item) => {
+          {stockItems.length > 0 ? stockItems.map((item) => {
             return (
               <div
                 key={item.id}
@@ -59,7 +54,7 @@ function StokDashboard() {
                 </button>
               </div>
             );
-          })}
+          }) : <p className="text-gray-500 text-center py-4">Stok masih kosong</p>}
         </div>
       </div>
     </div>
