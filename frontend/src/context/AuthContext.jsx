@@ -40,11 +40,14 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
-      await api.post('/auth/logout', { refreshToken });
-    } catch (error) {}
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
+      if (refreshToken) await api.post('/auth/logout', { refreshToken });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      setUser(null);
+    }
   };
 
   const register = async (email, password, full_name) => {
