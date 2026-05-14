@@ -2,8 +2,6 @@ import React from 'react';
 import { useCart } from '../../../hooks/useCart';
 import { createTransaction } from '../../../services/transactionService';
 import { updateStock } from '../../../services/productService';
-import React, { useState, useEffect } from 'react';
-import { carts, deleteCart } from '../../../utils/local/pos';
 import Swal from 'sweetalert2';
 
 function CartPos() {
@@ -39,9 +37,8 @@ function CartPos() {
     if (!confirm.isConfirmed) return;
 
     try {
-      // 1. Buat transaksi penjualan
       const transactionPayload = {
-        category_id: 1, // pastikan ada kategori Penjualan dengan id=1
+        category_id: 1,
         type: 'income',
         amount: subtotal,
         description: `Penjualan POS - ${cart.length} item`,
@@ -50,7 +47,6 @@ function CartPos() {
       };
       await createTransaction(transactionPayload);
 
-      // 2. Update stok setiap produk
       for (let item of cart) {
         await updateStock(item.id, {
           quantity: item.qty,
@@ -68,30 +64,6 @@ function CartPos() {
         'error',
       );
     }
-    Swal.fire({
-      title: 'Hapus Transaksi?',
-      text: `Apakah Anda yakin ingin menghapus "${item.name}"? Data yang dihapus tidak bisa dikembalikan.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#7f1d1d',
-      cancelButtonColor: '#64748b',
-      confirmButtonText: 'Hapus',
-      cancelButtonText: 'Batal'
-    }).then((result) => {
-      if (result.isConfirmed) {
-
-        deleteCart(item.id);
-        setCartItems(carts);
-
-        Swal.fire({
-          title: 'Sukses',
-          text: `${item.name} telah berhasil dihapus.`,
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false
-        });
-      }
-    });
   };
 
   return (
@@ -137,13 +109,8 @@ function CartPos() {
                 </div>
               </div>
             </div>
-
           ))
         )}
-
-          );
-        }) : <p className="text-gray-500 text-center py-4">Keranjang masih kosong</p>}
-
       </div>
       <div className='mt-auto border-t border-gray-400 flex-shrink-0 pt-2'>
         <div className='flex justify-between p-1'>

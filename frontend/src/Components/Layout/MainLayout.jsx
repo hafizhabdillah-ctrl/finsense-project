@@ -19,7 +19,7 @@ function MainLayout() {
   }
 
   return (
-    <div className='flex w-screen h-screen overflow-hidden'>
+    <div className='flex w-screen h-screen overflow-auto bg-gray-100'>
       <Sidebar />
       <div className='flex-1 flex flex-col'>
         <TopBar />

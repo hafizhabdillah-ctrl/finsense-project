@@ -2,15 +2,15 @@ import React, { useMemo } from 'react';
 import { useStockLogs } from '../../../hooks/useStockLogs';
 
 function StatLog() {
-  // Ambil tanggal hari ini
-  const today = new Date();
-  const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-  const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+  // Gunakan useMemo agar objek filter tidak dibuat ulang setiap render
+  const filters = useMemo(() => {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+    return { startDate: startOfDay, endDate: endOfDay };
+  }, []); // dependency kosong → stabil sepanjang lifecycle komponen
 
-  const { logs, loading } = useStockLogs({
-    startDate: startOfDay,
-    endDate: endOfDay,
-  });
+  const { logs, loading } = useStockLogs(filters);
 
   const stats = useMemo(() => {
     let totalTransactions = logs.length;
@@ -23,8 +23,7 @@ function StatLog() {
     return { totalTransactions, stockIn, stockOut };
   }, [logs]);
 
-  // if (loading)
-  //   return <div className='flex w-full gap-4 mt-4'>Memuat statistik...</div>;
+  // if (loading) return <div className='flex w-full gap-4 mt-4'>Memuat statistik...</div>;
 
   return (
     <div className='flex w-full gap-4 mt-4'>

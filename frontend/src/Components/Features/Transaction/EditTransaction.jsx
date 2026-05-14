@@ -152,10 +152,6 @@ function EditTransaction() {
         >
           <option value='income'>Masuk</option>
           <option value='expense'>Keluar</option>
-          <option value='Masuk'>Masuk</option>
-          <option value='Keluar'>Keluar</option>
-          <option value='Masuk'>Masuk</option>
-          <option value='Keluar'>Keluar</option>
         </select>
       </div>
 

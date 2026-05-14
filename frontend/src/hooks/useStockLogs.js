@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getStockLogs,
   createStockLog,
@@ -11,6 +11,8 @@ export const useStockLogs = (filters = {}) => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const prevFiltersRef = useRef();
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -25,6 +27,15 @@ export const useStockLogs = (filters = {}) => {
       setLoading(false);
     }
   }, [filters]);
+
+  useEffect(() => {
+    const filtersKey = JSON.stringify(filters);
+    const prevKey = JSON.stringify(prevFiltersRef.current);
+    if (filtersKey !== prevKey) {
+      prevFiltersRef.current = filters;
+      fetchLogs();
+    }
+  }, [filters, fetchLogs]);
 
   const addLog = useCallback(
     async (logData) => {
@@ -82,10 +93,6 @@ export const useStockLogs = (filters = {}) => {
     },
     [fetchLogs],
   );
-
-  useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
 
   return { logs, loading, error, fetchLogs, addLog, editLog, removeLog };
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getTransactions,
   createTransaction,
@@ -11,6 +11,7 @@ export const useTransactions = (filters = {}) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const prevFiltersRef = useRef();
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -25,6 +26,15 @@ export const useTransactions = (filters = {}) => {
       setLoading(false);
     }
   }, [filters]);
+
+  useEffect(() => {
+    const filtersKey = JSON.stringify(filters);
+    const prevKey = JSON.stringify(prevFiltersRef.current);
+    if (filtersKey !== prevKey) {
+      prevFiltersRef.current = filters;
+      fetchTransactions();
+    }
+  }, [filters, fetchTransactions]);
 
   const addTransaction = useCallback(
     async (data) => {
@@ -82,10 +92,6 @@ export const useTransactions = (filters = {}) => {
     },
     [fetchTransactions],
   );
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
 
   return {
     transactions,
