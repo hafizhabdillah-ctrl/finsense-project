@@ -63,7 +63,6 @@ function TableTransaction() {
               <div className='flex-4 text-center text-gray-800 text-sm'>
                 Rp {transaction.amount?.toLocaleString()}
               </div>
-<<<<<<< HEAD
               <div className='flex-4 text-center text-gray-800 text-sm'>
                 <span
                   className={`px-2 py-1 rounded text-xs font-bold uppercase ${
@@ -73,7 +72,6 @@ function TableTransaction() {
                   }`}
                 >
                   {transaction.type === 'income' ? 'Masuk' : 'Keluar'}
-=======
 
               {/* Tipe */}
               <div className="flex-4 text-center text-gray-800 text-sm">
@@ -83,7 +81,6 @@ function TableTransaction() {
                     : 'text-red-700'
                 }`}>
                   {transactions.type === 'Masuk' ? 'Masuk' : 'Keluar'}
->>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
                 </span>
               </div>
             </div>

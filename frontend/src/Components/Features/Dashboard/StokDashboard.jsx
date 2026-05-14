@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 
+
 function StokDashboard() {
-<<<<<<< HEAD
   const { lowStockProducts, loading } = useDashboardData();
 
   if (loading)
@@ -27,7 +27,8 @@ function StokDashboard() {
           ))}
         </ul>
       )}
-=======
+
+
   const stockItems = [];
 
   return (
@@ -83,7 +84,6 @@ function StokDashboard() {
           }) : <p className="text-gray-500 text-center py-4">Stok masih kosong</p>}
         </div>
       </div>
->>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
     </div>
   );
 }

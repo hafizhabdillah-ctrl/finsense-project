@@ -7,8 +7,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 function SummaryTransaction() {
   const { transactions } = useTransactions();
-
-<<<<<<< HEAD
   const getChartData = (type) => {
     const filtered = transactions.filter((t) => t.type === type);
     const labels = [
@@ -35,7 +33,14 @@ function SummaryTransaction() {
           borderWidth: 1,
         },
       ],
-=======
+
+  // Dapatkan bulan dan tahun saat ini
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0 = Januari, 4 = Mei, dst.
+  const currentYear = now.getFullYear();
+
+  const getChartData = (type) => {
+
   // Dapatkan bulan dan tahun saat ini
   const now = new Date();
   const currentMonth = now.getMonth(); // 0 = Januari, 4 = Mei, dst.
@@ -75,7 +80,6 @@ function SummaryTransaction() {
         backgroundColor: ['#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
         borderWidth: 1,
       }]
->>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
     };
   };
 
@@ -101,7 +105,6 @@ function SummaryTransaction() {
   };
 
   return (
-<<<<<<< HEAD
     <div className='flex flex-col bg-white p-4'>
       <div className='flex flex-row'>
         <div className='flex flex-1 flex-col items-center'>
@@ -116,7 +119,7 @@ function SummaryTransaction() {
           <p className='text-xs font-bold text-gray-500 mb-2'>PENGELUARAN</p>
           <div className='w-40 h-40 mt-6'>
             <Doughnut data={expenseData} options={options} />
-=======
+
     <div className="flex flex-col bg-white p-4">
 
       <div className="flex flex-row ">
@@ -150,7 +153,6 @@ function SummaryTransaction() {
                 </div>
               </div>
             )}
->>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
           </div>
         </div>
         <div className='flex flex-col flex-1 border-l border-gray-300 px-6'>
