@@ -150,8 +150,13 @@ function EditTransaction() {
           className='p-2 border border-gray-400 rounded'
           required
         >
+<<<<<<< HEAD
           <option value='income'>Masuk</option>
           <option value='expense'>Keluar</option>
+=======
+          <option value="Masuk">Masuk</option>
+          <option value="Keluar">Keluar</option>
+>>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
         </select>
       </div>
 

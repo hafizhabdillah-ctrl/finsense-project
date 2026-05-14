@@ -14,6 +14,26 @@ function StatDashboard() {
         </h2>
         <p className='text-2xl font-bold text-sky-950'>
           Rp {todayIncome.toLocaleString()}
+    <div className="flex flex-row w-full gap-4 items-stretch">
+
+      {/* Total Pemasukan */}
+      <div className="relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm">
+        <div>
+          <h1 className="text-gray-500 font-bold text-sm uppercase tracking-wider">
+            PREDIKSI PEMASUKAN
+          </h1>
+          <p className="text-2xl font-bold text-sky-950">
+            Rp 1.500.000
+          </p>
+        </div>
+
+        <p className="flex items-center mt-2 gap-2">
+          <span className="text-md leading-none text-green-500">
+            &#8599;
+          </span>
+          <span className="font-bold text-xs tracking-tight text-green-500">
+              +12.42% vs kemarin (AMAZE AMAZE)
+          </span>
         </p>
       </div>
       <div className='flex-1 bg-white p-4 border rounded-md shadow-sm'>

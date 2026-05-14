@@ -85,6 +85,7 @@ function NewLog() {
         <span className='font-bold'>Jumlah:</span>
         <input
           type='number'
+          placeholder='Masukan jumlah barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
@@ -95,6 +96,7 @@ function NewLog() {
         <span className='font-bold'>Catatan (opsional):</span>
         <input
           type='text'
+          placeholder='Masukan catatan barang...'
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
           value={note}
           onChange={(e) => setNote(e.target.value)}

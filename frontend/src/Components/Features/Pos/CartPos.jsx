@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import React from 'react';
 import { useCart } from '../../../hooks/useCart';
 import { createTransaction } from '../../../services/transactionService';
 import { updateStock } from '../../../services/productService';
+=======
+import React, { useState, useEffect } from 'react';
+import { carts, deleteCart } from '../../../utils/local/pos';
+>>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
 import Swal from 'sweetalert2';
 
 function CartPos() {
@@ -9,6 +14,7 @@ function CartPos() {
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
 
   const onDeleteHandler = (item) => {
+<<<<<<< HEAD
     Swal.fire({
       title: 'Hapus Item?',
       text: `Yakin ingin menghapus ${item.name}?`,
@@ -66,6 +72,33 @@ function CartPos() {
         'error',
       );
     }
+=======
+
+    Swal.fire({
+      title: 'Hapus Transaksi?',
+      text: `Apakah Anda yakin ingin menghapus "${item.name}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#7f1d1d',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        deleteCart(item.id);
+        setCartItems(carts);
+
+        Swal.fire({
+          title: 'Sukses',
+          text: `${item.name} telah berhasil dihapus.`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+>>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
   };
 
   return (
@@ -111,8 +144,13 @@ function CartPos() {
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
           ))
         )}
+=======
+          );
+        }) : <p className="text-gray-500 text-center py-4">Keranjang masih kosong</p>}
+>>>>>>> 9f95b9982ac407d68f939366f6996c2c0b9d537f
       </div>
       <div className='mt-auto border-t border-gray-400 flex-shrink-0 pt-2'>
         <div className='flex justify-between p-1'>
