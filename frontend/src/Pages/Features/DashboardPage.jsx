@@ -23,7 +23,7 @@ function DashboardPage() {
         <GrafikDashboard />
         <StokDashboard />
       </div>
-      <div className='mt-6'>
+      <div className='mt-2'>
         <LakuDashboard />
       </div>
     </div>

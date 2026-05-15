@@ -8,7 +8,7 @@ function LakuDashboard() {
     return <div className='p-4 bg-white rounded-md shadow'>Memuat data...</div>;
 
   return (
-    <div className='p-4'>
+    <div className='p-4 w-1/2 '>
       <h2 className='font-bold text-gray-700 mb-2'>Produk Paling Laku</h2>
       {bestSellers.length === 0 ? (
         <p className='text-gray-500'>Belum ada data penjualan.</p>

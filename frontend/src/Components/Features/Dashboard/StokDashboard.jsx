@@ -23,14 +23,14 @@ function StokDashboard() {
   return (
     <div className='flex flex-col gap-6'>
       {/* Bagian 1: Stok Menipis dari hook */}
-      <div className='flex-1 p-4 bg-white border border-gray-300 rounded-md shadow'>
-        <h2 className='font-bold text-gray-700 mb-2'>Stok Menipis</h2>
+      <div className='h-fit p-4 bg-white border border-gray-300 rounded-md shadow'>
+        <h2 className='text-xl font-bold text-gray-700 mb-2'>Stok Menipis</h2>
         {lowStockProducts.length === 0 ? (
           <p className='text-gray-500'>Semua stok aman.</p>
         ) : (
           <ul className='space-y-2'>
             {lowStockProducts.map((p) => (
-              <li key={p.id} className='flex justify-between border-b border-gray-300 pb-1'>
+              <li key={p.id} className='flex justify-between border-b border-gray-300 py-1 last:border-0'>
                 <span className='font-semibold text-gray-800'>{p.name}</span>
                 <span className='text-gray-800'>Stok: {p.stock}</span>
               </li>
@@ -40,7 +40,7 @@ function StokDashboard() {
       </div>
 
       {/* Bagian 2: Keadaan Stok (komponen dummy yang diminta tetap ada) */}
-      <div className='flex-1 p-4 border rounded-md border-gray-300 shadow-sm'>
+      <div className='h-fit p-4 border rounded-md border-gray-300 shadow-sm'>
         <div>
           <h1 className='text-gray-700 text-xl font-bold'>
             <span>Keadaan Stok</span>
@@ -52,7 +52,7 @@ function StokDashboard() {
               stockItems.map((item) => (
                 <div
                   key={item.id}
-                  className='flex items-center justify-between p-4'
+                  className='flex items-center justify-between px-2 py-3'
                 >
                   <div className='flex items-center gap-4'>
                     <div className='w-10 h-10 rounded bg-blue-100 text-sky-900 flex items-center justify-center'>

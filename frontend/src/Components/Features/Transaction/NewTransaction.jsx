@@ -72,6 +72,7 @@ function NewTransaction() {
         <span className='font-bold'>Keterangan:</span>
         <input
           type='text'
+          placeholder='Masukan keterangan...'
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
@@ -81,6 +82,7 @@ function NewTransaction() {
         <span className='font-bold'>Nominal:</span>
         <input
           type='number'
+          placeholder='Masukan nominal...'
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className='w-128 p-2 border-2 border-gray-200 rounded-lg'
