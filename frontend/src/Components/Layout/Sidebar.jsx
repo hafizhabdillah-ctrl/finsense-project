@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { FiPlusCircle, FiLogOut } from 'react-icons/fi';
-import { MdDashboard, MdInventory, MdContactSupport } from 'react-icons/md';
+import { MdDashboard, MdInventory } from 'react-icons/md';
 import { FaCashRegister, FaMoneyBill } from 'react-icons/fa';
 import { FaUserGroup } from 'react-icons/fa6';
 import { LuLogs } from 'react-icons/lu';
@@ -43,7 +43,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className='w-64 h-screen border-r border-gray-200 flex flex-col'>
+    <div className='sticky top-0 w-64 h-screen border-r border-gray-200 flex flex-col overflow-y-auto'>
       {/* Logo */}
       <div className='flex items-center px-4 py-4'>
         <img src={logo} alt='logo' className='h-14 w-14' />
@@ -88,18 +88,18 @@ function Sidebar() {
       <div className='flex flex-col mt-auto py-4 text-gray-600'>
         <hr className='border-t border-gray-300 mx-4 mb-4' />
 
-        <button className='flex mx-4 py-2 px-2 items-center hover:bg-gray-100 rounded-lg'>
-          <MdContactSupport size={22} className='mr-2' />
-          <span>Bantuan</span>
-        </button>
-
         <button
           onClick={handleLogout}
-          className='flex mx-4 py-2 px-2 items-center hover:bg-gray-300 rounded-lg hover:text-gray-900 transition-colors transition-all'
+          className='flex mx-4 py-2 px-2 gap-2 items-center hover:bg-gray-300 rounded-lg hover:text-gray-900 transition-colors transition-all'
         >
-          <FiLogOut size={18} />
-          Logout
+          <span>
+            <FiLogOut size={18} />
+          </span>
+          <span>
+            Logout
+          </span>
         </button>
+
       </div>
     </div>
   );

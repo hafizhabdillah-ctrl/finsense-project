@@ -9,7 +9,7 @@ function Topbar() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-row w-full py-4 border-b border-gray-200">
+    <div className="sticky top-0 z-40 flex flex-row w-full py-4 border-b border-gray-200 bg-white">
 
       {/* Search Bar */}
       <div className="mx-4 flex gap-2">

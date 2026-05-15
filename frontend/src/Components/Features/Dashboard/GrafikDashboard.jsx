@@ -55,7 +55,7 @@ function GrafikDashboard() {
   };
 
   return (
-    <div className='flex-1 p-4 bg-white rounded-md shadow'>
+    <div className='flex-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm'>
       <Line data={data} options={options} />
     </div>
   );
