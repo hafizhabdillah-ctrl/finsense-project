@@ -1,17 +1,12 @@
 const prisma = require('../src/config/prisma');
 async function main() {
   const categories = [
-    { name: 'Lainnya', type: 'expense', is_default: true },
-    { name: 'Makanan & Minuman', type: 'expense', is_default: false },
-    { name: 'Transportasi', type: 'expense', is_default: false },
-    { name: 'Bahan Baku', type: 'expense', is_default: false },
-    { name: 'Sewa & Operasional', type: 'expense', is_default: false },
-    { name: 'Listrik & Air', type: 'expense', is_default: false },
-    { name: 'Promosi & Iklan', type: 'expense', is_default: false },
-    { name: 'Gaji Karyawan', type: 'expense', is_default: false },
-    { name: 'Perawatan & Perbaikan', type: 'expense', is_default: false },
-    { name: 'Pemasukan Penjualan', type: 'income', is_default: true },
-    { name: 'Pendapatan Lain', type: 'income', is_default: false },
+    { name: 'Penjualan', type: 'income', is_default: true },
+    { name: 'Restok', type: 'expense', is_default: true },
+    { name: 'Operasional', type: 'expense', is_default: true },
+    { name: 'Gaji Karyawan', type: 'expense', is_default: true },
+    { name: 'Pendapatan Lain', type: 'income', is_default: true },
+    { name: 'Pengeluaran Lain', type: 'expense', is_default: true },
   ];
 
   for (const cat of categories) {
