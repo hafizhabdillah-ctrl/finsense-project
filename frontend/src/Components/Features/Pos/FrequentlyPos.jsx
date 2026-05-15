@@ -11,7 +11,7 @@ function FrequentlyPos() {
     const fetchProducts = async () => {
       try {
         const res = await getProducts();
-        setProducts(res.data.slice(0, 5));
+        setProducts(res.data.slice(0, 6));
       } catch (err) {
         console.error(err);
       }
@@ -33,7 +33,7 @@ function FrequentlyPos() {
       timer: 1500,
       showConfirmButton: false,
     }).then(() => {
-      window.location.reload(); // reload halaman setelah notifikasi
+      window.location.reload();
     });
   };
 
