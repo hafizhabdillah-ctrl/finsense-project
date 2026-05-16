@@ -120,13 +120,9 @@ function SummaryTransaction() {
             <span className='text-green-500 text-xs'>AI Powered</span>
           </h1>
           <div className='flex flex-col gap-2 text-md text-gray-600'>
-            <p>✅ Pemasukan bulan ini stabil.</p>
-            <p>
-              ⚠️ Pengeluaran kategori{' '}
-              <span className='font-bold text-red-500'>Restok</span> meningkat
-              15% dari bulan lalu.
-            </p>
-            <p>💡 Saran: Pertimbangkan mencari supplier alternatif.</p>
+            <p>✅ Lorem</p>
+            <p>⚠️ Lorem </p>
+            <p>💡 Lorem</p>
           </div>
         </div>
       </div>
