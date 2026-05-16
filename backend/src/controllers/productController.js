@@ -36,6 +36,8 @@ exports.getProductById = async (req, res) => {
 };
 
 // POST /products - tambah produk baru
+const { Prisma } = require('@prisma/client');
+
 exports.createProduct = async (req, res) => {
   try {
     const userId = req.userId;
@@ -57,7 +59,19 @@ exports.createProduct = async (req, res) => {
     res.status(201).json(product);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+
+    // Cek apakah error karena SKU sudah ada (unique constraint)
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === 'P2002'
+    ) {
+      return res
+        .status(409)
+        .json({ error: 'Gagal menambah produk, SKU sudah terdaftar' });
+    }
+
+    // Error lainnya tetap pesan umum
+    res.status(500).json({ error: 'Gagal menambah produk' });
   }
 };
 
