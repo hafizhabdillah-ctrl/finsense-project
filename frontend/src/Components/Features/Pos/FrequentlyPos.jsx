@@ -38,20 +38,38 @@ function FrequentlyPos() {
   };
 
   return (
+    // <div className='mt-4'>
+    //   <p className='text-lg font-semibold px-4 py-2 mb-4'>
+    //     Produk Sering Dibeli
+    //   </p>
+    //   <div className='flex px-2 gap-4 justify-around flex-wrap'>
+    //     {products.map((product) => (
+    //       <div
+    //         key={product.id}
+    //         onClick={() => handleAdd(product)}
+    //         className='w-56 flex flex-col justify-between p-4 border rounded-xl text-sky-950 border-gray-400 cursor-pointer hover:bg-gray-100 transition-all'
+    //       >
+    //         <div className='font-semibold'>{product.name}</div>
+    //         <div>
+    //           Stok: {product.stock} {product.unit || ''}
+    //         </div>
+    //         <div>Rp {product.price?.toLocaleString()}</div>
+    //       </div>
+    //     ))}
+    //   </div>
+    // </div>
     <div className='mt-4'>
-      <p className='text-lg font-semibold px-4 py-2 mb-4'>
-        Produk Sering Dibeli
-      </p>
-      <div className='flex px-2 gap-4 justify-around flex-wrap'>
+      <p className='text-lg font-semibold px-2 py-2'>Produk Sering Dibeli</p>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-2'>
         {products.map((product) => (
           <div
             key={product.id}
             onClick={() => handleAdd(product)}
-            className='w-56 flex flex-col justify-between p-4 border rounded-xl text-sky-950 border-gray-400 cursor-pointer hover:bg-gray-100 transition-all'
+            className='p-4 border rounded-xl cursor-pointer hover:bg-gray-100'
           >
             <div className='font-semibold'>{product.name}</div>
             <div>
-              Stok: {product.stock} {product.unit || ''}
+              Stok: {product.stock} {product.unit}
             </div>
             <div>Rp {product.price?.toLocaleString()}</div>
           </div>

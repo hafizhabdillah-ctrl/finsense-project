@@ -29,7 +29,7 @@ function StatTransaction() {
   // if (loading) {return <div className='flex w-1/2 gap-4 mt-4'>Memuat...</div>};
 
   return (
-    <div className='flex w-1/2 gap-4 mt-4'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4'>
       <div className='relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-gray-500 font-bold text-sm uppercase'>
           TOTAL PEMASUKAN BULAN INI

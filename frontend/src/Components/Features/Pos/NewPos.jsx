@@ -30,7 +30,7 @@ function NewPos() {
   };
 
   return (
-    <form className='py-2 px-4' onSubmit={onSubmitHandler}>
+    <form className='py-2 px-4 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
       {/* Header */}
       <h1 className='p-2 text-gray-700 text-2xl font-bold'>Tambah POS Baru</h1>
 
@@ -39,7 +39,7 @@ function NewPos() {
         <span className='font-bold'>Nama Barang:</span>
         <input
           type='text'
-          className='w-128 p-2 border-2 border-solid border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-solid border-gray-200 rounded-lg'
           placeholder='Masukan nama barang...'
           value={name}
           onChange={(n) => setName(n.target.value)}
@@ -51,7 +51,7 @@ function NewPos() {
         <span className='font-bold'>Jumlah Barang:</span>
         <input
           type='number'
-          className='w-128 p-2 border-2 border-solid border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-solid border-gray-200 rounded-lg'
           placeholder='Masukan jumlah Barang...'
           value={qty}
           onChange={(n) => setQty(n.target.value)}
@@ -63,7 +63,7 @@ function NewPos() {
         <span className='font-bold'>Harga:</span>
         <input
           type='number'
-          className='w-128 p-2 border-2 border-solid border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-solid border-gray-200 rounded-lg'
           placeholder='Masukan harga barang...'
           value={price}
           onChange={(n) => setPrice(n.target.value)}

@@ -69,64 +69,63 @@ function SummaryTransaction() {
   // }
 
   return (
-    <div className='flex flex-col bg-white p-4'>
-      <div className='flex flex-row'>
-        {/* Grafik Pemasukan */}
-        <div className='flex flex-1 flex-col items-center'>
-          <p className='text-xs font-bold text-gray-500 mb-2 uppercase'>
-            ALOKASI PEMASUKAN
-          </p>
-          <div className='w-40 h-40 mt-6 relative'>
-            {hasIncomeData ? (
-              <Doughnut data={incomeData} options={options} />
-            ) : (
-              <>
-                <Doughnut data={emptyData} options={options} />
-                <div className='absolute inset-0 flex items-center justify-center'>
-                  <span className='text-[10px] text-gray-400 font-semibold'>
-                    KOSONG
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
+    <div className='flex flex-col md:flex-row gap-4 bg-white p-4'>
+      {/* <div className='flex-1 text-center'> */}
+      {/* Grafik Pemasukan */}
+      <div className='flex-1 text-center'>
+        <p className='text-xs font-bold text-gray-500 mb-2 uppercase'>
+          ALOKASI PEMASUKAN
+        </p>
+        <div className='w-32 h-32 mx-auto mt-2 relative'>
+          {hasIncomeData ? (
+            <Doughnut data={incomeData} options={options} />
+          ) : (
+            <>
+              <Doughnut data={emptyData} options={options} />
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <span className='text-[10px] text-gray-400 font-semibold'>
+                  KOSONG
+                </span>
+              </div>
+            </>
+          )}
         </div>
+      </div>
 
-        {/* Grafik Pengeluaran */}
-        <div className='flex flex-1 flex-col items-center'>
-          <p className='text-xs font-bold text-gray-500 mb-2 uppercase'>
-            ALOKASI PENGELUARAN
-          </p>
-          <div className='w-40 h-40 mt-6 relative'>
-            {hasExpenseData ? (
-              <Doughnut data={expenseData} options={options} />
-            ) : (
-              <>
-                <Doughnut data={emptyData} options={options} />
-                <div className='absolute inset-0 flex items-center justify-center'>
-                  <span className='text-[10px] text-gray-400 font-semibold'>
-                    KOSONG
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
+      {/* Grafik Pengeluaran */}
+      <div className='flex-1 text-center'>
+        <p className='text-xs font-bold text-gray-500 mb-2 uppercase'>
+          ALOKASI PENGELUARAN
+        </p>
+        <div className='w-32 h-32 mx-auto mt-2 relative'>
+          {hasExpenseData ? (
+            <Doughnut data={expenseData} options={options} />
+          ) : (
+            <>
+              <Doughnut data={emptyData} options={options} />
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <span className='text-[10px] text-gray-400 font-semibold'>
+                  KOSONG
+                </span>
+              </div>
+            </>
+          )}
         </div>
+      </div>
 
-        {/* Evaluasi AI */}
-        <div className='flex flex-col flex-1 border-l border-gray-300 px-6'>
-          <h1 className='flex flex-row gap-1 text-lg font-bold text-sky-950 mb-2'>
-            Evaluasi AI{' '}
-            <span className='text-green-500 text-xs'>AI Powered</span>
-          </h1>
-          <div className='flex flex-col gap-2 text-md text-gray-600'>
-            <p>✅ Lorem</p>
-            <p>⚠️ Lorem </p>
-            <p>💡 Lorem</p>
-          </div>
+      {/* Evaluasi AI */}
+      <div className='flex-1 border-t md:border-t-0 md:border-l border-gray-300 pt-4 md:pt-0 md:pl-4'>
+        <h1 className='flex flex-row gap-1 text-lg font-bold text-sky-950 mb-2'>
+          Evaluasi AI <span className='text-green-500 text-xs'>AI Powered</span>
+        </h1>
+        <div className=' text-gray-600 text-sm space-y-1'>
+          <p>✅ Lorem</p>
+          <p>⚠️ Lorem </p>
+          <p>💡 Lorem</p>
         </div>
       </div>
     </div>
+    // </div>
   );
 }
 

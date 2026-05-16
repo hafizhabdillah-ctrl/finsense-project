@@ -84,7 +84,7 @@ function EditTransaction() {
   if (loading) return <div className='p-6'>Memuat data...</div>;
 
   return (
-    <form className='p-6' onSubmit={onSubmitHandler}>
+    <form className='p-6 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
       <h1 className='text-2xl font-bold text-gray-800'>Edit Transaksi</h1>
       <p className='mb-2 mt-2 text-sm text-gray-500'>ID Transaksi: {id}</p>
 

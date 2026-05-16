@@ -17,7 +17,8 @@ function InputPos() {
 
   // Inisialisasi Speech Recognition SEKALI saja saat component mount
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (SpeechRecognition && !recognitionRef.current) {
       const recognition = new SpeechRecognition();
@@ -91,7 +92,7 @@ function InputPos() {
   const handleVoiceAction = (text) => {
     // Fix: tambahkan return statement di callback
     const foundProduct = products.find((p) =>
-      text.includes(p.name.toLowerCase())
+      text.includes(p.name.toLowerCase()),
     );
 
     if (foundProduct) {
@@ -182,8 +183,12 @@ function InputPos() {
         <FaMicrophone size={28} />
       </button>
 
-      <p className={`text-sm transition-all ${isListening ? 'text-sky-950' : 'text-gray-400'}`}>
-        {isListening ? 'Mendengarkan...' : 'Tekan mikrofon untuk perintah suara'}
+      <p
+        className={`text-sm transition-all ${isListening ? 'text-sky-950' : 'text-gray-400'}`}
+      >
+        {isListening
+          ? 'Mendengarkan...'
+          : 'Tekan mikrofon untuk perintah suara'}
       </p>
     </div>
   );

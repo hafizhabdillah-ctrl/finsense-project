@@ -11,12 +11,12 @@ function StatDashboard() {
   return (
     <div className='flex flex-col w-full gap-4'>
       {/* statistik asli dari hook */}
-      <div className='flex w-full gap-4'>
-        <div className='flex-1 bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
+      <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+        <div className='bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
           <h2 className='text-gray-500 text-sm font-semibold'>
             Pemasukan Hari Ini
           </h2>
-          <p className='text-2xl font-bold text-sky-950'>
+          <p className='text-xl md:text-2xl font-bold text-sky-950'>
             Rp {todayIncome.toLocaleString()}
           </p>
         </div>

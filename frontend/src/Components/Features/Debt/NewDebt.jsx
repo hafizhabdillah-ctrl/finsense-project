@@ -31,7 +31,7 @@ function NewDebt() {
   };
 
   return (
-    <form className='py-2 px-4' onSubmit={onSubmitHandler}>
+    <form className='py-2 px-4 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
       <h1 className='p-2 text-gray-700 text-2xl font-bold'>
         Tambah Piutang Baru
       </h1>
@@ -40,7 +40,7 @@ function NewDebt() {
         <input
           type='text'
           placeholder='Masukan nama orang...'
-          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-200 rounded-lg'
           value={customer_name}
           onChange={(e) => setCustomerName(e.target.value)}
           required
@@ -51,7 +51,7 @@ function NewDebt() {
         <input
           type='number'
           placeholder='Masukan total hutang...'
-          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-200 rounded-lg'
           value={total_debt}
           onChange={(e) => setTotalDebt(e.target.value)}
           required
@@ -61,7 +61,7 @@ function NewDebt() {
         <span className='font-bold'>Jatuh Tempo:</span>
         <input
           type='date'
-          className='w-128 p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-200 rounded-lg'
           value={due_date}
           onChange={(e) => setDueDate(e.target.value)}
           required

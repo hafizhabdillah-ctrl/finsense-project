@@ -26,7 +26,7 @@ function StatLog() {
   // if (loading) return <div className='flex w-full gap-4 mt-4'>Memuat statistik...</div>;
 
   return (
-    <div className='flex w-full gap-4 mt-4'>
+    <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4'>
       <div className='relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-gray-500 font-bold text-sm uppercase tracking-wider'>
           TOTAL TRANSAKSI HARI INI

@@ -6,24 +6,40 @@ import LakuDashboard from '../../Components/Features/Dashboard/LakuDashboard';
 
 function DashboardPage() {
   return (
-    <div className='py-2 px-4'>
-      <h1 className='p-2 text-gray-700 text-2xl font-bold'>
+    // <div className='py-2 px-4'>
+    //   <h1 className='p-2 text-gray-700 text-2xl font-bold'>
+    //     Ringkasan Penjualan Hari Ini
+    //   </h1>
+    //   <p className='mx-2 mb-6 text-gray-500'>
+    //     {new Date().toLocaleDateString('id-ID', {
+    //       weekday: 'long',
+    //       year: 'numeric',
+    //       month: 'long',
+    //       day: 'numeric',
+    //     })}
+    //   </p>
+    //   <StatDashboard />
+    //   <div className='flex flex-row w-full gap-4 items-stretch mt-4'>
+    //     <GrafikDashboard />
+    //     <StokDashboard />
+    //   </div>
+    //   <div className='mt-2'>
+    //     <LakuDashboard />
+    //   </div>
+    // </div>
+    <div className='p-2 md:p-4'>
+      <h1 className='p-2 text-xl md:text-2xl font-bold'>
         Ringkasan Penjualan Hari Ini
       </h1>
-      <p className='mx-2 mb-6 text-gray-500'>
-        {new Date().toLocaleDateString('id-ID', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
+      <p className='mx-2 mb-4 md:mb-6 text-gray-500 text-sm md:text-base'>
+        {/* date */}
       </p>
       <StatDashboard />
-      <div className='flex flex-row w-full gap-4 items-stretch mt-4'>
+      <div className='flex flex-col lg:flex-row gap-4 mt-4'>
         <GrafikDashboard />
         <StokDashboard />
       </div>
-      <div className='mt-2'>
+      <div className='mt-4'>
         <LakuDashboard />
       </div>
     </div>

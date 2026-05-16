@@ -14,13 +14,8 @@ import chat from '../../images/chat.png';
 function MainPage() {
   const navigate = useNavigate();
 
-  function login() {
-    navigate('/login');
-  }
-
-  function register(){
-    navigate('/register');
-  }
+  const login = () => navigate('/login');
+  const register = () => navigate('/register');
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -30,185 +25,276 @@ function MainPage() {
   };
 
   return (
-    <div>
-      {/* Navbar */}
-      {/* Name */}
-      <div className="relative item-stretch flex text-white h-16 shadow-lg bg-sky-950 sticky top-0">
-        <div className="mx-8 font-sans font-bold text-2xl flex items-center gap-2">
-          <img src={logo} alt="logo" className="h-8"/>
-          <h1>Fin<span className="text-orange-300">Sense</span></h1>
-        </div>
+    <div className='bg-gray-200'>
+      {/* Navbar - Responsive */}
+      <nav className='sticky top-0 z-50 bg-sky-950 text-white shadow-lg'>
+        <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex items-center justify-between h-16 md:h-20'>
+            {/* Logo */}
+            <div className='flex items-center gap-2 font-bold text-2xl md:text-3xl'>
+              <img src={logo} alt='logo' className='h-8 md:h-10 w-auto' />
+              <h1>
+                Fin<span className='text-orange-300'>Sense</span>
+              </h1>
+            </div>
 
-        {/* Section */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex justify-center item-stretch absolute top-0 right-6 h-16 font-sans">
-          <button
-            onClick={()=> scrollToSection('produk')}
-            className="mx-8 underline underline-offset-8 hover:scale-105 transition-all duration-200">
-            Produk
-          </button>
+            {/* Menu Desktop */}
+            <div className='hidden md:flex items-center space-x-6 lg:space-x-8 text-base lg:text-lg font-medium'>
+              <button
+                onClick={() => scrollToSection('produk')}
+                className='hover:scale-105 transition-transform'
+              >
+                Produk
+              </button>
+              <button
+                onClick={() => scrollToSection('fitur')}
+                className='hover:scale-105 transition-transform'
+              >
+                Fitur
+              </button>
+              <button
+                onClick={() => scrollToSection('wawasan')}
+                className='hover:scale-105 transition-transform'
+              >
+                Wawasan AI
+              </button>
+            </div>
 
-          <button
-            onClick={()=> scrollToSection('fitur')}
-            className="mx-8 underline underline-offset-8 hover:scale-105 transition-all duration-200">
-            Fitur
-          </button>
-
-          <button
-            onClick={()=> scrollToSection('wawasan')}
-            className="mx-8 underline underline-offset-8 hover:scale-105 transition-all duration-200">Wawasan AI
-          </button>
-        </div>
-
-        {/* Login Register */}
-        <div className="flex items-stretch absolute top-0 right-0 h-16 font-sans font-bold">
-          <button className="mx-6 mt-2 mt-4 mb-3 hover:scale-105 transition-all duration-200" onClick={login}>Masuk</button>
-          <button className="mx-6 px-4 mt-4 mb-3 hover:scale-105 transition-all duration-200" onClick={register}>Daftar Sekarang</button>
-        </div>
-      </div>
-
-      {/* Product */}
-      <div id="produk" className="bg-gray-200 py-16 px-16 flex items-center gap-8">
-
-        {/* Text */}
-        <div className="flex-1 flex flex-col items-start gap-4">
-          <div className="flex justify-center text-sky-950 font-bold text-3xl text-left">
-            <h1>Cerdas untuk Pertumbuhan UMKM Anda</h1>
+            {/* Tombol Auth */}
+            <div className='flex items-center space-x-2 sm:space-x-4 text-base md:text-lg font-semibold'>
+              <button
+                onClick={login}
+                className='px-3 py-1 md:px-4 hover:scale-105 transition-transform'
+              >
+                Masuk
+              </button>
+              <button
+                onClick={register}
+                className='px-3 py-1 md:px-4 bg-white text-sky-950 rounded-lg hover:scale-105 transition-transform shadow'
+              >
+                Daftar
+              </button>
+            </div>
           </div>
 
-          <div className="mt-2 flex justify-center font-bold text-lg text-left text-gray-800">
-            <p>
-              Kendalikan bisnis ritel Anda dengan wawasan berbasis AI, manajemen inventaris yang mulus, dan pelacakan keuangan otomatis dalam satu platform cerdas.
+          {/* Menu Mobile (baris terpisah) */}
+          <div className='md:hidden flex justify-center gap-4 py-2 text-sm border-t border-sky-800'>
+            <button
+              onClick={() => scrollToSection('produk')}
+              className='hover:underline'
+            >
+              Produk
+            </button>
+            <button
+              onClick={() => scrollToSection('fitur')}
+              className='hover:underline'
+            >
+              Fitur
+            </button>
+            <button
+              onClick={() => scrollToSection('wawasan')}
+              className='hover:underline'
+            >
+              Wawasan AI
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section
+        id='produk'
+        className='bg-gray-200 py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8'
+      >
+        <div className='container mx-auto flex flex-col-reverse md:flex-row items-center gap-8 md:gap-12'>
+          <div className='flex-1 text-center md:text-left'>
+            <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold text-sky-950 leading-tight'>
+              Cerdas untuk Pertumbuhan UMKM Anda
+            </h1>
+            <p className='mt-4 text-base sm:text-lg text-gray-800 font-medium'>
+              Kendalikan bisnis ritel Anda dengan wawasan berbasis AI, manajemen
+              inventaris yang mulus, dan pelacakan keuangan otomatis dalam satu
+              platform cerdas.
             </p>
+            <button className='mt-6 bg-sky-950 text-white font-bold py-2 px-6 rounded-lg hover:scale-105 transition-transform shadow-md'>
+              Mulai Sekarang
+            </button>
           </div>
-
-          <button className="bg-sky-950 text-white rounded-lg py-2 px-4 hover:scale-105 transition-all duration-200 font-sans font-bold">Start now</button>
+          <div className='flex-1 flex justify-center'>
+            <img
+              src={hero}
+              alt='Hero'
+              className='w-full max-w-md rounded-xl shadow-2xl'
+            />
+          </div>
         </div>
+      </section>
 
-        {/* Image */}
-        <div className="flex-1 flex justify-center">
-          <img className="w-3/4 max-w-lg rounded-xl shadow-2xl" src={hero} />
-        </div>
+      {/* Separator */}
+      <div className='px-4'>
+        <hr className='border-gray-300 max-w-6xl mx-auto' />
       </div>
 
-      {/* Linebreak */}
-      <div className="bg-gray-200">
-        <hr className="border-t border-gray-300 mx-32" />
-      </div>
-
-      {/* Features */}
-      <div id="fitur" className="bg-gray-200 grid grid-cols-5 gap-6 py-16 px-16">
-
-        {/* Main Dashboard */}
-        <div className="bg-white py-8 px-6 rounded-xl shadow-lg">
-          <h1 className="font-sans font-bold text-sky-950 mb-3 text-lg">Dasbor Utama</h1>
-          <img src={dashboard} alt="Dashboard" className="h-40 w-full mb-4 object-contain"/>
-          <hr className="border-t border-gray-300 mb-4"/>
-          <p className="text-bold">
-            Pantau kesehatan bisnis Anda secara instan. Monitor total penjualan, tren pendapatan, dan metrik operasional harian dalam satu layar terpusat.
-          </p>
+      {/* Features Grid - Responsif */}
+      <section
+        id='fitur'
+        className='bg-gray-200 py-12 md:py-16 px-4 sm:px-6 lg:px-8'
+      >
+        <div className='container mx-auto'>
+          <h2 className='text-3xl font-bold text-center text-sky-950 mb-10'>
+            Fitur Unggulan
+          </h2>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6'>
+            {/* Card 1 */}
+            <div className='bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300'>
+              <h3 className='font-bold text-sky-950 text-xl mb-3'>
+                Dasbor Utama
+              </h3>
+              <img
+                src={dashboard}
+                alt='Dashboard'
+                className='h-32 w-full object-contain mb-4'
+              />
+              <hr className='w-full border-gray-200 mb-4' />
+              <p className='text-gray-700 text-sm'>
+                Pantau kesehatan bisnis Anda secara instan. Monitor total
+                penjualan, tren pendapatan, dan metrik operasional harian.
+              </p>
+            </div>
+            {/* Card 2 */}
+            <div className='bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300'>
+              <h3 className='font-bold text-sky-950 text-xl mb-3'>
+                Stok Barang
+              </h3>
+              <img
+                src={stock}
+                alt='Stock'
+                className='h-32 w-full object-contain mb-4'
+              />
+              <hr className='w-full border-gray-200 mb-4' />
+              <p className='text-gray-700 text-sm'>
+                Pantau level inventaris secara real-time, dapatkan peringatan
+                stok rendah, dan kelola rantai pasok dengan mudah.
+              </p>
+            </div>
+            {/* Card 3 */}
+            <div className='bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300'>
+              <h3 className='font-bold text-sky-950 text-xl mb-3'>
+                Kasir Otomatis
+              </h3>
+              <img
+                src={cashier}
+                alt='Cashier'
+                className='h-32 w-full object-contain mb-4'
+              />
+              <hr className='w-full border-gray-200 mb-4' />
+              <p className='text-gray-700 text-sm'>
+                Percepat proses pembayaran dengan sistem kasir pintar. Proses
+                transaksi akurat dan layani pelanggan lebih cepat.
+              </p>
+            </div>
+            {/* Card 4 */}
+            <div className='bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300'>
+              <h3 className='font-bold text-sky-950 text-xl mb-3'>
+                Pantau Hutang
+              </h3>
+              <img
+                src={debt}
+                alt='Debt'
+                className='h-32 w-full object-contain mb-4'
+              />
+              <hr className='w-full border-gray-200 mb-4' />
+              <p className='text-gray-700 text-sm'>
+                Kendalikan arus kas Anda sepenuhnya. Lacak faktur yang belum
+                dibayar secara otomatis.
+              </p>
+            </div>
+            {/* Card 5 */}
+            <div className='bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300'>
+              <h3 className='font-bold text-sky-950 text-xl mb-3'>
+                Log Inventaris
+              </h3>
+              <img
+                src={log}
+                alt='Log'
+                className='h-32 w-full object-contain mb-4'
+              />
+              <hr className='w-full border-gray-200 mb-4' />
+              <p className='text-gray-700 text-sm'>
+                Lacak setiap barang yang masuk dan keluar dengan catatan
+                historis mendetail untuk audit yang akurat.
+              </p>
+            </div>
+          </div>
         </div>
+      </section>
 
-        {/* Stock Management */}
-        <div className="bg-white py-8 px-6 rounded-xl shadow-lg">
-          <h1 className="font-sans font-bold text-sky-950 mb-3 text-lg">Stok Barang</h1>
-          <img src={stock} alt="Dashboard" className="h-40 w-full mb-4 object-contain"/>
-          <hr className="border-t border-gray-300 mb-4"/>
-          <p className="text-bold">
-            Jangan biarkan produk terlaris Anda habis. Pantau level inventaris secara real-time, dapatkan peringatan stok rendah, dan kelola rantai pasok dengan mudah.
-          </p>
-        </div>
-
-        {/* Automated Cashier */}
-        <div className="bg-white py-8 px-6 rounded-xl shadow-lg">
-          <h1 className="font-sans font-bold text-sky-950 mb-3 text-lg">Kasir Otomatis</h1>
-          <img src={cashier} alt="Dashboard" className="h-40 w-full mb-4 object-contain"/>
-          <hr className="border-t border-gray-300 mb-4"/>
-          <p className="text-bold">
-            Percepat proses pembayaran dengan sistem kasir pintar. Proses transaksi dengan akurat, kurangi kesalahan manusia, dan layani pelanggan lebih cepat.
-          </p>
-        </div>
-
-        {/* Debt Management */}
-        <div className="bg-white py-8 px-6 rounded-xl shadow-lg">
-          <h1 className="font-sans font-bold text-sky-950 mb-3 text-lg">Pantau Hutang</h1>
-          <img src={debt} alt="Dashboard" className="h-40 w-full mb-4 object-contain"/>
-          <hr className="border-t border-gray-300 mb-4"/>
-          <p className="text-bold">
-            Kendalikan arus kas Anda sepenuhnya. Lacak faktur yang belum dibayar secara otomatis dan pantau saldo piutang pelanggan dengan mudah.
-          </p>
-        </div>
-
-        {/* Inventory Logs */}
-        <div className="bg-white py-8 px-6 rounded-xl shadow-lg">
-          <h1 className="font-sans font-bold text-sky-950 mb-3 text-lg">Log Inventaris</h1>
-          <img src={log} alt="Dashboard" className="h-40 w-full mb-4 object-contain"/>
-          <hr className="border-t border-gray-300 mb-4"/>
-          <p className="text-bold">
-            Jaga transparansi gudang Anda. Lacak setiap barang yang masuk dan keluar dengan catatan historis mendetail untuk audit yang akurat.
-          </p>
-        </div>
-
-      </div>
-
-      {/* Linebreak */}
-      <div className="bg-gray-200">
-        <hr className="border-t border-gray-300 mx-32" />
+      {/* Separator */}
+      <div className='px-4'>
+        <hr className='border-gray-300 max-w-6xl mx-auto' />
       </div>
 
       {/* AI Insights */}
-      {/* 1 */}
-      <div id="wawasan" className="bg-gray-200 flex item-center justify-between">
+      <section
+        id='wawasan'
+        className='bg-gray-200 py-12 md:py-16 px-4 sm:px-6 lg:px-8'
+      >
+        <div className='container mx-auto'>
+          {/* Insight 1 - Desktop row, mobile column */}
+          <div className='flex flex-col md:flex-row items-center gap-8 md:gap-12 mb-16'>
+            <div className='flex-1 text-center md:text-left'>
+              <h2 className='text-3xl lg:text-4xl font-bold text-sky-950'>
+                Operasional Lebih Cerdas <br />
+                menggunakan Dukungan AI Suara
+              </h2>
+              <p className='mt-4 text-gray-800 font-medium text-base lg:text-lg'>
+                Percepat alur kerja Anda dengan Kasir Pengenal Suara tanpa
+                sentuhan. Cukup bicara pada terminal Anda untuk menambah barang,
+                cek harga, atau cetak struk seketika. Serasa memiliki asisten
+                tambahan di meja kasir.
+              </p>
+            </div>
+            <div className='flex-1 flex justify-center'>
+              <img
+                src={aicashier}
+                alt='AI Cashier'
+                className='w-full max-w-md rounded-2xl shadow-2xl border-4 border-white'
+              />
+            </div>
+          </div>
 
-        {/* Text */}
-        <div className="=1/2 py-16 px-16 mt-4">
-          <h1 className="text-3xl font-bold text-sky-950">Operasional Lebih Cerdas <br></br>menggunakan Dukungan AI Suara</h1>
-          <p className="text-gray-800 font-bold mt-4 text-lg">
-            Percepat alur kerja Anda dengan Kasir Pengenal Suara tanpa sentuhan. Cukup bicara pada terminal Anda untuk menambah barang, cek harga, atau cetak struk seketika. Serasa memiliki asisten tambahan di meja kasir.
-          </p>
-        </div>
-
-        {/* Image */}
-        <div className="w-1/2 flex justify-center">
-          <div className="relative">
-            <img
-              src={aicashier}
-              alt="AI Cashier Terminal"
-              className="w-full max-w-lg h-auto rounded-2xl shadow-2xl object-cover border-4 border-white mt-6 mb-6"
-            />
+          {/* Insight 2 - reverse on desktop, tetap urut di mobile */}
+          <div className='flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12'>
+            <div className='flex-1 text-center md:text-left'>
+              <h2 className='text-3xl lg:text-4xl font-bold text-sky-950'>
+                Chat Dukungan AI Cerdas 24/7
+              </h2>
+              <p className='mt-4 text-gray-800 font-medium text-base lg:text-lg'>
+                Jangan pernah merasa bingung dengan data Anda lagi. Dukungan AI
+                Live kami terintegrasi langsung ke dasbor Anda, siap menjawab
+                pertanyaan bisnis yang kompleks, memberikan solusi masalah
+                secara real-time, dan saran strategis kapan pun Anda butuhkan.
+              </p>
+            </div>
+            <div className='flex-1 flex justify-center'>
+              <img
+                src={chat}
+                alt='AI Chat'
+                className='w-full max-w-md rounded-2xl shadow-2xl border-4 border-white'
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* 2 */}
-      <div className="bg-gray-200 flex item-center justify-between">
-
-        {/* Image */}
-        <div className="w-1/2 flex justify-center">
-          <div className="relative">
-            <img
-              src={chat}
-              alt="AI Cashier Terminal"
-              className="w-full max-w-lg h-auto rounded-2xl shadow-2xl object-cover border-4 border-white mt-6 mb-6"
-            />
-          </div>
-        </div>
-
-        {/* Text */}
-        <div className="=1/2 py-16 px-16 mt-4">
-          <h1 className="text-3xl font-bold text-sky-950">Chat Dukungan AI Cerdas 24/7</h1>
-          <p className="text-gray-800 font-bold mt-4 text-lg">
-            Jangan pernah merasa bingung dengan data Anda lagi. Dukungan AI Live kami terintegrasi langsung ke dasbor Anda, siap menjawab pertanyaan bisnis yang kompleks, memberikan solusi masalah secara real-time, dan saran strategis kapan pun Anda butuhkan.
-          </p>
-        </div>
-
-      </div>
+      </section>
 
       {/* Footer */}
-      <div className="bg-sky-950 text-white py-6 px-6">
-        <div className="justify-items-center font-bold">
-          <h1>Coding Camp 2026 Capstone Project &copy;</h1>
+      <footer className='bg-sky-950 text-white py-6'>
+        <div className='container mx-auto text-center font-bold text-sm md:text-base'>
+          <p>
+            FinSense &copy; {new Date().getFullYear()}. All rights reserved.
+          </p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

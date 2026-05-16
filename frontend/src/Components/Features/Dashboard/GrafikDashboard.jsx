@@ -55,8 +55,14 @@ function GrafikDashboard() {
   };
 
   return (
-    <div className='flex-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm'>
-      <Line data={data} options={options} />
+    // <div className='flex-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm'>
+    //   <Line data={data} options={options} />
+    // </div>
+    <div className='w-full p-4 bg-white border border-gray-300 rounded-md shadow-sm overflow-x-auto'>
+      <div className='min-w-[300px]'>
+        {' '}
+        <Line data={data} options={{ ...options, maintainAspectRatio: true }} />
+      </div>
     </div>
   );
 }

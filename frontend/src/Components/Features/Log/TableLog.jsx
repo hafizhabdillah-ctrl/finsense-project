@@ -25,75 +25,77 @@ function TableLog() {
   // if (loading) return <div className='p-4'>Memuat data log...</div>;
 
   return (
-    <div>
-      <div className='bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold'>
-        <div className='flex-1 text-center'>Waktu</div>
-        <div className='flex-1 text-center'>Produk</div>
-        <div className='flex-1 text-center'>SKU</div>
-        <div className='flex-1 text-center'>Tipe</div>
-        <div className='flex-1 text-center'>Jumlah</div>
-        <div className='flex-1 text-center'>Oleh</div>
-        <div className='flex-1 text-center'>Status</div>
-      </div>
-      <div className='flex flex-col'>
-        {currentItems.length === 0 ? (
-          <div className='p-4 text-center text-gray-500'>
-            Tidak ada data log barang
-          </div>
-        ) : (
-          currentItems.map((log) => (
-            <div
-              key={log.id}
-              onClick={() => navigate(`/logs/${log.id}`)}
-              className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
-            >
-              <div className='flex-1 text-center text-gray-800 text-sm'>
-                {new Date(log.created_at).toLocaleString()}
-              </div>
-              <div className='flex-1 text-center text-gray-800 text-sm font-bold'>
-                {log.product?.name}
-              </div>
-              <div className='flex-1 text-center text-gray-500 text-sm'>
-                {log.product?.sku}
-              </div>
-              <div className='flex-1 text-center text-gray-500 text-sm'>
-                {log.type === 'in'
-                  ? 'Stok Masuk'
-                  : log.type === 'out'
-                    ? 'Stok Keluar'
-                    : 'Penyesuaian'}
-              </div>
-              <div className='flex-1 text-center text-gray-800 text-sm'>
-                {log.quantity}
-              </div>
-              <div className='flex-1 text-center text-gray-800 text-sm'>
-                {log.operator}
-              </div>
-              <div className='flex-1 text-center text-gray-800 text-sm'>
-                {log.status === 'completed' ? 'Selesai' : 'Menunggu audit'}
-              </div>
+    <div className='overflow-x-auto'>
+      <div className='min-w-[800px]'>
+        <div className='bg-sky-950 p-2 flex w-full mt-4 text-white font-semibold'>
+          <div className='flex-1 text-center'>Waktu</div>
+          <div className='flex-1 text-center'>Produk</div>
+          <div className='flex-1 text-center'>SKU</div>
+          <div className='flex-1 text-center'>Tipe</div>
+          <div className='flex-1 text-center'>Jumlah</div>
+          <div className='flex-1 text-center'>Oleh</div>
+          <div className='flex-1 text-center'>Status</div>
+        </div>
+        <div className='flex flex-col'>
+          {currentItems.length === 0 ? (
+            <div className='p-4 text-center text-gray-500'>
+              Tidak ada data log barang
             </div>
-          ))
-        )}
-        <div className='p-2 border-t border-gray-200 flex justify-between'>
-          <p className='text-sm text-gray-500'>
-            Menampilkan {startRange}-{endRange} dari {totalItems} log
-          </p>
-          <div className='flex gap-2'>
-            <button
-              onClick={goToPrevPage}
-              disabled={currentPage === 1}
-              className={`px-3 py-1 text-sm border rounded-md font-medium ${currentPage === 1 ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
-            >
-              Sebelumnya
-            </button>
-            <button
-              onClick={goToNextPage}
-              disabled={indexOfLastItem >= totalItems}
-              className={`px-3 py-1 text-sm border rounded-md font-medium ${indexOfLastItem >= totalItems ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
-            >
-              Selanjutnya
-            </button>
+          ) : (
+            currentItems.map((log) => (
+              <div
+                key={log.id}
+                onClick={() => navigate(`/logs/${log.id}`)}
+                className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
+              >
+                <div className='flex-1 text-center text-gray-800 text-sm'>
+                  {new Date(log.created_at).toLocaleString()}
+                </div>
+                <div className='flex-1 text-center text-gray-800 text-sm font-bold'>
+                  {log.product?.name}
+                </div>
+                <div className='flex-1 text-center text-gray-500 text-sm'>
+                  {log.product?.sku}
+                </div>
+                <div className='flex-1 text-center text-gray-500 text-sm'>
+                  {log.type === 'in'
+                    ? 'Stok Masuk'
+                    : log.type === 'out'
+                      ? 'Stok Keluar'
+                      : 'Penyesuaian'}
+                </div>
+                <div className='flex-1 text-center text-gray-800 text-sm'>
+                  {log.quantity}
+                </div>
+                <div className='flex-1 text-center text-gray-800 text-sm'>
+                  {log.operator}
+                </div>
+                <div className='flex-1 text-center text-gray-800 text-sm'>
+                  {log.status === 'completed' ? 'Selesai' : 'Menunggu audit'}
+                </div>
+              </div>
+            ))
+          )}
+          <div className='p-2 border-t border-gray-200 flex justify-between'>
+            <p className='text-sm text-gray-500'>
+              Menampilkan {startRange}-{endRange} dari {totalItems} log
+            </p>
+            <div className='flex gap-2'>
+              <button
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 text-sm border rounded-md font-medium ${currentPage === 1 ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
+              >
+                Sebelumnya
+              </button>
+              <button
+                onClick={goToNextPage}
+                disabled={indexOfLastItem >= totalItems}
+                className={`px-3 py-1 text-sm border rounded-md font-medium ${indexOfLastItem >= totalItems ? 'text-gray-300 border-gray-200' : 'cursor-pointer text-gray-600 border-gray-300 hover:bg-white'}`}
+              >
+                Selanjutnya
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -56,7 +56,7 @@ function DetailStock() {
     <div className='p-6'>
       <h1 className='text-2xl font-bold text-gray-800'>Detail Produk</h1>
       <p className='mb-2 mt-2 text-sm text-gray-500'>ID Produk: {product.id}</p>
-      <div className='grid grid-cols-2 gap-4 border-t pt-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-2 border-t pt-4 mt-2'>
         <p className='font-semibold text-gray-600'>Nama Produk:</p>
         <p>{product.name}</p>
         <p className='font-semibold text-gray-600'>SKU:</p>
