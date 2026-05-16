@@ -90,16 +90,13 @@ function Sidebar() {
 
         <button
           onClick={handleLogout}
-          className='flex mx-4 py-2 px-2 gap-2 items-center hover:bg-gray-300 rounded-lg hover:text-gray-900 transition-colors transition-all'
+          className='flex mx-4 py-2 px-2 gap-2 items-center cursor-pointer hover:bg-gray-300 rounded-lg hover:text-gray-900 transition-colors transition-all'
         >
           <span>
             <FiLogOut size={18} />
           </span>
-          <span>
-            Logout
-          </span>
+          <span>Logout</span>
         </button>
-
       </div>
     </div>
   );
