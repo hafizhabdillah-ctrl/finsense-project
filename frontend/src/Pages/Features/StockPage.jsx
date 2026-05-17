@@ -8,9 +8,9 @@ function StockPage() {
   const navigate = useNavigate();
 
   return (
-    <div className='p-2 md:p-4'>
+    <div>
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4'>
-        <h1 className='p-2 text-gray-700 text-xl md:text-2xl font-bold'>
+        <h1 className='text-xl md:text-2xl font-bold'>
           Manajemen Stok
         </h1>
         <button

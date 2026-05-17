@@ -40,14 +40,14 @@ function NewStock() {
   };
 
   return (
-    <form className='py-2 px-4 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
+    <form className='py-2 px-4 max-w-2xl' onSubmit={onSubmitHandler}>
       <h1 className='p-2 text-gray-700 text-2xl font-bold'>Tambah Stok Baru</h1>
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Nama Barang:</span>
         <input
           type='text'
           placeholder='Masukan nama barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -58,7 +58,7 @@ function NewStock() {
         <input
           type='text'
           placeholder='Masukan SKU...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={sku}
           onChange={(e) => setSku(e.target.value)}
           required
@@ -69,7 +69,7 @@ function NewStock() {
         <input
           type='number'
           placeholder='Masukan jumlah barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={stock}
           onChange={(e) => setStock(e.target.value)}
         />
@@ -79,7 +79,7 @@ function NewStock() {
         <input
           type='text'
           placeholder='Masukan satuan barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
         />
@@ -89,7 +89,7 @@ function NewStock() {
         <input
           type='number'
           placeholder='Masukan harga barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
@@ -99,7 +99,7 @@ function NewStock() {
         <input
           type='number'
           placeholder='Masukan jumlah minimal barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={min_stock}
           onChange={(e) => setMinStock(e.target.value)}
         />

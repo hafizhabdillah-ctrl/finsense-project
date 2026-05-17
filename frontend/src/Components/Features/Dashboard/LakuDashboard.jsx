@@ -28,7 +28,7 @@ function LakuDashboard() {
     //     </div>
     //   )}
     // </div>
-    <div className='p-4 w-3/4 rounded-md shadow-sm'>
+    <div className='p-2 w-3/4'>
       <h2 className='font-bold text-gray-700 mb-2'>Produk Paling Laku</h2>
       {bestSellers.length === 0 ? (
         <p>Belum ada data penjualan.</p>
@@ -37,7 +37,7 @@ function LakuDashboard() {
           {bestSellers.map((p, idx) => (
             <div
               key={p.id}
-              className='flex flex-col sm:flex-row justify-between border-b pb-1'
+              className='flex flex-col sm:flex-row justify-between border-b border-gray-300 pb-1'
             >
               <span className='font-semibold'>
                 {idx + 1}. {p.name}

@@ -35,7 +35,7 @@ function Sidebar({ onClose }) {
     },
     { name: 'POS Terminal', icon: <FaCashRegister size={22} />, path: '/pos' },
     {
-      name: 'Hutang & Pelanggan',
+      name: 'Hutang Pelanggan',
       icon: <FaUserGroup size={22} />,
       path: '/debts',
     },

@@ -49,14 +49,14 @@ function NewLog() {
   };
 
   return (
-    <form className='py-2 px-4 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
+    <form className='py-2 px-4 max-w-2xl' onSubmit={onSubmitHandler}>
       <h1 className='p-2 text-gray-700 text-2xl font-bold'>
         Tambah Log Barang
       </h1>
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Produk:</span>
         <select
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={product_id}
           onChange={(e) => setProductId(e.target.value)}
           required
@@ -72,7 +72,7 @@ function NewLog() {
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Tipe:</span>
         <select
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={type}
           onChange={(e) => setType(e.target.value)}
         >
@@ -86,7 +86,7 @@ function NewLog() {
         <input
           type='number'
           placeholder='Masukan jumlah barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           required
@@ -97,7 +97,7 @@ function NewLog() {
         <input
           type='text'
           placeholder='Masukan catatan barang...'
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
@@ -105,7 +105,7 @@ function NewLog() {
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Oleh:</span>
         <select
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={operator}
           onChange={(e) => setOperator(e.target.value)}
         >
@@ -117,7 +117,7 @@ function NewLog() {
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Status:</span>
         <select
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >

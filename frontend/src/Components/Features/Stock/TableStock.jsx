@@ -44,7 +44,7 @@ function TableStock() {
               <div
                 key={product.id}
                 onClick={() => navigate(`/stocks/${product.id}`)}
-                className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
+                className='flex items-center w-full p-2 border-b border-r border-l border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
               >
                 <div className='flex-1 text-center text-gray-800 text-sm'>
                   {indexOfFirstItem + idx + 1}
@@ -60,7 +60,7 @@ function TableStock() {
                 </div>
                 <div className='flex-4 text-center text-gray-800 text-sm'>
                   <span
-                    className={`font-bold ${product.stock <= product.min_stock ? 'text-red-600' : 'text-green-600'}`}
+                    className={`font-bold ${product.stock <= product.min_stock ? 'text-red-700' : 'text-green-700'}`}
                   >
                     {product.stock <= product.min_stock ? 'Menipis' : 'Aman'}
                   </span>

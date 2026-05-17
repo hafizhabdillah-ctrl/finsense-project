@@ -27,8 +27,8 @@ function DashboardPage() {
     //     <LakuDashboard />
     //   </div>
     // </div>
-    <div className='p-2 md:p-4'>
-      <h1 className='p-2 text-xl md:text-2xl font-bold'>
+    <div>
+      <h1 className='text-xl md:text-2xl font-bold'>
         Ringkasan Penjualan Hari Ini
       </h1>
       <p className='mx-2 mb-4 md:mb-6 text-gray-500 text-sm md:text-base'>

@@ -147,7 +147,7 @@ function SettingsModal({ isOpen, onClose }) {
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Profil User
+            User
           </button>
           <button
             onClick={() => setActiveTab('umkm')}
@@ -157,7 +157,7 @@ function SettingsModal({ isOpen, onClose }) {
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Profil UMKM
+            UMKM
           </button>
         </div>
 

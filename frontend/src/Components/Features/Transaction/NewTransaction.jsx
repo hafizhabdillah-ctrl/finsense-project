@@ -40,7 +40,7 @@ function NewTransaction() {
   };
 
   return (
-    <form className='py-2 px-4 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
+    <form className='py-2 px-4 max-w-2xl' onSubmit={onSubmitHandler}>
       <h1 className='p-2 text-gray-700 text-2xl font-bold'>Tambah Transaksi</h1>
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
         <span className='font-bold'>Waktu:</span>
@@ -48,7 +48,7 @@ function NewTransaction() {
           type='date'
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           required
         />
       </div>
@@ -57,7 +57,7 @@ function NewTransaction() {
         <select
           value={category_id}
           onChange={(e) => setCategoryId(e.target.value)}
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           required
         >
           <option value=''>Pilih kategori</option>
@@ -75,7 +75,7 @@ function NewTransaction() {
           placeholder='Masukan keterangan...'
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
         />
       </div>
       <div className='px-2 mt-4 relative flex flex-col gap-2'>
@@ -85,7 +85,7 @@ function NewTransaction() {
           placeholder='Masukan nominal...'
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
           required
         />
       </div>
@@ -94,7 +94,7 @@ function NewTransaction() {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className='w-full p-2 border-2 border-gray-200 rounded-lg'
+          className='w-full p-2 border-2 border-gray-300 rounded-lg'
         >
           <option value='income'>Masuk</option>
           <option value='expense'>Keluar</option>

@@ -33,10 +33,10 @@ function EditLog() {
   if (loading) return <div className='p-6'>Memuat data...</div>;
 
   return (
-    <form className='p-6 max-w-2xl mx-auto' onSubmit={onSubmitHandler}>
+    <form onSubmit={onSubmitHandler}>
       <h1 className='text-2xl font-bold text-gray-800'>Edit Log</h1>
       <p className='mb-2 mt-2 text-sm text-gray-500'>ID Log: {id}</p>
-      <div className='grid grid-cols-2 gap-4 border-t pt-4'>
+      <div className='grid grid-cols-2 gap-4 border-t pt-2'>
         <p className='flex items-center font-semibold text-gray-600'>Status:</p>
         <select
           className='p-2 border border-gray-400 rounded'

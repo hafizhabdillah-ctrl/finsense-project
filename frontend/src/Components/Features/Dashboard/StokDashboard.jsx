@@ -45,7 +45,7 @@ function StokDashboard() {
         ) : (
           <ul className='space-y-2'>
             {lowStockProducts.map((p) => (
-              <li key={p.id} className='flex justify-between border-b pb-1'>
+              <li key={p.id} className='flex justify-between border-b border-gray-300 pb-1'>
                 <span className='font-semibold'>{p.name}</span>
                 <span>Stok: {p.stock}</span>
               </li>
@@ -103,7 +103,7 @@ function StokDashboard() {
           {stockItems.map((item) => (
             <div
               key={item.id}
-              className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-2 border-b'
+              className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-2 border-b border-gray-300'
             >
               <div className='flex items-center gap-4'>
                 <div className='w-10 h-10 rounded bg-blue-100 flex items-center justify-center'>
@@ -116,7 +116,7 @@ function StokDashboard() {
                   </span>
                 </div>
               </div>
-              <button className='border p-2 px-3 rounded-lg bg-sky-950 text-white hover:bg-white hover:text-sky-950 transition w-full sm:w-auto'>
+              <button className='border p-2 px-3 rounded-lg bg-sky-950 text-white cursor-pointer hover:bg-white hover:text-sky-950 transition w-full sm:w-auto'>
                 Restok
               </button>
             </div>

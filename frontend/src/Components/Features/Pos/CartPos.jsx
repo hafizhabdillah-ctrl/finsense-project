@@ -127,45 +127,49 @@ function CartPos() {
     //     </button>
     //   </div>
     // </div>
-    <div className='flex flex-col p-2 w-full h-full lg:w-96'>
+    <div className='flex flex-col p-2 h-full'>
       <h1 className='font-semibold text-xl text-sky-950 mb-2'>Keranjang</h1>
-      <div className='flex flex-col gap-2 max-h-96 overflow-y-auto'>
-        {cart.map((item) => (
-          <div key={item.id} className='border-b pb-2'>
-            <div className='flex justify-between font-semibold'>
-              {item.name}
-            </div>
-            <div className='flex flex-wrap justify-between items-center gap-2 text-gray-500'>
-              <div className='flex items-center gap-2'>
-                <span>Rp {item.price.toLocaleString()}</span>
-                <input
-                  type='number'
-                  min='1'
-                  value={item.qty}
-                  onChange={(e) =>
-                    updateItem(item.id, parseInt(e.target.value) || 1)
-                  }
-                  className='w-16 p-1 border rounded'
-                />
+      <div className='flex flex-col gap-2 max-h-96 overflow-y-auto flex-1 mt-2'>
+        {cart.length === 0 ? (
+          <p className='text-gray-500 text-center py-8'>Keranjang kosong</p>
+        ) : (
+          cart.map((item) => (
+            <div key={item.id} className='border-b pb-2'>
+              <div className='flex justify-between font-semibold'>
+                {item.name}
               </div>
-              <div className='flex gap-2'>
-                <span className='font-bold text-sky-950'>
-                  Rp {(item.price * item.qty).toLocaleString()}
-                </span>
-                <button
-                  onClick={() => onDeleteHandler(item)}
-                  className='text-red-800'
-                >
-                  X
-                </button>
+              <div className='flex flex-wrap justify-between items-center gap-2 text-gray-500'>
+                <div className='flex items-center gap-4 mt-2'>
+                  <span>Rp {item.price.toLocaleString()}</span>
+                  <input
+                    type='number'
+                    min='1'
+                    value={item.qty}
+                    onChange={(e) =>
+                      updateItem(item.id, parseInt(e.target.value) || 1)
+                    }
+                    className='w-16 p-1 border rounded'
+                  />
+                </div>
+                <div className='flex gap-2'>
+                  <span className='font-bold text-sky-950'>
+                    Rp {(item.price * item.qty).toLocaleString()}
+                  </span>
+                  <button
+                    onClick={() => onDeleteHandler(item)}
+                    className='text-red-800 cursor-pointer'
+                  >
+                    X
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       <div className='mt-auto pt-2 border-t'>
         <div className='flex justify-between'>
-          <span>Subtotal</span>
+          <span className='text-gray-500'>Subtotal</span>
           <span className='font-bold text-lg'>
             Rp {subtotal.toLocaleString()}
           </span>

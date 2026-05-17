@@ -47,12 +47,12 @@ function DetailTransaction() {
   if (!transaction) return <div className='p-6'>Transaksi tidak ditemukan</div>;
 
   return (
-    <div className='p-6'>
+    <div>
       <h1 className='text-2xl font-bold text-gray-800'>Detail Transaksi</h1>
       <p className='mb-2 mt-2 text-sm text-gray-500'>
         ID Transaksi: {transaction.id}
       </p>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-2 border-t pt-4 mt-2'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-2'>
         <p className='font-semibold text-gray-600'>Tanggal:</p>
         <p>
           {new Date(transaction.transaction_date).toLocaleDateString('id-ID')}

@@ -45,7 +45,7 @@ function TableDebt() {
               <div
                 key={debt.id}
                 onClick={() => navigate(`/debts/${debt.id}`)}
-                className='flex items-center w-full p-2 border-b border-r border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
+                className='flex items-center w-full p-2 border-b border-r border-l border-gray-300 cursor-pointer hover:bg-gray-300 transition-all'
               >
                 <div className='flex-1 text-center text-gray-800 text-sm'>
                   {indexOfFirstItem + idx + 1}
