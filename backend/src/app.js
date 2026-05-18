@@ -14,6 +14,7 @@ const aiModelRoutes = require('./routes/aiModelRoutes');
 const productRoutes = require('./routes/productRoutes');
 const stockLogRoutes = require('./routes/stockLogRoutes');
 const debtRoutes = require('./routes/debtRoutes');
+const voiceRoutes = require('./routes/voiceRoutes');
 
 const app = express();
 app.use(
@@ -23,9 +24,13 @@ app.use(
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use((req, res, next) => {
+  console.log(`[Express] ${req.method} ${req.url}`);
+  next();
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/umkm', umkmRoutes);
 app.use('/api/transactions', transactionRoutes);
@@ -40,6 +45,7 @@ app.use('/api/ai-models', aiModelRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/stock-logs', stockLogRoutes);
 app.use('/api/debts', debtRoutes);
+app.use('/api', voiceRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
 

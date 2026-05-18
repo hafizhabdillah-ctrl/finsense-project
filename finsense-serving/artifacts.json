@@ -1,0 +1,40 @@
+{
+  "version": "v4",
+  "norm_params": {
+    "harga_log_min": 8.243019104003906,
+    "harga_log_max": 13.710150718688965,
+    "jumlah_min": 1,
+    "jumlah_max": 10,
+    "n_classes_jumlah": 10
+  },
+  "audio_config": {
+    "sample_rate": 16000,
+    "n_mels": 80,
+    "n_fft": 512,
+    "win_length": 400,
+    "hop_length": 160,
+    "max_frames": 1200
+  },
+  "model_params": 312333,
+  "custom_components": [
+    "SpecAugment (Custom Layer)",
+    "AudioAugment (Custom Layer)",
+    "AttentionPooling (Custom Layer)",
+    "OrdinalSoftLabelLoss (Custom Loss)",
+    "WithinKAccuracy (Custom Metric)"
+  ],
+  "jumlah_max": 10,
+  "regularization": {
+    "l2": 0.0001,
+    "dropout_conv": 0.2,
+    "dropout_gru": 0.4,
+    "dropout_head": 0.5,
+    "specaug": {
+      "freq": 20,
+      "time": 60,
+      "n_freq": 3,
+      "n_time": 3
+    },
+    "ordinal_sigma": 1.5
+  }
+}
