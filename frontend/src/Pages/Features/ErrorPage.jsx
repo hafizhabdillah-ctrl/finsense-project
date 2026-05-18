@@ -49,14 +49,14 @@ function ErrorPage() {
           <div className='flex flex-col sm:flex-row gap-3 justify-center'>
             <button
               onClick={() => navigate(-1)}
-              className='inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all'
+              className='cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all'
             >
               <FiArrowLeft size={18} />
               Kembali
             </button>
             <button
               onClick={() => navigate('/dashboard')}
-              className='inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-950 text-white rounded-lg font-medium hover:bg-sky-900 transition-all shadow-sm'
+              className='cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-950 text-white rounded-lg font-medium hover:bg-sky-900 transition-all shadow-sm'
             >
               <FiHome size={18} />
               Ke Dashboard

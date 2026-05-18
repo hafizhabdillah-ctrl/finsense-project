@@ -36,8 +36,6 @@ exports.getProductById = async (req, res) => {
 };
 
 // POST /products - tambah produk baru
-const { Prisma } = require('@prisma/client');
-
 exports.createProduct = async (req, res) => {
   try {
     const userId = req.userId;
