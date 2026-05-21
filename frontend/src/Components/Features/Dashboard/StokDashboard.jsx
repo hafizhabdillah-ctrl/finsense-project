@@ -1,106 +1,181 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaBox } from 'react-icons/fa';
-import { useDashboardData } from '../../../hooks/useDashboardData';
+import api from '../../../services/api';
 
-function StokDashboard() {
-  const { lowStockProducts, loading } = useDashboardData();
+// Helper: Ambil riwayat stok 7 hari terakhir untuk suatu produk
+const getStockHistory = async (productId, currentStock) => {
+  const days = 7;
+  const endDate = new Date();
+  endDate.setHours(23, 59, 59, 999);
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - (days - 1));
+  startDate.setHours(0, 0, 0, 0);
 
-  // Data dummy untuk komponen "Keadaan Stok"
-  const stockItems = [
-    { id: 1, name: 'Beras Premium 5kg', stock: 3 },
-    { id: 2, name: 'Minyak Goreng 2L', stock: 2 },
-    { id: 3, name: 'Gula Pasir 1kg', stock: 5 },
-  ];
+  try {
+    const response = await api.get('/stock-logs', {
+      params: {
+        product_id: productId,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        _sort: 'created_at',
+        _order: 'asc',
+      },
+    });
+    const logs = response.data;
 
-  if (loading) {
-    return (
-      <div className='flex-1 p-4 bg-white rounded-md shadow'>
-        Memuat stok...
-      </div>
-    );
+    // Inisialisasi data per hari
+    const daily = {};
+    let current = new Date(startDate);
+    while (current <= endDate) {
+      const key = current.toISOString().split('T')[0];
+      daily[key] = {
+        Units_Sold: 0,
+        Stock_Out: 0,
+        Stock_In: 0,
+        DayOfWeek: current.getDay(),
+        DayOfMonth: current.getDate(),
+        Month: current.getMonth() + 1,
+        Stock_End: currentStock,
+      };
+      current.setDate(current.getDate() + 1);
+    }
+
+    // Akumulasi dari stock logs
+    for (const log of logs) {
+      const dateKey = new Date(log.created_at).toISOString().split('T')[0];
+      if (daily[dateKey]) {
+        if (log.type === 'out') {
+          daily[dateKey].Units_Sold += log.quantity;
+          daily[dateKey].Stock_Out += log.quantity;
+        } else if (log.type === 'in') {
+          daily[dateKey].Stock_In += log.quantity;
+        }
+      }
+    }
+
+    // Hitung stok akhir berurutan (running)
+    const sortedKeys = Object.keys(daily).sort();
+    let totalNet = 0;
+    for (const key of sortedKeys) {
+      totalNet += daily[key].Stock_In - daily[key].Stock_Out;
+    }
+    let runningStock = currentStock - totalNet;
+    const history = sortedKeys.map((key) => {
+      runningStock += daily[key].Stock_In - daily[key].Stock_Out;
+      daily[key].Stock_End = Math.max(0, runningStock);
+      return {
+        Units_Sold: daily[key].Units_Sold,
+        Stock_Out: daily[key].Stock_Out,
+        Stock_In: daily[key].Stock_In,
+        DayOfWeek: daily[key].DayOfWeek,
+        DayOfMonth: daily[key].DayOfMonth,
+        Month: daily[key].Month,
+        Stock_End: daily[key].Stock_End,
+      };
+    });
+    return history;
+  } catch (err) {
+    console.warn('Gagal mengambil stock logs, gunakan data dummy', err);
+    // Fallback: 7 hari dummy dengan stok konstan
+    const dummy = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      dummy.push({
+        Units_Sold: 0,
+        Stock_Out: 0,
+        Stock_In: 0,
+        DayOfWeek: d.getDay(),
+        DayOfMonth: d.getDate(),
+        Month: d.getMonth() + 1,
+        Stock_End: currentStock,
+      });
+    }
+    return dummy;
   }
+};
+
+const StokDashboard = () => {
+  const navigate = useNavigate();
+  const [restockList, setRestockList] = useState([]); // rekomendasi AI
+  const [lowStockList, setLowStockList] = useState([]); // semua produk stok menipis
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRestocks = async () => {
+      setLoading(true);
+      try {
+        // 1. Ambil semua produk
+        const productsRes = await api.get('/products');
+        const products = productsRes.data;
+
+        // 2. Filter produk yang stok <= min_stok (stok menipis) untuk ditampilkan di "Keadaan Stok"
+        const lowStockProducts = products.filter((p) => p.stock <= p.min_stock);
+        setLowStockList(lowStockProducts);
+
+        // 3. Untuk rekomendasi AI, hanya ambil produk stok menipis dan panggil AI
+        const predictions = [];
+        for (const product of lowStockProducts.slice(0, 10)) {
+          try {
+            // Panggil endpoint AI (GET dengan ID)
+            const aiRes = await api.get(`/ai/predict-stock/${product.id}`);
+            if (aiRes.data.need_restock) {
+              predictions.push({
+                id: product.id,
+                name: product.name,
+                stock: product.stock,
+                min_stock: product.min_stock,
+                probability: aiRes.data.probability,
+              });
+            }
+          } catch (err) {
+            console.error(`Prediksi AI gagal untuk ${product.name}`, err);
+          }
+        }
+        setRestockList(predictions);
+      } catch (err) {
+        console.error('Gagal mengambil data produk', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRestocks();
+  }, []);
 
   return (
-    <div className='flex flex-col gap-6'>
-      {/* Bagian 1: Stok Menipis dari hook */}
-      {/* <div className='h-fit p-4 bg-white border border-gray-300 rounded-md shadow'>
-        <h2 className='text-xl font-bold text-gray-700 mb-2'>Stok Menipis</h2>
-        {lowStockProducts.length === 0 ? (
-          <p className='text-gray-500'>Semua stok aman.</p>
+    <div className='space-y-6'>
+      {/* Bagian Rekomendasi Restok (AI) */}
+      <div className='bg-white p-4 rounded shadow'>
+        <h2 className='font-bold text-lg mb-2'>Rekomendasi Restok (AI)</h2>
+        {loading ? (
+          <p className='text-gray-500'>Memuat prediksi...</p>
+        ) : restockList.length === 0 ? (
+          <p className='text-gray-500'>
+            Semua produk aman, tidak perlu restok.
+          </p>
         ) : (
-          <ul className='space-y-2'>
-            {lowStockProducts.map((p) => (
-              <li key={p.id} className='flex justify-between border-b border-gray-300 py-1 last:border-0'>
-                <span className='font-semibold text-gray-800'>{p.name}</span>
-                <span className='text-gray-800'>Stok: {p.stock}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
-      <div className='p-4 bg-white border border-gray-300 rounded-md shadow-sm w-full'>
-        <h2 className='text-xl font-bold mb-2'>Stok Menipis</h2>
-        {lowStockProducts.length === 0 ? (
-          <p>Semua stok aman.</p>
-        ) : (
-          <ul className='space-y-2'>
-            {lowStockProducts.map((p) => (
-              <li key={p.id} className='flex justify-between border-b border-gray-300 pb-1'>
-                <span className='font-semibold'>{p.name}</span>
-                <span>Stok: {p.stock}</span>
+          <ul>
+            {restockList.map((p) => (
+              <li key={p.id} className='mb-2 border-b pb-1'>
+                <span className='font-medium'>{p.name}</span> - Stok: {p.stock}{' '}
+                (min: {p.min_stock}){' '}
+                <span className='text-sm text-blue-600'>
+                  (Prob. restok: {(p.probability * 100).toFixed(0)}%)
+                </span>
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      {/* Bagian 2: Keadaan Stok (komponen dummy yang diminta tetap ada) */}
-      {/* <div className='h-fit p-4 border rounded-md border-gray-300 shadow-sm'>
-        <div>
-          <h1 className='text-gray-700 text-xl font-bold'>
-            <span>Keadaan Stok</span>
-          </h1>
-        </div>
-        <div>
-          <div className='flex flex-col gap-3 overflow-y-auto'>
-            {stockItems.length > 0 ? (
-              stockItems.map((item) => (
-                <div
-                  key={item.id}
-                  className='flex items-center justify-between px-2 py-3'
-                >
-                  <div className='flex items-center gap-4'>
-                    <div className='w-10 h-10 rounded bg-blue-100 text-sky-900 flex items-center justify-center'>
-                      <FaBox size={18} />
-                    </div>
-                    <div className='flex flex-col'>
-                      <span className='font-bold text-gray-800 text-sm'>
-                        {item.name}
-                      </span>
-                      <span className='text-gray-500'>
-                        Sisa {item.stock} unit
-                      </span>
-                    </div>
-                  </div>
-                  <button className='border p-2 px-3 mx-4 rounded-lg border-sky-900 bg-sky-950 text-white hover:bg-white hover:text-sky-950 transition cursor-pointer'>
-                    <span className='text-sm font-bold tracking-wider'>
-                      Restok
-                    </span>
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className='text-gray-500 text-center py-4'>
-                Stok masih kosong
-              </p>
-            )}
-          </div>
-        </div>
-      </div> */}
+      {/* Bagian Keadaan Stok (semua produk stok menipis) dengan tombol Restok */}
       <div className='p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-xl font-bold'>Keadaan Stok</h1>
         <div className='flex flex-col gap-3 mt-2'>
-          {stockItems.map((item) => (
+          {lowStockList.map((item) => (
             <div
               key={item.id}
               className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-2 border-b border-gray-300'
@@ -116,18 +191,23 @@ function StokDashboard() {
                   </span>
                 </div>
               </div>
-              <button className='border p-2 px-3 rounded-lg bg-sky-950 text-white cursor-pointer hover:bg-white hover:text-sky-950 transition w-full sm:w-auto'>
+              <button
+                onClick={() => navigate(`/stocks/${item.id}`)}
+                className='border p-2 px-3 rounded-lg bg-sky-950 text-white cursor-pointer hover:bg-white hover:text-sky-950 transition w-full sm:w-auto'
+              >
                 Restok
               </button>
             </div>
           ))}
-          {stockItems.length === 0 && (
-            <p className='text-gray-500 text-center py-4'>Stok masih kosong</p>
+          {lowStockList.length === 0 && (
+            <p className='text-gray-500 text-center py-4'>
+              Tidak ada produk dengan stok menipis.
+            </p>
           )}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default StokDashboard;

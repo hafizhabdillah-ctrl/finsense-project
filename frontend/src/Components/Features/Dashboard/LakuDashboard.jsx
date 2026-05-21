@@ -1,54 +1,41 @@
-import React from 'react';
-import { useDashboardData } from '../../../hooks/useDashboardData';
+import React, { useEffect, useState } from 'react';
+import api from '../../../services/api';
 
-function LakuDashboard() {
-  const { bestSellers, loading } = useDashboardData();
-
-  if (loading)
-    return <div className='p-4 bg-white rounded-md shadow'>Memuat data...</div>;
+const LakuDashboard = () => {
+  const [topProducts, setTopProducts] = useState([]);
+  useEffect(() => {
+    const fetchTop = async () => {
+      try {
+        const res = await api.get('/ai/predict-top-products');
+        setTopProducts(res.data.top_products);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchTop();
+  }, []);
 
   return (
-    // <div className='p-4 w-1/2 '>
-    //   <h2 className='font-bold text-gray-700 mb-2'>Produk Paling Laku</h2>
-    //   {bestSellers.length === 0 ? (
-    //     <p className='text-gray-500'>Belum ada data penjualan.</p>
-    //   ) : (
-    //     <div className='space-y-2'>
-    //       {bestSellers.map((p, idx) => (
-    //         <div
-    //           key={p.id}
-    //           className='flex justify-between border-b border-gray-300 pb-1'
-    //         >
-    //           <span className='font-semibold text-gray-800'>
-    //             {idx + 1}. {p.name}
-    //           </span>
-    //           <span className='font-semibold'>Terjual {p.total_terjual}</span>
-    //         </div>
-    //       ))}
-    //     </div>
-    //   )}
-    // </div>
-    <div className='p-2 w-3/4'>
-      <h2 className='font-bold text-gray-700 mb-2'>Produk Paling Laku</h2>
-      {bestSellers.length === 0 ? (
-        <p>Belum ada data penjualan.</p>
-      ) : (
-        <div className='space-y-2'>
-          {bestSellers.map((p, idx) => (
-            <div
-              key={p.id}
-              className='flex flex-col sm:flex-row justify-between border-b border-gray-300 pb-1'
+    <div className='bg-white p-4 rounded shadow'>
+      <h2 className='font-bold text-lg mb-2'>
+        Prediksi Produk Terlaris Hari Ini
+      </h2>
+      <ul>
+        {topProducts.map((p) => (
+          <li key={p.product} className='flex justify-between py-1 border-b'>
+            <span>{p.product}</span>
+            <span
+              className={
+                p.is_top_seller ? 'text-green-600 font-bold' : 'text-gray-400'
+              }
             >
-              <span className='font-semibold'>
-                {idx + 1}. {p.name}
-              </span>
-              <span>Terjual {p.total_terjual}</span>
-            </div>
-          ))}
-        </div>
-      )}
+              {p.is_top_seller ? '✅ Top' : '❌'} (
+              {Math.round(p.probability * 100)}%)
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
-
+};
 export default LakuDashboard;

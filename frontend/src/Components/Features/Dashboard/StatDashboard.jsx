@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDashboardData } from '../../../hooks/useDashboardData';
+import api from '../../../services/api';
 
-function StatDashboard() {
+const StatDashboard = () => {
   const { todayIncome, todayCount, averageOrder, loading } = useDashboardData();
-
+  const [revenuePred, setRevenuePred] = useState(null);
+  useEffect(() => {
+    const fetchPred = async () => {
+      try {
+        const res = await api.get('/ai/predict-revenue');
+        setRevenuePred(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPred();
+  }, []);
   if (loading) {
     return <div className='flex gap-4'>Memuat statistik...</div>;
   }
@@ -37,18 +49,17 @@ function StatDashboard() {
       </div>
 
       {/* komponen dummy PREDIKSI PEMASUKAN */}
-      <div className='flex flex-row w-full gap-4 items-stretch'>
-        <div className='relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
-          <div>
-            <h1 className='text-gray-500 font-bold text-sm uppercase tracking-wider'>
-              PREDIKSI PEMASUKAN
-            </h1>
-            <p className='text-2xl font-bold text-sky-950'>Rp 1.500.000</p>
-          </div>
+      {revenuePred && (
+        <div className='bg-blue-50 p-4 rounded shadow border border-blue-200'>
+          <p className='text-blue-800'>Prediksi Pemasukan Besok</p>
+          <p className='text-2xl font-bold text-blue-900'>
+            Rp {revenuePred.predicted_revenue.toLocaleString()}
+          </p>
+          <p className='text-xs text-blue-600'>{revenuePred.prediction_date}</p>
         </div>
-      </div>
+      )}
     </div>
   );
-}
+};
 
 export default StatDashboard;

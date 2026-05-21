@@ -15,6 +15,7 @@ const productRoutes = require('./routes/productRoutes');
 const stockLogRoutes = require('./routes/stockLogRoutes');
 const debtRoutes = require('./routes/debtRoutes');
 const voiceRoutes = require('./routes/voiceRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 app.use(
@@ -46,6 +47,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/stock-logs', stockLogRoutes);
 app.use('/api/debts', debtRoutes);
 app.use('/api', voiceRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
 
