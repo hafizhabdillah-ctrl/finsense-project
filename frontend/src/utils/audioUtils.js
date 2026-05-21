@@ -3,7 +3,7 @@ export async function convertToWav(blob) {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-  // Resample ke 16 kHz (sesuaikan dengan sample_rate di app.py)
+  // Target sample rate 16kHz (sesuai model)
   const targetSampleRate = 16000;
   const offlineContext = new OfflineAudioContext(
     1, // mono
@@ -16,7 +16,6 @@ export async function convertToWav(blob) {
   source.start();
   const resampledBuffer = await offlineContext.startRendering();
 
-  // Konversi AudioBuffer ke WAV Blob
   return audioBufferToWav(resampledBuffer);
 }
 
@@ -34,7 +33,6 @@ function audioBufferToWav(buffer) {
   const wavBuffer = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(wavBuffer);
 
-  // Tulis header WAV
   writeString(view, 0, 'RIFF');
   view.setUint32(4, 36 + samples.length * 2, true);
   writeString(view, 8, 'WAVE');
