@@ -114,7 +114,7 @@ function SummaryTransaction() {
   // }
 
   return (
-    <div className='flex flex-col md:flex-row gap-4 bg-white p-4'>
+    <div className='flex flex-col md:flex-row gap-4 bg-white p-4 w-3/4'>
       {/* <div className='flex-1 text-center'> */}
       {/* Grafik Pemasukan */}
       <div className='flex-1 text-center'>
@@ -155,18 +155,6 @@ function SummaryTransaction() {
               </div>
             </>
           )}
-        </div>
-      </div>
-
-      {/* Evaluasi AI */}
-      <div className='flex-1 border-t md:border-t-0 md:border-l border-gray-300 pt-4 md:pt-0 md:pl-4'>
-        <h1 className='flex flex-row gap-1 text-lg font-bold text-sky-950 mb-2'>
-          Evaluasi AI <span className='text-green-500 text-xs'>AI Powered</span>
-        </h1>
-        <div className=' text-gray-600 text-sm space-y-1'>
-          <p>✅ Lorem</p>
-          <p>⚠️ Lorem </p>
-          <p>💡 Lorem</p>
         </div>
       </div>
     </div>

@@ -28,7 +28,7 @@ function MainPage() {
     <div className='bg-gray-200'>
       {/* Navbar - Responsive */}
       <nav className='sticky top-0 z-50 bg-sky-950 text-white shadow-lg'>
-        <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='container mx-auto px-2 sm:px-4 lg:px-6'>
           <div className='flex items-center justify-between h-16 md:h-20'>
             {/* Logo */}
             <div className='flex items-center gap-2 font-bold text-2xl md:text-3xl'>
@@ -116,7 +116,9 @@ function MainPage() {
               inventaris yang mulus, dan pelacakan keuangan otomatis dalam satu
               platform cerdas.
             </p>
-            <button className='mt-6 bg-sky-950 text-white font-bold py-2 px-6 rounded-lg hover:scale-105 transition-transform shadow-md'>
+            <button 
+              onClick={register}
+              className='mt-6 bg-sky-950 text-white font-bold py-2 px-6 rounded-lg hover:scale-105 transition-transform shadow-md'>
               Mulai Sekarang
             </button>
           </div>
@@ -130,18 +132,13 @@ function MainPage() {
         </div>
       </section>
 
-      {/* Separator */}
-      <div className='px-4'>
-        <hr className='border-gray-300 max-w-6xl mx-auto' />
-      </div>
-
       {/* Features Grid - Responsif */}
       <section
         id='fitur'
-        className='bg-gray-200 py-12 md:py-16 px-4 sm:px-6 lg:px-8'
+        className='bg-gray-200 py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-sky-950'
       >
         <div className='container mx-auto'>
-          <h2 className='text-3xl font-bold text-center text-sky-950 mb-10'>
+          <h2 className='text-3xl font-bold text-center text-white mb-10'>
             Fitur Unggulan
           </h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6'>
@@ -229,11 +226,6 @@ function MainPage() {
         </div>
       </section>
 
-      {/* Separator */}
-      <div className='px-4'>
-        <hr className='border-gray-300 max-w-6xl mx-auto' />
-      </div>
-
       {/* AI Insights */}
       <section
         id='wawasan'
@@ -254,7 +246,7 @@ function MainPage() {
                 tambahan di meja kasir.
               </p>
             </div>
-            <div className='flex-1 flex justify-center'>
+            <div className='flex-1 flex justify-end'>
               <img
                 src={aicashier}
                 alt='AI Cashier'
@@ -267,7 +259,7 @@ function MainPage() {
           <div className='flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12'>
             <div className='flex-1 text-center md:text-left'>
               <h2 className='text-3xl lg:text-4xl font-bold text-sky-950'>
-                Chat Dukungan AI Cerdas 24/7
+                Dapatkan Wawasan dari AI 24/7
               </h2>
               <p className='mt-4 text-gray-800 font-medium text-base lg:text-lg'>
                 Jangan pernah merasa bingung dengan data Anda lagi. Dukungan AI
@@ -276,7 +268,7 @@ function MainPage() {
                 secara real-time, dan saran strategis kapan pun Anda butuhkan.
               </p>
             </div>
-            <div className='flex-1 flex justify-center'>
+            <div className='flex-1 flex justify-start'>
               <img
                 src={chat}
                 alt='AI Chat'
@@ -291,7 +283,7 @@ function MainPage() {
       <footer className='bg-sky-950 text-white py-6'>
         <div className='container mx-auto text-center font-bold text-sm md:text-base'>
           <p>
-            FinSense &copy; {new Date().getFullYear()}. All rights reserved.
+            FinSense &copy; {new Date().getFullYear()} - Coding Camp 2026
           </p>
         </div>
       </footer>
