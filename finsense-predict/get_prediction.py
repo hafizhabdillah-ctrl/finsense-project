@@ -22,7 +22,6 @@ import pickle
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-from sklearn.preprocessing import LabelEncoder
 
 # ── Install holidays jika belum ada ──────────────────────────
 try:
@@ -346,132 +345,102 @@ def predict_top_products(models, bundle, today: dict) -> dict:
 
 
 # ══════════════════════════════════════════════════════════════
-# FUNGSI PREDIKSI 3: STOCK (DIREVISI: TIDAK PERNAH RETURN ERROR)
+# FUNGSI PREDIKSI 3: STOCK
 # ══════════════════════════════════════════════════════════════
 
 def predict_stock(models, bundle, product_name: str,
                   last_7_days_stock: list[dict]) -> dict:
     """
     Prediksi apakah produk tertentu perlu direstok besok.
-    Jika produk tidak dikenal atau data tidak lengkap, tetap mengembalikan
-    respons default (need_restock=False, prob=0) agar API selalu 200 OK.
 
     Parameters
     ----------
-    product_name : str — nama produk (boleh tidak dikenal)
-    last_7_days_stock : list of dict, ideally 7 hari (lama → baru)
-        Setiap dict minimal punya field:
-        Units_Sold, Stock_Out, Stock_In, DayOfWeek, DayOfMonth, Month, Stock_End
+    product_name : str — nama produk (harus ada di top_n training)
+
+    last_7_days_stock : list of dict, panjang = 7 (lama → baru)
+        {
+            "Units_Sold" : 45,
+            "Stock_Out"  : 45,
+            "Stock_In"   : 0,
+            "DayOfWeek"  : 0,
+            "DayOfMonth" : 15,
+            "Month"      : 5,
+            "Stock_End"  : 320   # stok akhir hari ini
+        }
+        ProductID, StockMA3, StockMA7, StockRatio, StockLag1,
+        StockTrend3, StockDaysLeft, BelowThresh dihitung otomatis.
 
     Returns
     -------
     {
-        "product_name"    : str,
-        "need_restock"    : bool,
-        "probability"     : float,
-        "current_stock"   : int,
-        "restock_threshold": int,
-        "note"            : str (optional, untuk debug)
+        "product_name"    : "Make Over Lipmatte",
+        "need_restock"    : true,
+        "probability"     : 0.73,
+        "current_stock"   : 85,
+        "restock_threshold": 100
     }
     """
-    # Ambil nilai default dari bundle
-    restock_th = bundle.get('stock_threshold', 100)
-    threshold  = bundle.get('stock_best_thresh', 0.45)
-    WINDOW     = bundle['window']
+    from sklearn.preprocessing import LabelEncoder
 
-    # --- Fungsi untuk menghasilkan respons default (tidak perlu restok) ---
-    def default_response(note="Default prediction due to missing data/unknown product"):
-        current_stock = 0
-        if last_7_days_stock and len(last_7_days_stock) > 0:
-            current_stock = last_7_days_stock[-1].get('Stock_End', 0)
-        return {
-            'product_name'      : product_name,
-            'need_restock'      : False,
-            'probability'       : 0.0,
-            'current_stock'     : int(current_stock),
-            'restock_threshold' : restock_th,
-            'note'              : note
-        }
-
-    # 1. Cek apakah produk dikenal
-    if product_name not in bundle.get('all_products', []):
-        return default_response(f"Product '{product_name}' not in AI training set")
-
-    # 2. Pastikan data stok cukup (minimal 1 hari, idealnya WINDOW hari)
-    if not last_7_days_stock or len(last_7_days_stock) == 0:
-        return default_response("No stock history provided")
-
-    # 3. Jika data kurang dari WINDOW hari, pad dengan data terakhir (repeat)
-    if len(last_7_days_stock) < WINDOW:
-        # Ulang data terakhir sebanyak yang kurang
-        pad_needed = WINDOW - len(last_7_days_stock)
-        last_day = last_7_days_stock[-1].copy()
-        padded = [last_day.copy() for _ in range(pad_needed)] + last_7_days_stock[-WINDOW:]
-        last_7_days_stock = padded
-
-    # 4. Siapkan encoder dan scaler
     sc         = bundle['stock_scaler']
     feat_cols  = bundle['stock_features']
     le         = bundle['stock_le']
+    threshold  = bundle.get('stock_best_thresh', 0.45)
+    restock_th = bundle.get('stock_threshold', 100)
     model      = models['stock']
+    WINDOW     = bundle['window']
 
-    try:
-        pid = int(le.transform([product_name])[0])
-    except Exception:
-        # Jika gagal transform (misal produk tiba-tiba tidak ada di LabelEncoder)
-        return default_response("Product encoding failed")
+    if product_name not in bundle['all_products']:
+        return {'error': f'Produk tidak dikenal: {product_name}'}
 
-    # Hitung fitur turunan dari histori (ambil WINDOW terakhir)
+    pid = int(le.transform([product_name])[0])
+
+    # Hitung fitur turunan dari histori 7 hari
     stock_ends   = [d['Stock_End']  for d in last_7_days_stock]
     stock_outs   = [d['Stock_Out']  for d in last_7_days_stock]
-    avg_out      = max(np.mean(stock_outs), 1) if len(stock_outs) > 0 else 1
+    avg_out      = max(np.mean(stock_outs), 1)
 
     rows = []
     for i, d in enumerate(last_7_days_stock[-WINDOW:]):
         stock_end  = d['Stock_End']
-        # Rolling means
         stock_ma3  = np.mean(stock_ends[max(0, i-2):i+1])
         stock_ma7  = np.mean(stock_ends[max(0, i-6):i+1])
         stock_lag1 = stock_ends[i-1] if i > 0 else stock_end
         stock_tr3  = stock_ends[i] - stock_ends[max(0, i-3)]
-        days_left  = min(stock_end / avg_out, 30) if avg_out > 0 else 30
-        below      = 1 if stock_end < restock_th else 0
+        days_left  = min(stock_end / avg_out, 30)
+        below      = int(stock_end < restock_th)
 
         row = {
-            'Units_Sold'    : d['Units_Sold'],
-            'Stock_Out'     : d['Stock_Out'],
-            'Stock_In'      : d['Stock_In'],
-            'DayOfWeek'     : d['DayOfWeek'],
-            'DayOfMonth'    : d['DayOfMonth'],
-            'Month'         : d['Month'],
-            'ProductID'     : pid,
-            'StockMA3'      : stock_ma3,
-            'StockMA7'      : stock_ma7,
-            'IsRestokDay'   : int(d['Stock_In'] > 0),
-            'StockRatio'    : d['Stock_Out'] / (stock_end + d['Stock_Out'] + 1),
-            'StockLag1'     : stock_lag1,
-            'StockTrend3'   : stock_tr3,
-            'StockDaysLeft' : days_left,
-            'BelowThresh'   : below,
+            'Units_Sold'  : d['Units_Sold'],
+            'Stock_Out'   : d['Stock_Out'],
+            'Stock_In'    : d['Stock_In'],
+            'DayOfWeek'   : d['DayOfWeek'],
+            'DayOfMonth'  : d['DayOfMonth'],
+            'Month'       : d['Month'],
+            'ProductID'   : pid,
+            'StockMA3'    : stock_ma3,
+            'StockMA7'    : stock_ma7,
+            'IsRestokDay' : int(d['Stock_In'] > 0),
+            'StockRatio'  : d['Stock_Out'] / (stock_end + d['Stock_Out'] + 1),
+            'StockLag1'   : stock_lag1,
+            'StockTrend3' : stock_tr3,
+            'StockDaysLeft': days_left,
+            'BelowThresh' : below,
         }
         rows.append([row[f] for f in feat_cols])
 
-    # Scaling dan prediksi
-    try:
-        seq_scaled = sc.transform(np.array(rows, dtype=np.float32))
-        seq_input  = seq_scaled.reshape(1, WINDOW, len(feat_cols)).astype(np.float32)
-        prob       = float(model.predict(seq_input, verbose=0)[0][0])
-        need       = prob >= threshold
-    except Exception as e:
-        # Jika terjadi error saat prediksi (misal shape mismatch), kembalikan default
-        return default_response(f"Prediction error: {str(e)}")
+    seq_scaled = sc.transform(np.array(rows, dtype=np.float32))
+    seq_input  = seq_scaled.reshape(1, WINDOW, len(feat_cols)).astype(np.float32)
+
+    prob       = float(model.predict(seq_input, verbose=0)[0][0])
+    need       = prob >= threshold
 
     return {
-        'product_name'      : product_name,
-        'need_restock'      : need,
-        'probability'       : round(prob, 4),
-        'current_stock'     : int(last_7_days_stock[-1]['Stock_End']),
-        'restock_threshold' : restock_th,
+        'product_name'     : product_name,
+        'need_restock'     : need,
+        'probability'      : round(prob, 4),
+        'current_stock'    : int(last_7_days_stock[-1]['Stock_End']),
+        'restock_threshold': restock_th,
     }
 
 
@@ -533,7 +502,7 @@ if __name__ == '__main__':
         status = '✅ TOP' if item['is_top_seller'] else '❌'
         print(f"  {status} {item['product']:<35} prob={item['probability']:.2f}")
 
-    # ── Demo 3: Stock (produk dikenal) ───────────────────────
+    # ── Demo 3: Stock ─────────────────────────────────────────
     sample_product = bundle['top_products'][0]
     last7_stk = [
         {'Units_Sold':45,'Stock_Out':45,'Stock_In':0,  'DayOfWeek':1,'DayOfMonth':24,'Month':12,'Stock_End':320},
@@ -546,14 +515,7 @@ if __name__ == '__main__':
     ]
     result_stk = predict_stock(models, bundle, sample_product, last7_stk)
     print('\n' + '─' * 50)
-    print('DEMO 3 — Prediksi Stok (produk dikenal)')
+    print('DEMO 3 — Prediksi Stok')
     print('─' * 50)
     print(json.dumps(result_stk, indent=2, ensure_ascii=False))
-
-    # ── Demo 4: Stock (produk tidak dikenal) ─────────────────
-    unknown_product = "Sedaap Selection"
-    result_unknown = predict_stock(models, bundle, unknown_product, last7_stk)
-    print('\n' + '─' * 50)
-    print('DEMO 4 — Prediksi Stok (produk tidak dikenal) -> default response')
-    print('─' * 50)
-    print(json.dumps(result_unknown, indent=2, ensure_ascii=False))
+    print()
