@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import SearchBarTop from './SearchBarTop';
 import SettingsModal from './SettingsModal';
 import { useNavigate } from 'react-router-dom';
 import { IoIosNotifications, IoIosSettings } from 'react-icons/io';
@@ -14,7 +13,7 @@ function Topbar({ onMenuClick }) {
   return (
     <>
       <div className='sticky top-0 z-30 flex items-center justify-between w-full py-3 px-4 md:py-4 border-b border-gray-200 bg-white'>
-        {/* Kiri: Tombol menu (mobile) + back */}
+        {/* Kiri Tombol menu (mobile) + back */}
         <div className='flex items-center gap-2'>
           <button
             onClick={onMenuClick}
@@ -30,16 +29,8 @@ function Topbar({ onMenuClick }) {
           </button>
         </div>
 
-        {/* SearchBar - responsif */}
-        <div className='flex-1 max-w-md mx-2 md:mx-4'>
-          <SearchBarTop />
-        </div>
-
-        {/* Kanan: Notifikasi, Settings, Profile */}
+        {/* Kanan Settings, Profile */}
         <div className='flex items-center gap-2 md:gap-4 text-gray-500'>
-          <button className='cursor-pointer hover:text-gray-700 transition-colors p-1'>
-            <IoIosNotifications size={26} />
-          </button>
           <button
             onClick={() => setIsSettingsModalOpen(true)}
             className='cursor-pointer hover:text-gray-700 transition-colors p-1'

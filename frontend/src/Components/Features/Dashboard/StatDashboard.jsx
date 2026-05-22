@@ -50,12 +50,19 @@ const StatDashboard = () => {
 
       {/* komponen dummy PREDIKSI PEMASUKAN */}
       {revenuePred && (
-        <div className='bg-blue-50 p-4 rounded shadow border border-blue-200'>
-          <p className='text-blue-800'>Prediksi Pemasukan Besok</p>
-          <p className='text-2xl font-bold text-blue-900'>
+        <div className='w-1/3 bg-blue-50 p-4 rounded-md shadow-sm border border-gray-300'>
+          <div className='flex gap-1'>
+            <h2 className='text-gray-500 text-sm font-semibold'>
+              Prediksi Pemasukan Besok
+            </h2>
+            <span className='flex font-semibold items-start text-green-500 text-xs'>
+              AI Powered
+            </span>
+          </div>
+          <p className='text-2xl font-bold text-blue-900 mb-2'>
             Rp {revenuePred.predicted_revenue.toLocaleString()}
           </p>
-          <p className='text-xs text-blue-600'>{revenuePred.prediction_date}</p>
+          <p className='text-xs'>{revenuePred.prediction_date}</p>
         </div>
       )}
     </div>

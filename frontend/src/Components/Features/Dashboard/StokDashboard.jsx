@@ -148,8 +148,13 @@ const StokDashboard = () => {
   return (
     <div className='space-y-6'>
       {/* Bagian Rekomendasi Restok (AI) */}
-      <div className='bg-white p-4 rounded shadow'>
-        <h2 className='font-bold text-lg mb-2'>Rekomendasi Restok (AI)</h2>
+      <div className='bg-white border p-4 rounded border-gray-300 shadow-sm'>
+        <div className='flex gap-1'>
+        <h2 className='flex font-bold text-lg mb-2'>
+          Rekomendasi Restok
+        </h2>
+          <span className='flex font-semibold items-start text-green-500 text-xs'>AI Powered</span>
+        </div>
         {loading ? (
           <p className='text-gray-500'>Memuat prediksi...</p>
         ) : restockList.length === 0 ? (
@@ -171,7 +176,7 @@ const StokDashboard = () => {
         )}
       </div>
 
-      {/* Bagian Keadaan Stok (semua produk stok menipis) dengan tombol Restok */}
+      {/* Bagian Keadaan Stok */}
       <div className='p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-xl font-bold'>Keadaan Stok</h1>
         <div className='flex flex-col gap-3 mt-2'>

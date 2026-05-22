@@ -16,13 +16,13 @@ const LakuDashboard = () => {
   }, []);
 
   return (
-    <div className='bg-white p-4 rounded shadow'>
+    <div className='w-3/4 bg-white'>
       <h2 className='font-bold text-lg mb-2'>
         Prediksi Produk Terlaris Hari Ini
       </h2>
       <ul>
         {topProducts.map((p) => (
-          <li key={p.product} className='flex justify-between py-1 border-b'>
+          <li key={p.product} className='flex justify-between py-1 border-b border-gray-400'>
             <span>{p.product}</span>
             <span
               className={
