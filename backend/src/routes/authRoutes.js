@@ -1,20 +1,30 @@
 const express = require('express');
-const {
-  register,
-  login,
-  refreshToken,
-  logout,
-  getProfile,
-  updateProfile,
-} = require('../controllers/authController');
-const auth = require('../middleware/auth');
 const router = express.Router();
+const authController = require('../controllers/authController');
+const {
+  validateRegister,
+  validateLogin,
+  validateUpdateUser,
+  validateRefreshToken,
+  validateLogout,
+} = require('../utils/validation');
+const validate = require('../middleware/validate');
+const auth = require('../middleware/auth');
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/refresh-token', refreshToken);
-router.post('/logout', logout);
-router.get('/profile', auth, getProfile);
-router.put('/profile', auth, updateProfile);
+router.post('/register', validate(validateRegister), authController.register);
+router.post('/login', validate(validateLogin), authController.login);
+router.put(
+  '/profile',
+  auth,
+  validate(validateUpdateUser),
+  authController.updateProfile,
+);
+router.get('/profile', auth, authController.getProfile);
+router.post(
+  '/refresh-token',
+  validate(validateRefreshToken),
+  authController.refreshToken,
+);
+router.post('/logout', validate(validateLogout), authController.logout);
 
 module.exports = router;

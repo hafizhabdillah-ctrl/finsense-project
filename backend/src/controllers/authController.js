@@ -121,6 +121,9 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Unauthorized: user ID missing' });
+    }
     const { full_name, email } = req.body;
     const user = await prisma.user.update({
       where: { id: req.userId },
