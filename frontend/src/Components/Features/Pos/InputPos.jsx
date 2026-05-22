@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import api from '../../../services/api';
 import { convertToWav } from '../../../utils/audioUtils';
 
-// Helper: parse jumlah dari transkrip bahasa Indonesia (tidak diubah)
+// Helper parseJumlah (tidak berubah, dipertahankan)
 const QTY = {
   satu: 1,
   dua: 2,
@@ -96,7 +96,9 @@ function InputPos() {
   const [filtered, setFiltered] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState(''); // tetap untuk ditampilkan ke UI
+  const transcriptRef = useRef('');
+
   const recognitionRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -138,7 +140,9 @@ function InputPos() {
   };
 
   const startListening = async () => {
+    // Reset semua
     setTranscript('');
+    transcriptRef.current = '';
     setFiltered([]);
     audioChunksRef.current = [];
 
@@ -154,6 +158,7 @@ function InputPos() {
     recognition.maxAlternatives = 1;
     recognitionRef.current = recognition;
 
+    // Mulai rekaman audio
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -169,7 +174,8 @@ function InputPos() {
 
     recognition.onresult = (event) => {
       const text = event.results[0][0].transcript;
-      setTranscript(text);
+      transcriptRef.current = text; // 🔁 simpan ke ref (sinkron)
+      setTranscript(text); // untuk tampilan UI
     };
     recognition.onerror = (e) => {
       console.error(e);
@@ -184,7 +190,13 @@ function InputPos() {
       ) {
         mediaRecorderRef.current.stop();
       }
-      if (transcript) processTransaction();
+      // Gunakan transcriptRef.current (bukan state transcript)
+      if (transcriptRef.current) {
+        processTransaction(transcriptRef.current);
+      } else {
+        // Tidak ada ucapan yang dikenali
+        Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+      }
     };
 
     recognition.start();
@@ -202,14 +214,12 @@ function InputPos() {
     setIsListening(false);
   };
 
-  const processTransaction = async () => {
-    if (!transcript) {
-      Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
-      return;
-    }
+  // Proses transaksi dengan menerima parameter textTranskrip
+  const processTransaction = async (spokenText) => {
     setIsProcessing(true);
+    const jumlah = parseJumlah(spokenText) || 1;
 
-    const jumlah = parseJumlah(transcript) || 1;
+    // Optional: sedikit delay untuk memastikan audio chunks sudah terkumpul
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     const originalBlob = new Blob(audioChunksRef.current, {
@@ -219,7 +229,7 @@ function InputPos() {
 
     const formData = new FormData();
     formData.append('audio', wavBlob, 'recording.wav');
-    formData.append('transcript', transcript);
+    formData.append('transcript', spokenText);
     formData.append('jumlah', String(jumlah));
 
     try {
@@ -237,13 +247,11 @@ function InputPos() {
       } = res.data;
 
       if (matchedProduct) {
-        // Konfirmasi tambah ke keranjang
         const result = await Swal.fire({
           title: 'Tambahkan ke Keranjang?',
           html: `
             <strong>Produk:</strong> ${produk}<br/>
             <strong>Jumlah:</strong> ${qty}<br/>
-            <strong>Total:</strong> Rp ${harga.toLocaleString()}<br/>
             <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
           `,
           icon: 'question',
@@ -261,16 +269,14 @@ function InputPos() {
             price: matchedProduct.price,
             qty: qty,
           });
-          // Tampilkan alert sukses, setelah OK refresh halaman
           await Swal.fire(
             'Berhasil!',
             'Produk ditambahkan ke keranjang',
             'success',
           );
-          window.location.reload(); // 🔄 Refresh halaman setelah klik OK
+          window.location.reload();
         }
       } else {
-        // Produk tidak ditemukan, tampilkan info
         let top3Text = '';
         if (res.data.produk_top3 && res.data.produk_top3.length) {
           top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
@@ -289,7 +295,7 @@ function InputPos() {
           icon: 'info',
           confirmButtonText: 'OK',
         });
-        window.location.reload(); // 🔄 Refresh halaman setelah klik OK
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -301,6 +307,7 @@ function InputPos() {
 
   return (
     <div className='flex flex-col items-center py-4 gap-4'>
+      {/* Input pencarian (sama seperti kode asli) */}
       <div className='relative w-full max-w-md'>
         <input
           type='text'
@@ -348,11 +355,11 @@ function InputPos() {
             : 'Tekan mikrofon untuk perintah suara'}
       </p>
 
-      {transcript && !isListening && !isProcessing && (
+      {/* {transcript && !isListening && !isProcessing && (
         <div className='text-sm bg-gray-100 p-2 rounded max-w-md text-center'>
           "{transcript}"
         </div>
-      )}
+      )} */}
     </div>
   );
 }
