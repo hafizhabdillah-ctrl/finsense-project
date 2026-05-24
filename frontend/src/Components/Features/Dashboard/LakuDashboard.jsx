@@ -16,7 +16,7 @@ const LakuDashboard = () => {
   }, []);
 
   return (
-    <div className='w-3/4 bg-white'>
+    <div className='w-full sm:w-3/4 bg-white'>
       <h2 className='font-bold text-lg mb-2'>
         Prediksi Produk Terlaris Hari Ini
       </h2>

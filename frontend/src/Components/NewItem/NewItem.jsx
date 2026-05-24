@@ -36,18 +36,19 @@ function NewItem() {
     <div className="p-2">
 
       {/* Container */}
-      <div className="flex flex-col gap-4 w-1/2">
+      <div className="flex flex-col gap-4 w-full sm:w-1/2">
         {menuItems.map((item, index) => (
           <button
             key={index}
             onClick={() => navigate(item.link)}
-            className="flex items-center p-4 bg-sky-950 border rounded-md hover:text-sky-950 hover:shadow-md hover:bg-white hover:border-sky-950 transition-all cursor-pointer group"
+            className="flex flex-col items-start p-4 bg-sky-950 border rounded-md text-left hover:text-sky-950 hover:shadow-md hover:bg-white hover:border-sky-950 transition-all cursor-pointer group w-full"
           >
-            {/* Teks Tengah */}
-            <span className="flex flex-row items-center gap-2 font-semibold">
-              <h3 className="text-lg text-white group-hover:text-sky-950">{item.title}</h3>
-              <p className="text-md text-sky-950">&gt; {item.description}</p>
-            </span>
+            <h3 className="text-lg font-bold text-white group-hover:text-sky-950">
+              {item.title}
+            </h3>
+            <p className="text-sm text-sky-200 group-hover:text-gray-500 mt-1">
+              {item.description}
+            </p>
           </button>
         ))}
       </div>

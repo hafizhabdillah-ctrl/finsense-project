@@ -67,7 +67,7 @@ function PosPage() {
           <InputPos />
           <FrequentlyPos />
         </div>
-        <div className='border border-gray-400 rounded-md lg:w-1/4 ml-auto'>
+        <div className='border border-gray-400 rounded-md w-full lg:w-1/4'>
           <CartPos />
         </div>
       </div>

@@ -23,7 +23,7 @@ function Topbar({ onMenuClick }) {
           </button>
           <button
             onClick={() => navigate(-1)}
-            className='text-gray-500 hover:text-gray-700 p-1 rounded-md transition-colors'
+            className='hidden sm:block text-gray-500 hover:text-gray-700 p-1 rounded-md transition-colors'
           >
             <span className='text-2xl'>&larr;</span>
           </button>
@@ -37,7 +37,7 @@ function Topbar({ onMenuClick }) {
           >
             <IoIosSettings size={26} />
           </button>
-          <div className='hidden sm:block pl-2 md:pl-4 border-l border-gray-300 font-semibold text-sky-950'>
+          <div className='pl-2 md:pl-4 border-l border-gray-300 font-semibold text-sky-950'>
             {user?.full_name || 'User'}
           </div>
         </div>

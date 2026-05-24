@@ -10,7 +10,7 @@ function StatDebt() {
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-1 gap-4 mt-4'>
-      <div className='flex w-64 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
+      <div className='flex w-full sm:w-1/4 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
         <p className='text-md text-gray-500 font-semibold mb-2'>
           TOTAL PIUTANG AKTIF
         </p>
