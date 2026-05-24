@@ -37,16 +37,29 @@ function CartPos() {
     if (!confirm.isConfirmed) return;
 
     try {
+      // ✅ 1. Buat array items sesuai skema TransactionItem
+      const items = cart.map((item) => ({
+        item_name: item.name,
+        quantity: item.qty,
+        unit: 'pcs', // sesuaikan jika produk punya satuan
+        unit_price: item.price,
+        product_id: item.id, // relasi ke tabel Product
+      }));
+
+      // ✅ 2. Payload lengkap dengan items
       const transactionPayload = {
-        category_id: 1,
+        category_id: 1, // pastikan ID ini ada di tabel Category (type: income)
         type: 'income',
         amount: subtotal,
         description: `Penjualan POS - ${cart.length} item`,
         transaction_date: new Date().toISOString(),
         source: 'ai',
+        items: items,
       };
+
       await createTransaction(transactionPayload);
 
+      // 3. Update stok (mengurangi stok)
       for (let item of cart) {
         await updateStock(item.id, {
           quantity: item.qty,
@@ -58,6 +71,7 @@ function CartPos() {
       Swal.fire('Sukses', 'Transaksi berhasil diproses', 'success');
       emptyCart();
     } catch (err) {
+      console.error(err);
       Swal.fire(
         'Gagal',
         err.response?.data?.error || 'Terjadi kesalahan',
@@ -67,66 +81,6 @@ function CartPos() {
   };
 
   return (
-    // <div className='flex flex-col p-2 w-96 h-190'>
-    //   <h1 className='font-semibold text-xl text-sky-950 mb-4 flex-shrink-0'>
-    //     Keranjang
-    //   </h1>
-    //   <div className='flex flex-col gap-2 flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-300px)]'>
-    //     {cart.length === 0 ? (
-    //       <p className='text-gray-500 text-center py-4'>Keranjang kosong</p>
-    //     ) : (
-    //       cart.map((item) => (
-    //         <div
-    //           key={item.id}
-    //           className='my-2 justify-between items-center border-b border-gray-300'
-    //         >
-    //           <div className='flex justify-between font-semibold text-lg'>
-    //             {item.name}
-    //           </div>
-    //           <div className='text-gray-500 flex justify-between items-center'>
-    //             <div className='flex items-center gap-2'>
-    //               <span>Rp {item.price.toLocaleString()}</span>
-    //               <input
-    //                 type='number'
-    //                 min='1'
-    //                 value={item.qty}
-    //                 onChange={(e) =>
-    //                   updateItem(item.id, parseInt(e.target.value) || 1)
-    //                 }
-    //                 className='w-16 p-1 border rounded'
-    //               />
-    //             </div>
-    //             <div className='flex gap-2'>
-    //               <span className='text-sky-950 font-bold'>
-    //                 Rp {(item.price * item.qty).toLocaleString()}
-    //               </span>
-    //               <button
-    //                 onClick={() => onDeleteHandler(item)}
-    //                 className='text-red-800 cursor-pointer'
-    //               >
-    //                 X
-    //               </button>
-    //             </div>
-    //           </div>
-    //         </div>
-    //       ))
-    //     )}
-    //   </div>
-    //   <div className='mt-auto border-t border-gray-400 flex-shrink-0 pt-2'>
-    //     <div className='flex justify-between p-1'>
-    //       <span className='text-gray-500'>Subtotal</span>
-    //       <span className='font-bold text-lg text-sky-950'>
-    //         Rp {subtotal.toLocaleString()}
-    //       </span>
-    //     </div>
-    //     <button
-    //       onClick={onCheckout}
-    //       className='w-full flex items-center justify-center mt-2 bg-orange-500 hover:bg-orange-600 transition-all text-white font-bold p-3 rounded-lg cursor-pointer'
-    //     >
-    //       Konfirmasi
-    //     </button>
-    //   </div>
-    // </div>
     <div className='flex flex-col p-2 h-full'>
       <h1 className='font-semibold text-xl text-sky-950 mb-2'>Keranjang</h1>
       <div className='flex flex-col gap-2 max-h-96 overflow-y-auto flex-1 mt-2'>

@@ -8,5 +8,6 @@ router.get('/predict-revenue', aiPrediction.predictRevenue);
 router.get('/predict-top-products', aiPrediction.predictTopProducts);
 router.get('/predict-stock/:productId', aiPrediction.predictStock);
 router.post('/predict-stock/:productId', aiPrediction.predictStock);
+router.get('/real-top-products', aiPrediction.getRealTopProducts);
 
 module.exports = router;

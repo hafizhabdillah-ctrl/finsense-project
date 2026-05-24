@@ -14,11 +14,9 @@ async function getStockHistory(productId, productName, currentStock) {
   startDate.setDate(startDate.getDate() - (days - 1));
   startDate.setHours(0, 0, 0, 0);
 
-  // Default history jika tidak ada data
   let history = [];
 
   try {
-    // Coba ambil dari stock logs (type 'out' untuk penjualan, 'in' untuk restok)
     const response = await api.get('/stock-logs', {
       params: {
         product_id: productId,
@@ -30,7 +28,6 @@ async function getStockHistory(productId, productName, currentStock) {
     });
     const logs = response.data;
 
-    // Siapkan data per hari
     const daily = {};
     let current = new Date(startDate);
     while (current <= endDate) {
@@ -47,7 +44,6 @@ async function getStockHistory(productId, productName, currentStock) {
       current.setDate(current.getDate() + 1);
     }
 
-    // Akumulasi dari logs
     for (const log of logs) {
       const dateKey = new Date(log.created_at).toISOString().split('T')[0];
       if (daily[dateKey]) {
@@ -60,13 +56,7 @@ async function getStockHistory(productId, productName, currentStock) {
       }
     }
 
-    // Hitung stok akhir per hari (running)
     const sortedKeys = Object.keys(daily).sort();
-    let runningStock = currentStock;
-    // Jika ada data, hitung mundur dari stok terakhir
-    // Cara simpel: kita urutkan dari yang paling lama, stok awal tidak diketahui, kita asumsikan stok akhir hari ini sudah benar
-    // Untuk menghindari negatif, kita hitung stok akhir dengan menjumlah dari awal
-    // Kita butuh stok awal periode = currentStock - netChanges
     let totalNet = 0;
     for (const key of sortedKeys) {
       totalNet += daily[key].Stock_In - daily[key].Stock_Out;
@@ -92,7 +82,6 @@ async function getStockHistory(productId, productName, currentStock) {
     );
   }
 
-  // Jika history kurang dari 7 hari, pad dengan data terakhir
   if (history.length < days) {
     const lastEntry =
       history.length > 0
@@ -110,7 +99,6 @@ async function getStockHistory(productId, productName, currentStock) {
       history.unshift({ ...lastEntry, Stock_End: currentStock });
     }
   }
-
   return history.slice(-days);
 }
 
@@ -121,25 +109,28 @@ export const useDashboardData = () => {
   const [todayIncome, setTodayIncome] = useState(0);
   const [todayCount, setTodayCount] = useState(0);
   const [averageOrder, setAverageOrder] = useState(0);
-  const [lowStockProducts, setLowStockProducts] = useState([]); // produk stok <= min_stok (lokal)
+  const [lowStockProducts, setLowStockProducts] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState({ dates: [], amounts: [] });
-  const [aiPredictions, setAiPredictions] = useState([]); // hasil AI untuk produk low stock
+  const [aiPredictions, setAiPredictions] = useState([]);
   const [loadingAi, setLoadingAi] = useState(false);
+  // State untuk prediksi revenue & top products
+  const [revenuePrediction, setRevenuePrediction] = useState(null);
+  const [topProductsPrediction, setTopProductsPrediction] = useState([]);
+  const [predictionMessage, setPredictionMessage] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // 1. Tanggal hari ini
         const today = new Date();
         const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
         const endOfDay = new Date(
           today.setHours(23, 59, 59, 999),
         ).toISOString();
 
-        // 2. Transaksi hari ini
+        // 1. Transaksi hari ini
         const todayRes = await getTransactions({
           startDate: startOfDay,
           endDate: endOfDay,
@@ -152,7 +143,7 @@ export const useDashboardData = () => {
           todayIncomes.length ? totalIncome / todayIncomes.length : 0,
         );
 
-        // 3. Data untuk grafik (7 hari terakhir)
+        // 2. Grafik 7 hari
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const weeklyRes = await getTransactions({
@@ -169,39 +160,86 @@ export const useDashboardData = () => {
         const amounts = sortedDates.map((d) => dailyMap.get(d));
         setChartData({ dates: sortedDates, amounts });
 
-        // 4. Data produk
+        // 3. Semua produk
         const productsRes = await getProducts();
         const allProducts = productsRes.data;
 
-        // 5. Low stock (stok <= min_stock)
+        // 4. Low stock lokal
         const lowStock = allProducts.filter((p) => p.stock <= p.min_stock);
         setLowStockProducts(lowStock.slice(0, 10));
 
-        // 6. Best sellers dari stock log
-        const stockLogsRes = await api.get('/stock-logs', {
-          params: { type: 'out' },
-        });
-        const outLogs = stockLogsRes.data;
-        const salesMap = new Map();
-        outLogs.forEach((log) => {
-          salesMap.set(
-            log.product_id,
-            (salesMap.get(log.product_id) || 0) + log.quantity,
-          );
-        });
-        const bestIds = Array.from(salesMap.entries())
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5)
-          .map(([id]) => id);
-        const topSellers = allProducts
-          .filter((p) => bestIds.includes(p.id))
-          .map((p) => ({ ...p, total_terjual: salesMap.get(p.id) }));
-        setBestSellers(topSellers);
+        // 5. Best sellers (dari TransactionItem, lebih akurat)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        try {
+          // Memanggil endpoint real top products (dari TransactionItem)
+          const realTopRes = await api.get('/ai/real-top-products');
+          setBestSellers(realTopRes.data.top_products.slice(0, 5));
+        } catch (err) {
+          console.warn('Gagal ambil real top products, fallback ke stock logs');
+          // Fallback ke stock logs
+          const stockLogsRes = await api.get('/stock-logs', {
+            params: { type: 'out' },
+          });
+          const outLogs = stockLogsRes.data;
+          const salesMap = new Map();
+          outLogs.forEach((log) => {
+            salesMap.set(
+              log.product_id,
+              (salesMap.get(log.product_id) || 0) + log.quantity,
+            );
+          });
+          const bestIds = Array.from(salesMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([id]) => id);
+          const topSellers = allProducts
+            .filter((p) => bestIds.includes(p.id))
+            .map((p) => ({ ...p, total_terjual: salesMap.get(p.id) }));
+          setBestSellers(topSellers);
+        }
 
-        // 7. PREDIKSI AI UNTUK PRODUK LOW STOCK (agar muncul di draft)
+        // 6. Prediksi Revenue AI (dengan validasi minimum data di backend)
+        try {
+          const revRes = await api.get('/ai/predict-revenue');
+          if (revRes.data.available === false) {
+            setPredictionMessage(
+              revRes.data.message ||
+                'Data transaksi belum cukup (minimal 7 hari)',
+            );
+            setRevenuePrediction(null);
+          } else {
+            setRevenuePrediction(revRes.data.predicted_revenue);
+            setPredictionMessage('');
+          }
+        } catch (err) {
+          console.error('Revenue prediction error:', err);
+          setPredictionMessage('Gagal memuat prediksi pendapatan');
+        }
+
+        // 7. Prediksi Top Products AI (dengan fallback ke real data)
+        try {
+          const topRes = await api.get('/ai/predict-top-products');
+          if (topRes.data.available === false) {
+            // Jika AI tidak siap, gunakan real top products dari database
+            const realTopRes = await api.get('/ai/real-top-products');
+            setTopProductsPrediction(realTopRes.data.top_products);
+          } else {
+            setTopProductsPrediction(topRes.data.top_products);
+          }
+        } catch (err) {
+          console.error('Top products prediction error:', err);
+          try {
+            const realTopRes = await api.get('/ai/real-top-products');
+            setTopProductsPrediction(realTopRes.data.top_products);
+          } catch (e) {
+            setTopProductsPrediction([]);
+          }
+        }
+
+        // 8. Prediksi Restok untuk produk low stock
         setLoadingAi(true);
         const predictions = [];
-        // Ambil maksimal 10 produk low stock (agar tidak overload)
         for (const product of lowStock.slice(0, 10)) {
           try {
             const stockHistory = await getStockHistory(
@@ -250,11 +288,14 @@ export const useDashboardData = () => {
     todayIncome,
     todayCount,
     averageOrder,
-    lowStockProducts, // produk dengan stok ≤ min_stock
+    lowStockProducts,
     bestSellers,
     chartData,
     loading,
-    aiPredictions, // prediksi AI untuk produk low stock (sudah include need_restock & probability)
+    aiPredictions,
     loadingAi,
+    revenuePrediction,
+    topProductsPrediction,
+    predictionMessage,
   };
 };

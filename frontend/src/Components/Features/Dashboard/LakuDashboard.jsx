@@ -6,7 +6,7 @@ const LakuDashboard = () => {
   useEffect(() => {
     const fetchTop = async () => {
       try {
-        const res = await api.get('/ai/predict-top-products');
+        const res = await api.get('/ai/real-top-products');
         setTopProducts(res.data.top_products);
       } catch (err) {
         console.error(err);
@@ -22,7 +22,10 @@ const LakuDashboard = () => {
       </h2>
       <ul>
         {topProducts.map((p) => (
-          <li key={p.product} className='flex justify-between py-1 border-b border-gray-400'>
+          <li
+            key={p.product}
+            className='flex justify-between py-1 border-b border-gray-400'
+          >
             <span>{p.product}</span>
             <span
               className={

@@ -57,6 +57,18 @@ const transactionSource = Joi.string()
   .valid('manual', 'voice', 'ai')
   .default('manual');
 
+// Schema untuk satu item transaksi
+const transactionItemSchema = Joi.object({
+  item_name: Joi.string().min(1).max(200).required(),
+  quantity: Joi.number().positive().required(),
+  unit: Joi.string().max(20).optional().allow('', null),
+  unit_price: Joi.number().positive().precision(2).required(),
+  total_price: Joi.number().positive().precision(2).optional(),
+  category_id: Joi.number().integer().positive().optional().allow(null),
+  product_id: Joi.string().uuid().optional().allow(null),
+  ai_confidence: Joi.number().min(0).max(1).optional().allow(null),
+});
+
 const createTransactionSchema = Joi.object({
   category_id: transactionCategoryId,
   type: transactionType,
@@ -66,6 +78,7 @@ const createTransactionSchema = Joi.object({
     .iso()
     .default(() => new Date()),
   source: transactionSource,
+  items: Joi.array().items(transactionItemSchema).optional().default([]),
 });
 
 const updateTransactionSchema = Joi.object({
@@ -75,6 +88,7 @@ const updateTransactionSchema = Joi.object({
   description: Joi.string().max(255).optional().allow('', null),
   transaction_date: Joi.date().iso().optional(),
   source: transactionSource.optional(),
+  items: Joi.array().items(transactionItemSchema).optional(),
 });
 
 // ==================== PRODUCT / STOK ====================
