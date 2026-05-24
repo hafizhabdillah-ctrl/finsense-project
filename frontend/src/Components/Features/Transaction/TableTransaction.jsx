@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTransactions } from '../../../hooks/useTransactions';
 
-function TableTransaction() {
+function TableTransaction({ startDate = '', endDate = '' }) {
   const navigate = useNavigate();
   const { transactions, loading } = useTransactions();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // Filter transaksi berdasarkan rentang tanggal
+  const filteredTransactions = useMemo(() => {
+    if (!startDate && !endDate) return transactions;
+
+    return transactions.filter((transaction) => {
+      const txDate = transaction.transaction_date.split('T')[0]; // ambil YYYY-MM-DD
+      if (startDate && endDate) {
+        return txDate >= startDate && txDate <= endDate;
+      } else if (startDate) {
+        return txDate >= startDate;
+      } else if (endDate) {
+        return txDate <= endDate;
+      }
+      return true;
+    });
+  }, [transactions, startDate, endDate]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
-  const totalItems = transactions.length;
+  const currentItems = filteredTransactions.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+  const totalItems = filteredTransactions.length;
   const startRange = totalItems === 0 ? 0 : indexOfFirstItem + 1;
   const endRange = Math.min(indexOfLastItem, totalItems);
 
@@ -22,7 +42,7 @@ function TableTransaction() {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // if (loading) return <div className='p-4'>Memuat transaksi...</div>;
+  if (loading) return <div className='p-4'>Memuat transaksi...</div>;
 
   return (
     <div className='overflow-x-auto'>
@@ -38,7 +58,9 @@ function TableTransaction() {
         <div className='flex flex-col'>
           {totalItems === 0 ? (
             <div className='p-8 text-center text-gray-500 border-b border-r border-gray-300'>
-              Belum ada catatan transaksi.
+              {startDate || endDate
+                ? 'Tidak ada transaksi dalam rentang tanggal tersebut'
+                : 'Belum ada catatan transaksi.'}
             </div>
           ) : (
             currentItems.map((transaction, idx) => (

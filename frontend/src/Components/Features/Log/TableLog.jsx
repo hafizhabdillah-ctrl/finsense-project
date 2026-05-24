@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStockLogs } from '../../../hooks/useStockLogs';
 
-function TableLog() {
+function TableLog({ searchTerm = '' }) {
   const navigate = useNavigate();
-  const { logs, loading } = useStockLogs(); // tanpa filter, tampilkan semua
+  const { logs, loading } = useStockLogs();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Filter logs berdasarkan searchTerm (nama produk atau SKU)
+  const filteredLogs = useMemo(() => {
+    if (!searchTerm.trim()) return logs;
+    const lowerSearch = searchTerm.toLowerCase();
+    return logs.filter(
+      (log) =>
+        log.product?.name?.toLowerCase().includes(lowerSearch) ||
+        log.product?.sku?.toLowerCase().includes(lowerSearch),
+    );
+  }, [logs, searchTerm]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = logs.slice(indexOfFirstItem, indexOfLastItem);
-  const totalItems = logs.length;
-  const startRange = indexOfFirstItem + 1;
+  const currentItems = filteredLogs.slice(indexOfFirstItem, indexOfLastItem);
+  const totalItems = filteredLogs.length;
+  const startRange = totalItems === 0 ? 0 : indexOfFirstItem + 1;
   const endRange = Math.min(indexOfLastItem, totalItems);
 
   const goToNextPage = () => {
@@ -22,7 +33,7 @@ function TableLog() {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // if (loading) return <div className='p-4'>Memuat data log...</div>;
+  if (loading) return <div className='p-4'>Memuat data log...</div>;
 
   return (
     <div className='overflow-x-auto'>
@@ -39,7 +50,9 @@ function TableLog() {
         <div className='flex flex-col'>
           {currentItems.length === 0 ? (
             <div className='p-4 text-center text-gray-500'>
-              Tidak ada data log barang
+              {searchTerm
+                ? 'Tidak ada log yang cocok'
+                : 'Tidak ada data log barang'}
             </div>
           ) : (
             currentItems.map((log) => (

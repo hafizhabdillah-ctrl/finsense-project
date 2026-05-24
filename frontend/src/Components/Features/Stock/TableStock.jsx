@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProducts } from '../../../hooks/useProducts';
 
-function TableStock() {
+function TableStock({ searchTerm = '' }) {
   const navigate = useNavigate();
   const { products, loading } = useProducts();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // Filter products berdasarkan searchTerm (nama atau SKU)
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) return products;
+    const lowerSearch = searchTerm.toLowerCase();
+    return products.filter(
+      (product) =>
+        product.name?.toLowerCase().includes(lowerSearch) ||
+        product.sku?.toLowerCase().includes(lowerSearch),
+    );
+  }, [products, searchTerm]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-  const totalItems = products.length;
-  const startRange = indexOfFirstItem + 1;
+  const currentItems = filteredProducts.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+  const totalItems = filteredProducts.length;
+  const startRange = totalItems === 0 ? 0 : indexOfFirstItem + 1;
   const endRange = Math.min(indexOfLastItem, totalItems);
 
   const goToNextPage = () => {
@@ -37,7 +51,9 @@ function TableStock() {
         <div className='flex flex-col'>
           {currentItems.length === 0 ? (
             <div className='p-4 text-center text-gray-500'>
-              Tidak ada data stok barang
+              {searchTerm
+                ? 'Tidak ada produk yang cocok'
+                : 'Tidak ada data stok barang'}
             </div>
           ) : (
             currentItems.map((product, idx) => (

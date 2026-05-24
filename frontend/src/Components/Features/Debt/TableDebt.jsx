@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebts } from '../../../hooks/useDebts';
 
-function TableDebt() {
+function TableDebt({ searchTerm = '' }) {
   const navigate = useNavigate();
   const { debts, loading } = useDebts();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Filter debts berdasarkan searchTerm
+  const filteredDebts = useMemo(() => {
+    if (!searchTerm.trim()) return debts;
+    const lowerSearch = searchTerm.toLowerCase();
+    return debts.filter((debt) =>
+      debt.customer_name?.toLowerCase().includes(lowerSearch),
+    );
+  }, [debts, searchTerm]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = debts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalItems = debts.length;
-  const startRange = indexOfFirstItem + 1;
+  const currentItems = filteredDebts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalItems = filteredDebts.length;
+  const startRange = totalItems === 0 ? 0 : indexOfFirstItem + 1;
   const endRange = Math.min(indexOfLastItem, totalItems);
 
   const goToNextPage = () => {
@@ -38,7 +47,7 @@ function TableDebt() {
         <div className='flex flex-col'>
           {currentItems.length === 0 ? (
             <div className='p-4 text-center text-gray-500'>
-              Tidak ada hutang
+              {searchTerm ? 'Tidak ada hutang yang cocok' : 'Tidak ada hutang'}
             </div>
           ) : (
             currentItems.map((debt, idx) => (
@@ -67,7 +76,7 @@ function TableDebt() {
           )}
 
           <div className='p-2 border-t border-gray-200 flex justify-between'>
-            <p className='text-sm text-gray-500 flex gap-1'>
+            <p className='text-sm text-gray-500'>
               Menampilkan {startRange}-{endRange} dari {totalItems} hutang
             </p>
             <div className='flex gap-2'>
