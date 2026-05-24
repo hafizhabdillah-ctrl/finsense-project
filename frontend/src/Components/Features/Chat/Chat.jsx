@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import api from '../../../services/api'; // sesuaikan path ke file api.js
+import api from '../../../services/api';
 import { IoMdSend } from 'react-icons/io';
 import { IoClose, IoChatboxEllipsesOutline } from 'react-icons/io5';
 
@@ -18,9 +18,10 @@ function Chat() {
 
   const createNewSession = async () => {
     try {
-      const response = await api.post('/chat/sessions', { session_title: 'Chat baru' });
+      const response = await api.post('/chat/sessions', {
+        session_title: 'Chat baru',
+      });
       setSessionId(response.data.id);
-      // Kirim pesan sapaan awal (opsional: bisa langsung tampilkan greeting)
       setMessages([
         {
           id: Date.now(),
@@ -28,18 +29,17 @@ function Chat() {
           text: 'Halo! Saya asisten FinSense. Pilih topik yang ingin kamu tanyakan:',
         },
       ]);
-      // Set quick replies untuk menu utama
       setQuickReplies([
-        { id: 'tips', label: '💡 Tips Keuangan' },
-        { id: 'laporan', label: '📊 Laporan' },
-        { id: 'rekomendasi_usaha', label: '🚀 Rekomendasi Usaha' },
-        { id: 'pajak_umkm', label: '📑 Pajak UMKM' }
+        { id: 'catat', label: '🎤 Catat Transaksi (Suara)' },
+        { id: 'lihat_transaksi', label: '📋 Lihat Transaksi' },
+        { id: 'stok', label: '📦 Manajemen Stok' },
+        { id: 'hutang', label: '💰 Hutang/Piutang' },
+        { id: 'tips', label: '💡 Tips UMKM' },
       ]);
     } catch (error) {
       console.error('Gagal membuat session chat:', error);
     }
   };
-
   useEffect(() => {
     if (isOpen && !sessionId) {
       createNewSession();
@@ -50,7 +50,9 @@ function Chat() {
     if (!sessionId) return;
     setIsLoading(true);
     try {
-      const response = await api.post(`/chat/sessions/${sessionId}/messages`, { message });
+      const response = await api.post(`/chat/sessions/${sessionId}/messages`, {
+        message,
+      });
       const assistantMsg = response.data.assistantMessage;
       setMessages((prev) => [
         ...prev,
@@ -79,7 +81,6 @@ function Chat() {
   const onSendEventHandler = async () => {
     if (inputValue.trim() === '' || isLoading) return;
     const userMessageText = inputValue.trim();
-    // Tambahkan pesan user ke UI
     const newUserMsg = {
       id: Date.now(),
       sender: 'user',
@@ -87,7 +88,7 @@ function Chat() {
     };
     setMessages((prev) => [...prev, newUserMsg]);
     setInputValue('');
-    setQuickReplies([]); // reset sementara
+    setQuickReplies([]);
     await sendMessageToBackend(userMessageText);
   };
 
@@ -98,25 +99,30 @@ function Chat() {
   const toggleChat = () => setIsOpen(!isOpen);
 
   return (
-    <div>
+    <>
       {isOpen && (
-        <div className="fixed bottom-24 right-8 w-80 border border-gray-300 rounded-lg flex flex-col overflow-hidden font-sans">
+        <div className='fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-50 w-[calc(100vw-2rem)] sm:w-96 md:w-[28rem] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200'>
           {/* Header */}
-          <div className="bg-sky-950 p-4 flex justify-between items-center text-white">
-            <span className="font-bold text-sm tracking-wide">🤖 FinSense AI Support</span>
-            <button onClick={toggleChat} className="text-gray-300 hover:text-white">
-              <IoClose size={26} />
+          <div className='bg-sky-950 px-4 py-3 flex justify-between items-center text-white'>
+            <span className='font-bold text-sm tracking-wide flex items-center gap-2'>
+              <span>🤖</span> FinSense AI Support
+            </span>
+            <button
+              onClick={toggleChat}
+              className='hover:bg-sky-800 p-1 rounded-full transition'
+            >
+              <IoClose size={22} />
             </button>
           </div>
 
-          {/* Area Pesan */}
-          <div className="h-72 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm">
+          {/* Messages Area */}
+          <div className='flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3 text-sm min-h-[300px] max-h-[calc(80vh-130px)]'>
             {messages.map((n) => (
               <div
                 key={n.id}
-                className={`p-3 max-w-[85%] shadow-sm ${
+                className={`p-3 max-w-[85%] shadow-sm break-words ${
                   n.sender === 'user'
-                    ? 'self-end bg-sky-950 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl'
+                    ? 'self-end bg-sky-950 text-white rounded-t-xl rounded-bl-xl rounded-br-xl'
                     : 'self-start bg-gray-200 text-sky-950 rounded-tr-xl rounded-br-xl rounded-bl-xl'
                 }`}
               >
@@ -124,14 +130,16 @@ function Chat() {
               </div>
             ))}
             {isLoading && (
-              <div className="self-start bg-gray-200 text-sky-950 p-3 rounded-xl">Mengetik...</div>
+              <div className='self-start bg-gray-200 text-sky-950 p-3 rounded-xl'>
+                Mengetik...
+              </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Replies */}
           {quickReplies.length > 0 && (
-            <div className="px-3 pb-2 bg-white border-t border-gray-200 flex flex-wrap gap-2">
+            <div className='px-3 py-2 bg-white border-t border-gray-100 flex flex-wrap gap-2'>
               {quickReplies.map((reply, idx) => (
                 <button
                   key={idx}
@@ -139,7 +147,7 @@ function Chat() {
                     setInputValue(reply.label);
                     onSendEventHandler();
                   }}
-                  className="bg-gray-100 hover:bg-gray-200 text-sky-950 text-xs py-1.5 px-3 rounded-full"
+                  className='bg-gray-100 hover:bg-gray-200 text-sky-950 text-xs py-1.5 px-3 rounded-full transition'
                 >
                   {reply.label}
                 </button>
@@ -148,37 +156,49 @@ function Chat() {
           )}
 
           {/* Input Box */}
-          <div className="p-3 bg-white border-t border-gray-400 flex gap-2 items-center">
+          <div className='p-3 bg-white border-t border-gray-200 flex gap-2 items-center'>
             <input
-              type="text"
+              type='text'
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={onEnterButtonHandler}
-              placeholder="Ketik pesan..."
+              placeholder='Ketik pesan...'
               disabled={isLoading}
-              className="flex-1 px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-1 focus:ring-sky-950"
+              className='flex-1 px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-1 focus:ring-sky-950 text-sm'
             />
             <button
               onClick={onSendEventHandler}
               disabled={isLoading}
-              className="bg-sky-950 text-white p-3 rounded-md hover:bg-sky-800"
+              className='bg-sky-950 text-white p-2 rounded-full hover:bg-sky-800 transition disabled:opacity-50'
             >
-              <IoMdSend />
+              <IoMdSend size={20} />
             </button>
           </div>
         </div>
       )}
 
-      {/* Tombol floating */}
+      {/* Floating Button */}
+      {/* Floating Button */}
       <button
         onClick={toggleChat}
-        className={`fixed bottom-8 right-8 p-4 rounded-full shadow-xl transition-all duration-300 z-50 flex items-center justify-center ${
-          isOpen ? 'bg-red-500 hover:bg-red-600 rotate-90 scale-90' : 'text-white bg-sky-950 hover:bg-sky-800 hover:-translate-y-1'
-        }`}
+        className={`
+    fixed bottom-4 right-4 sm:bottom-6 sm:right-6 
+    p-3 rounded-full shadow-xl transition-all duration-300 z-50 
+    flex items-center justify-center
+    ${
+      isOpen
+        ? 'bg-red-500 hover:bg-red-600 rotate-90 scale-90 md:hidden' // Sembunyikan di tablet/laptop saat chat terbuka
+        : 'bg-sky-950 hover:bg-sky-800 hover:-translate-y-1 text-white'
+    }
+  `}
       >
-        {isOpen ? <IoClose size={22} /> : <IoChatboxEllipsesOutline size={22} />}
+        {isOpen ? (
+          <IoClose size={24} />
+        ) : (
+          <IoChatboxEllipsesOutline size={24} />
+        )}
       </button>
-    </div>
+    </>
   );
 }
 
