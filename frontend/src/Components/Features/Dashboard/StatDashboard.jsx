@@ -50,7 +50,7 @@ const StatDashboard = () => {
 
       {/* komponen dummy PREDIKSI PEMASUKAN */}
       {revenuePred && (
-        <div className='w-1/3 bg-blue-50 p-4 rounded-md shadow-sm border border-gray-300'>
+        <div className='w-1/2 bg-blue-50 p-4 rounded-md shadow-sm border border-gray-300'>
           <div className='flex gap-1'>
             <h2 className='text-gray-500 text-sm font-semibold'>
               Prediksi Pemasukan Besok
