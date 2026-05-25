@@ -35,7 +35,7 @@ function LogPage() {
         <FaSearch className='absolute left-3 top-3 text-gray-400' />
       </div>
 
-      <div className='overflow-x-auto mt-4'>
+      <div className='overflow-x-auto mt-2'>
         <TableLog searchTerm={searchTerm} />
       </div>
     </div>

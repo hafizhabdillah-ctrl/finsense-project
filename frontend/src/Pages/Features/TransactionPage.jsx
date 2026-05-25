@@ -31,7 +31,7 @@ function TransactionPage() {
       <StatTransaction />
 
       {/* Filter Tanggal */}
-      <div className='flex flex-wrap items-center gap-4 mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200'>
+      <div className='flex flex-wrap items-center gap-4 mt-4 px-2'>
         <div className='flex items-center gap-2'>
           <FaCalendarAlt className='text-gray-500' />
           <span className='font-medium text-gray-700'>Filter Tanggal:</span>
@@ -61,7 +61,7 @@ function TransactionPage() {
         </div>
       </div>
 
-      <div className='overflow-x-auto mt-4'>
+      <div className='overflow-x-auto mt-2'>
         <TableTransaction startDate={startDate} endDate={endDate} />
       </div>
       <div className='mt-6'>
