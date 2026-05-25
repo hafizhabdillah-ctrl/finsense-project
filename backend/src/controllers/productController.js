@@ -58,17 +58,13 @@ exports.createProduct = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    // Cek apakah error karena SKU sudah ada (unique constraint)
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === 'P2002'
-    ) {
+    // Cek error duplicate key (kode P2002)
+    if (err.code === 'P2002') {
       return res
         .status(409)
         .json({ error: 'Gagal menambah produk, SKU sudah terdaftar' });
     }
 
-    // Error lainnya tetap pesan umum
     res.status(500).json({ error: 'Gagal menambah produk' });
   }
 };
