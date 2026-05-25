@@ -4,6 +4,8 @@ import { Route, Routes } from 'react-router-dom';
 import MainPage from './Pages/MainPage';
 import LoginPage from './Pages/Auth/LoginPage';
 import RegisterPage from './Pages/Auth/RegisterPage';
+import LupaPasswordPage from './Pages/Auth/LupaPasswordPage';
+import ResetPasswordPage from './Pages/Auth/ResetPasswordPage';
 import MainLayout from './Components/Layout/MainLayout';
 
 import DashboardPage from './Pages/Features/DashboardPage';
@@ -39,6 +41,8 @@ function App() {
         <Route path='/' element={<MainPage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
+        <Route path='/lupa-password' element={<LupaPasswordPage />} />
+        <Route path='/reset-password' element={<ResetPasswordPage />} />
 
         <Route element={<MainLayout />}>
           {/* Halaman utama */}

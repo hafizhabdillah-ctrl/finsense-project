@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const LoginInput = () => {
   const [email, setEmail] = useState('');
@@ -62,8 +63,7 @@ const LoginInput = () => {
           placeholder='Masukkan email Anda'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg 
-                     focus:border-sky-950 focus:outline-none transition-colors
+          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
                      text-gray-800 placeholder-gray-400'
           required
         />
@@ -81,7 +81,7 @@ const LoginInput = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className='w-full p-3 text-base border-2 border-gray-300 rounded-lg 
-                       focus:border-sky-950 focus:outline-none transition-colors
+                       focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
                        text-gray-800 placeholder-gray-400'
             required
           />
@@ -94,9 +94,12 @@ const LoginInput = () => {
             }
           >
             {showPassword ? (
-              <FiEyeOff size={20} className='text-gray-500' />
+              <FaEyeSlash
+                size={20}
+                className='text-gray-500 hover:text-sky-700'
+              />
             ) : (
-              <FiEye size={20} className='text-gray-500' />
+              <FaEye size={20} className=' text-gray-500 hover:text-sky-700' />
             )}
           </button>
         </div>
