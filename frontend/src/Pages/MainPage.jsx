@@ -116,9 +116,10 @@ function MainPage() {
               inventaris yang mulus, dan pelacakan keuangan otomatis dalam satu
               platform cerdas.
             </p>
-            <button 
+            <button
               onClick={register}
-              className='mt-6 bg-sky-950 text-white font-bold py-2 px-6 rounded-lg hover:scale-105 transition-transform shadow-md'>
+              className='mt-6 bg-sky-950 text-white font-bold py-2 px-6 rounded-lg hover:scale-105 transition-transform shadow-md'
+            >
               Mulai Sekarang
             </button>
           </div>
@@ -282,9 +283,7 @@ function MainPage() {
       {/* Footer */}
       <footer className='bg-sky-950 text-white py-6'>
         <div className='container mx-auto text-center font-bold text-sm md:text-base'>
-          <p>
-            FinSense &copy; {new Date().getFullYear()} - Coding Camp 2026
-          </p>
+          <p>FinSense &copy; {new Date().getFullYear()} - Coding Camp 2026</p>
         </div>
       </footer>
     </div>

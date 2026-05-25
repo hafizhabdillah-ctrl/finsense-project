@@ -3,23 +3,47 @@ import api from '../../../services/api';
 
 const LakuDashboard = () => {
   const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchTop = async () => {
       try {
+        setLoading(true);
         const res = await api.get('/ai/real-top-products');
-        setTopProducts(res.data.top_products);
+        // Pastikan res.data.top_products ada dan berupa array
+        const products = Array.isArray(res.data?.top_products)
+          ? res.data.top_products
+          : [];
+        setTopProducts(products);
       } catch (err) {
         console.error(err);
+        setTopProducts([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTop();
   }, []);
 
-  return (
-    <div className='w-full sm:w-3/4 bg-white'>
-      <h2 className='font-bold text-lg mb-2'>
-        Prediksi Produk Terlaris Hari Ini
-      </h2>
+  // Fungsi untuk menampilkan konten berdasarkan status
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className='text-center py-4 text-gray-500'>
+          Memuat data prediksi...
+        </div>
+      );
+    }
+
+    if (topProducts.length === 0) {
+      return (
+        <div className='text-center py-4 text-gray-400'>
+          Belum ada data produk terlaris hari ini.
+        </div>
+      );
+    }
+
+    return (
       <ul>
         {topProducts.map((p) => (
           <li
@@ -38,7 +62,17 @@ const LakuDashboard = () => {
           </li>
         ))}
       </ul>
+    );
+  };
+
+  return (
+    <div className='w-full sm:w-3/4 bg-white p-4 rounded shadow'>
+      <h2 className='font-bold text-lg mb-2'>
+        Prediksi Produk Terlaris Hari Ini
+      </h2>
+      {renderContent()}
     </div>
   );
 };
+
 export default LakuDashboard;

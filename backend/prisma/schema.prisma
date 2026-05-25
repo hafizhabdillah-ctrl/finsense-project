@@ -6,7 +6,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ==================== ENUMS ====================
+// ==================== ENUMS (yang tersisa) ====================
 enum TransactionType {
   income
   expense
@@ -18,32 +18,9 @@ enum SourceEnum {
   ai
 }
 
-enum SeverityEnum {
-  low
-  mid
-  high
-}
-
-enum GoalStatus {
-  active
-  achieved
-  failed
-}
-
-enum PeriodType {
-  monthly
-  weekly
-}
-
-enum ModelType {
-  classify
-  forecast
-  anomaly
-}
-
 enum DebtStatus {
   pending
-  partial 
+  partial
   paid
   overdue
 }
@@ -72,15 +49,10 @@ model User {
   umkm_profile         UmkmProfile?
   transactions         Transaction[]
   chat_sessions        AiChatSession[]
-  financial_goals      FinancialGoal[]
-  monthly_budgets      MonthlyBudget[]
-  anomaly_detections   AnomalyDetection[]
-  financial_forecasts  FinancialForecast[]
-  financial_reports    FinancialReport[]
-  refreshTokens        RefreshToken[]
   products             Product[]
   stockLogs            StockLog[]
   debts                Debt[]
+  refreshTokens        RefreshToken[]
 
   @@index([email])
   @@index([created_at])
@@ -133,7 +105,7 @@ model TransactionCategory {
 
   transactions        Transaction[]
   transaction_items   TransactionItem[]
-  monthly_budgets     MonthlyBudget[]
+  // MonthlyBudget sudah dihapus
 
   @@index([type])
   @@index([parent_id])
@@ -155,7 +127,7 @@ model Transaction {
   category TransactionCategory @relation(fields: [category_id], references: [id])
 
   items   TransactionItem[]
-  anomaly AnomalyDetection?
+  // anomaly AnomalyDetection? -> dihapus
 
   @@index([user_id])
   @@index([category_id])
@@ -263,23 +235,7 @@ model DebtPayment {
   @@index([paid_at])
 }
 
-// ==================== AI & MODEL ====================
-model AiModel {
-  id          Int       @id @default(autoincrement())
-  name        String
-  version     String
-  type        ModelType
-  accuracy    Float?
-  model_path  String?
-  is_active   Boolean   @default(false)
-  deployed_at DateTime? @default(now())
-
-  forecasts FinancialForecast[]
-
-  @@index([type])
-  @@index([is_active])
-}
-
+// ==================== AI CHAT (tanpa model prediksi) ====================
 model AiChatSession {
   id              String   @id @default(uuid())
   user_id         String
@@ -310,92 +266,4 @@ model AiMessage {
   @@index([session_id])
   @@index([created_at])
   @@index([role])
-}
-
-// ==================== LAPORAN & BUDGET ====================
-model FinancialGoal {
-  id             String     @id @default(uuid())
-  user_id        String
-  goal_name      String
-  target_amount  Float
-  current_amount Float      @default(0)
-  deadline       DateTime
-  status         GoalStatus @default(active)
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([status])
-  @@index([deadline])
-}
-
-model MonthlyBudget {
-  id              String   @id @default(uuid())
-  user_id         String
-  category_id     Int
-  month           Int      // 1-12
-  year            Int
-  budget_amount   Float
-  alert_threshold Float    @default(80)
-
-  user     User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  category TransactionCategory @relation(fields: [category_id], references: [id])
-
-  @@unique([user_id, category_id, month, year])
-  @@index([user_id])
-  @@index([year, month])
-}
-
-model AnomalyDetection {
-  id             Int          @id @default(autoincrement())
-  user_id        String
-  transaction_id String       @unique
-  anomaly_type   String
-  severity       SeverityEnum
-  deviation_pct  Float
-  is_reviewed    Boolean      @default(false)
-  detected_at    DateTime     @default(now())
-
-  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([severity])
-  @@index([detected_at])
-  @@index([is_reviewed])
-}
-
-model FinancialForecast {
-  id                 String   @id @default(uuid())
-  user_id            String
-  forecast_date      DateTime @default(now())
-  predicted_balance  Float
-  predicted_expense  Float
-  confidence         Float?
-  model_id           Int?
-
-  user  User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  model AiModel? @relation(fields: [model_id], references: [id])
-
-  @@index([user_id])
-  @@index([forecast_date])
-  @@index([model_id])
-}
-
-model FinancialReport {
-  id            String     @id @default(uuid())
-  user_id       String
-  period_type   PeriodType
-  period_start  DateTime
-  period_end    DateTime
-  total_income  Float
-  total_expense Float
-  net_balance   Float
-  pdf_url       String?
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([period_start, period_end])
-  @@index([period_type])
 }
