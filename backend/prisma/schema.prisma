@@ -43,8 +43,11 @@ model User {
   password_hash String
   full_name     String
   is_verified   Boolean   @default(false)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
+  reset_token         String?  @unique   // token untuk reset password, unique
+  reset_token_expiry  DateTime?          // waktu kadaluarsa token
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
 
   umkm_profile         UmkmProfile?
   transactions         Transaction[]
