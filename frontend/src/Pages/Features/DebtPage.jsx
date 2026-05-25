@@ -34,7 +34,7 @@ function Debtpage() {
         <FaSearch className='absolute left-3 top-3 text-gray-400' />
       </div>
 
-      <div className='overflow-x-auto mt-4'>
+      <div className='overflow-x-auto mt-2'>
         <TableDebt searchTerm={searchTerm} />
       </div>
     </div>

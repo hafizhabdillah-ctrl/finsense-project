@@ -60,7 +60,7 @@ const StatDashboard = () => {
             </span>
           </div>
           <p className='text-2xl font-bold text-blue-900 mb-2'>
-            Rp {revenuePred.predicted_revenue.toLocaleString()}
+            Rp {(revenuePred.predicted_revenue ?? 0).toLocaleString()}          
           </p>
           <p className='text-xs'>{revenuePred.prediction_date}</p>
         </div>
