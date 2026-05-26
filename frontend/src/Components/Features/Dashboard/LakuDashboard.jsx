@@ -48,7 +48,7 @@ const LakuDashboard = () => {
         {topProducts.map((p) => (
           <li
             key={p.product}
-            className='flex justify-between py-1 border-b border-gray-400'
+            className='flex justify-between py-1 border-b border-gray-300'
           >
             <span>{p.product}</span>
             <span
@@ -66,9 +66,14 @@ const LakuDashboard = () => {
   };
 
   return (
-    <div className='w-full sm:w-3/4 bg-white p-4 rounded shadow'>
-      <h2 className='font-bold text-lg mb-2'>
-        Prediksi Produk Terlaris Hari Ini
+    <div className='w-full sm:w-3/4 bg-white p-4 border border-gray-300 rounded shadow-sm'>
+      <h2 className='flex flex-row gap-1 font-bold text-lg mb-2'>
+        <span>
+          Prediksi Produk Terlaris Hari Ini
+        </span>
+        <span className='flex font-semibold items-start text-green-500 text-xs'>
+          AI Powered
+        </span>
       </h2>
       {renderContent()}
     </div>

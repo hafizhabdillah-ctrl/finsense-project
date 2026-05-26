@@ -105,7 +105,7 @@ function Chat() {
           {/* Header */}
           <div className='bg-sky-950 px-4 py-3 flex justify-between items-center text-white'>
             <span className='font-bold text-sm tracking-wide flex items-center gap-2'>
-              <span>🤖</span> FinSense AI Support
+              FinSense AI Support
             </span>
             <button
               onClick={toggleChat}

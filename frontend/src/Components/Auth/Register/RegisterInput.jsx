@@ -69,7 +69,7 @@ const RegisterInput = () => {
           placeholder='Masukkan nama lengkap Anda'
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
+          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors
                      text-gray-800 placeholder-gray-400'
           required
         />
@@ -85,7 +85,7 @@ const RegisterInput = () => {
           placeholder='Masukkan email Anda'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
+          className='w-full p-3 text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors
                      text-gray-800 placeholder-gray-400'
           required
         />
@@ -103,7 +103,7 @@ const RegisterInput = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className='w-full p-3 text-base border-2 border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
+                       focus:outline-none focus:ring-2 transition-colors
                        text-gray-800 placeholder-gray-400'
             required
           />
@@ -142,7 +142,7 @@ const RegisterInput = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className='w-full p-3 text-base border-2 border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:text-sky-800 transition-colors
+                       focus:outline-none focus:ring-2 transition-colors
                        text-gray-800 placeholder-gray-400'
             required
           />
