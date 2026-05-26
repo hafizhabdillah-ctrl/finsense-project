@@ -17,6 +17,8 @@ function NewTransaction() {
     { id: 2, name: 'Restok' },
     { id: 3, name: 'Operasional' },
     { id: 4, name: 'Gaji Karyawan' },
+    { id: 5, name: 'Bayar Hutang' },
+    { id: 6, name: 'Hutang Pelanggan' },
   ]);
 
   const onSubmitHandler = async (e) => {
