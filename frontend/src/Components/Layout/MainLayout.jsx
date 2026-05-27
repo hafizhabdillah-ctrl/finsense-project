@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import TopBar from './Topbar';
 import Chat from '../Features/Chat/Chat';
 import { AuthContext } from '../../context/AuthContext';
-import Loading from '../../components/Loading';
+import Loading from '../Loading';
 
 function MainLayout() {
   const { user, loading } = useContext(AuthContext);
