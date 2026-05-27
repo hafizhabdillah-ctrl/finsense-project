@@ -14,13 +14,8 @@ const aiRoutes = require('./routes/aiRoutes');
 const app = express();
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'https://finsense-project.vercel.app',
-    ],
+    origin: '*',
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
   }),
 );
 
