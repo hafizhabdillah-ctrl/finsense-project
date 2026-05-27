@@ -6,7 +6,8 @@ export default defineConfig({
     seed: 'node prisma/seed.js',
   },
   datasource: {
-    url: process.env.DATABASE_URL, // akan membaca dari .env
+    url: process.env.DATABASE_URL,
+    directUrl: process.env.DIRECT_URL,
   },
   generator: {
     provider: 'prisma-client-js',

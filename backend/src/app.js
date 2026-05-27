@@ -11,10 +11,24 @@ const debtRoutes = require('./routes/debtRoutes');
 const voiceRoutes = require('./routes/voiceRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 
-const app = express();
+const allowedOrigins = [
+  'https://finsense-project.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+];
+
 app.use(
   cors({
-    origin: '*',
+    origin: function (origin, callback) {
+      // Izinkan request tanpa origin (seperti Postman) atau jika origin ada di allowed list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // jika menggunakan cookie/session
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
