@@ -17,7 +17,7 @@ app.use(
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://finsense-project.vercel.app/',
+      'https://finsense-project.vercel.app',
     ],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
