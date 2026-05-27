@@ -72,7 +72,7 @@ def _decode_audio_to_feat(audio_bytes):
         if os.path.exists(path):
             os.unlink(path)
 
-@app.post("/predict")
+@app.post("/")
 async def predict(
     audio: UploadFile = File(...),
     transcript: str = Form(""),

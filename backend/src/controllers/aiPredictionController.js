@@ -1,7 +1,8 @@
 const axios = require('axios');
 const prisma = require('../config/prisma');
 
-const AI_PRED_URL = process.env.AI_PRED_URL || 'http://localhost:8001';
+const AI_PRED_URL =
+  process.env.PREDICTION_SERVICE_URL || 'http://localhost:8000/predict';
 
 // ========== HELPER: Cek apakah toko memiliki cukup data ==========
 async function hasMinimumTransactionData(

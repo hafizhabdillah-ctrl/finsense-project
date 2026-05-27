@@ -106,7 +106,7 @@ exports.processVoice = async (req, res) => {
     if (jumlah > 0) form.append('jumlah', String(jumlah));
 
     const fastApiUrl =
-      process.env.FASTAPI_URL || 'http://localhost:8000/predict';
+      process.env.AI_SERVICE_URL || 'http://localhost:8000/voice';
     console.log(`[Voice] Calling FastAPI: ${fastApiUrl}`);
 
     const fastApiResponse = await axios.post(fastApiUrl, form, {
