@@ -15,6 +15,7 @@ const allowedOrigins = [
   'https://finsense-project.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
+  'https://finsense-project-production.up.railway.app',
 ];
 
 app.use(
