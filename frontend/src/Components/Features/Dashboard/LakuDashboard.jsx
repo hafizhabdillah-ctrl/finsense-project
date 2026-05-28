@@ -66,7 +66,7 @@ const LakuDashboard = () => {
   };
 
   return (
-    <div className='w-full sm:w-3/4 bg-white p-4 border border-gray-300 rounded shadow-sm'>
+    <div className='w-full bg-white p-4 border border-gray-300 rounded shadow-sm'>
       <h2 className='flex flex-row gap-1 font-bold text-lg mb-2'>
         <span>
           Prediksi Produk Terlaris Hari Ini

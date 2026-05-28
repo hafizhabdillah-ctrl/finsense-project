@@ -512,6 +512,10 @@ function InputPos() {
             : 'Tekan mikrofon untuk perintah suara'}
       </p>
 
+      <p className='text-sm text-gray-400'>
+        Contoh: "Jual Mie Goreng 3 bungkus"
+      </p>
+
       {/* {transcript && !isListening && !isProcessing && (
         <div className='text-sm bg-gray-100 p-2 rounded max-w-md text-center'>
           "{transcript}"

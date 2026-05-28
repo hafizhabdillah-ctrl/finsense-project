@@ -175,42 +175,6 @@ const StokDashboard = () => {
           </ul>
         )}
       </div>
-
-      {/* Bagian Keadaan Stok */}
-      <div className='p-4 border rounded-md border-gray-300 shadow-sm'>
-        <h1 className='text-xl font-bold'>Keadaan Stok</h1>
-        <div className='flex flex-col gap-3 mt-2'>
-          {lowStockList.map((item) => (
-            <div
-              key={item.id}
-              className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-2 border-b border-gray-300'
-            >
-              <div className='flex items-center gap-4'>
-                <div className='w-10 h-10 rounded bg-blue-100 flex items-center justify-center'>
-                  <FaBox size={18} />
-                </div>
-                <div>
-                  <span className='font-bold'>{item.name}</span>
-                  <span className='text-gray-500 block text-sm'>
-                    Sisa {item.stock} unit
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={() => navigate(`/stocks/${item.id}`)}
-                className='border p-2 px-3 rounded-lg bg-sky-950 text-white cursor-pointer hover:bg-white hover:text-sky-950 transition w-full sm:w-auto'
-              >
-                Restok
-              </button>
-            </div>
-          ))}
-          {lowStockList.length === 0 && (
-            <p className='text-gray-500 text-center py-4'>
-              Tidak ada produk dengan stok menipis.
-            </p>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
