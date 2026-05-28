@@ -1,22 +1,53 @@
+// export async function convertToWav(blob) {
+//   const arrayBuffer = await blob.arrayBuffer();
+//   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+//   let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+//   // Target sample rate 16kHz (sesuai model)
+//   const targetSampleRate = 16000;
+//   const offlineContext = new OfflineAudioContext(
+//     1, // mono
+//     (audioBuffer.length * targetSampleRate) / audioBuffer.sampleRate,
+//     targetSampleRate,
+//   );
+//   const source = offlineContext.createBufferSource();
+//   source.buffer = audioBuffer;
+//   source.connect(offlineContext.destination);
+//   source.start();
+//   const resampledBuffer = await offlineContext.startRendering();
+
+//   return audioBufferToWav(resampledBuffer);
+// }
 export async function convertToWav(blob) {
-  const arrayBuffer = await blob.arrayBuffer();
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  try {
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+    let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-  // Target sample rate 16kHz (sesuai model)
-  const targetSampleRate = 16000;
-  const offlineContext = new OfflineAudioContext(
-    1, // mono
-    (audioBuffer.length * targetSampleRate) / audioBuffer.sampleRate,
-    targetSampleRate,
-  );
-  const source = offlineContext.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(offlineContext.destination);
-  source.start();
-  const resampledBuffer = await offlineContext.startRendering();
-
-  return audioBufferToWav(resampledBuffer);
+    const targetSampleRate = 16000;
+    const offlineContext = new OfflineAudioContext(
+      1,
+      (audioBuffer.length * targetSampleRate) / audioBuffer.sampleRate,
+      targetSampleRate,
+    );
+    const source = offlineContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(offlineContext.destination);
+    source.start();
+    const resampledBuffer = await offlineContext.startRendering();
+    return audioBufferToWav(resampledBuffer);
+  } catch (err) {
+    console.warn('OfflineAudioContext gagal, gunakan fallback langsung', err);
+    // Fallback: langsung konversi tanpa resample (asumsi sample rate asli 44.1k atau 48k)
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    return audioBufferToWav(audioBuffer);
+  }
 }
 
 function audioBufferToWav(buffer) {

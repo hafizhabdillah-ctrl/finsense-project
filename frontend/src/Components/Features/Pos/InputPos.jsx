@@ -138,72 +138,217 @@ function InputPos() {
     setFiltered([]);
   };
 
+  // const startListening = async () => {
+  //   // Reset semua
+  //   setTranscript('');
+  //   transcriptRef.current = '';
+  //   setFiltered([]);
+  //   audioChunksRef.current = [];
+
+  //   const SpeechRecognition =
+  //     window.SpeechRecognition || window.webkitSpeechRecognition;
+  //   if (!SpeechRecognition) {
+  //     Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
+  //     return;
+  //   }
+  //   const recognition = new SpeechRecognition();
+  //   recognition.lang = 'id-ID';
+  //   recognition.interimResults = false;
+  //   recognition.maxAlternatives = 1;
+  //   recognitionRef.current = recognition;
+
+  //   // Mulai rekaman audio
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     const mediaRecorder = new MediaRecorder(stream);
+  //     mediaRecorderRef.current = mediaRecorder;
+  //     mediaRecorder.ondataavailable = (e) => {
+  //       if (e.data.size > 0) audioChunksRef.current.push(e.data);
+  //     };
+  //     mediaRecorder.start();
+  //   } catch (err) {
+  //     Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
+  //     return;
+  //   }
+
+  //   recognition.onresult = (event) => {
+  //     const text = event.results[0][0].transcript;
+  //     transcriptRef.current = text; // 🔁 simpan ke ref (sinkron)
+  //     setTranscript(text); // untuk tampilan UI
+  //   };
+  //   recognition.onerror = (e) => {
+  //     console.error(e);
+  //     Swal.fire('Error', 'Gagal menangkap suara', 'error');
+  //     stopListening();
+  //   };
+  //   recognition.onend = () => {
+  //     setIsListening(false);
+  //     if (
+  //       mediaRecorderRef.current &&
+  //       mediaRecorderRef.current.state === 'recording'
+  //     ) {
+  //       mediaRecorderRef.current.stop();
+  //     }
+  //     // Gunakan transcriptRef.current (bukan state transcript)
+  //     if (transcriptRef.current) {
+  //       processTransaction(transcriptRef.current);
+  //     } else {
+  //       // Tidak ada ucapan yang dikenali
+  //       Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+  //     }
+  //   };
+
+  //   recognition.start();
+  //   setIsListening(true);
+  // };
+
+  // const stopListening = () => {
+  //   if (recognitionRef.current) recognitionRef.current.stop();
+  //   if (
+  //     mediaRecorderRef.current &&
+  //     mediaRecorderRef.current.state === 'recording'
+  //   ) {
+  //     mediaRecorderRef.current.stop();
+  //   }
+  //   setIsListening(false);
+  // };
+
+  // // Proses transaksi dengan menerima parameter textTranskrip
+  // const processTransaction = async (spokenText) => {
+  //   setIsProcessing(true);
+  //   const jumlah = parseJumlah(spokenText) || 1;
+
+  //   // Optional: sedikit delay untuk memastikan audio chunks sudah terkumpul
+  //   await new Promise((resolve) => setTimeout(resolve, 300));
+
+  //   const originalBlob = new Blob(audioChunksRef.current, {
+  //     type: 'audio/webm',
+  //   });
+  //   const wavBlob = await convertToWav(originalBlob);
+
+  //   const formData = new FormData();
+  //   formData.append('audio', wavBlob, 'recording.wav');
+  //   formData.append('transcript', spokenText);
+  //   formData.append('jumlah', String(jumlah));
+
+  //   try {
+  //     const res = await api.post('/voice', formData, {
+  //       headers: { 'Content-Type': 'multipart/form-data' },
+  //       timeout: 30000,
+  //     });
+
+  //     const {
+  //       produk,
+  //       jumlah: qty,
+  //       harga,
+  //       produk_conf,
+  //       matchedProduct,
+  //     } = res.data;
+
+  //     if (matchedProduct) {
+  //       const result = await Swal.fire({
+  //         title: 'Tambahkan ke Keranjang?',
+  //         html: `
+  //           <strong>Produk:</strong> ${produk}<br/>
+  //           <strong>Jumlah:</strong> ${qty}<br/>
+  //           <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
+  //         `,
+  //         icon: 'question',
+  //         showCancelButton: true,
+  //         confirmButtonColor: '#3085d6',
+  //         cancelButtonColor: '#d33',
+  //         confirmButtonText: 'Ya, Tambahkan',
+  //         cancelButtonText: 'Batal',
+  //       });
+
+  //       if (result.isConfirmed) {
+  //         addItem({
+  //           id: matchedProduct.id,
+  //           name: matchedProduct.name,
+  //           price: matchedProduct.price,
+  //           qty: qty,
+  //         });
+  //         await Swal.fire(
+  //           'Berhasil!',
+  //           'Produk ditambahkan ke keranjang',
+  //           'success',
+  //         );
+  //         window.location.reload();
+  //       }
+  //     } else {
+  //       let top3Text = '';
+  //       if (res.data.produk_top3 && res.data.produk_top3.length) {
+  //         top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
+  //         for (let [name, conf] of res.data.produk_top3) {
+  //           top3Text += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
+  //         }
+  //         top3Text += '</ul>';
+  //       }
+  //       await Swal.fire({
+  //         title: 'Hasil Deteksi Suara',
+  //         html: `
+  //           Produk terdeteksi: <strong>${produk}</strong><br/>
+  //           Jumlah: ${qty}<br/>
+  //           Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}
+  //         `,
+  //         icon: 'info',
+  //         confirmButtonText: 'OK',
+  //       });
+  //       window.location.reload();
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     Swal.fire('Error', 'Gagal memproses suara. Coba lagi.', 'error');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
   const startListening = async () => {
-    // Reset semua
     setTranscript('');
     transcriptRef.current = '';
     setFiltered([]);
     audioChunksRef.current = [];
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
-      return;
-    }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'id-ID';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognitionRef.current = recognition;
-
-    // Mulai rekaman audio
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = getSupportedMimeType();
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
+
+      mediaRecorder.onstop = async () => {
+        // Semua chunk sudah terkumpul
+        if (audioChunksRef.current.length === 0) {
+          Swal.fire('Info', 'Tidak ada suara yang direkam', 'info');
+          setIsListening(false);
+          return;
+        }
+        await processTransaction(transcriptRef.current); // transkrip bisa diisi dari server nanti
+      };
+
       mediaRecorder.start();
+      setIsListening(true);
+
+      // Opsional: hentikan setelah durasi tertentu (misal 5 detik)
+      setTimeout(() => {
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === 'recording'
+        ) {
+          mediaRecorderRef.current.stop();
+          stream.getTracks().forEach((track) => track.stop());
+        }
+      }, 5000);
     } catch (err) {
+      console.error(err);
       Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
-      return;
     }
-
-    recognition.onresult = (event) => {
-      const text = event.results[0][0].transcript;
-      transcriptRef.current = text; // 🔁 simpan ke ref (sinkron)
-      setTranscript(text); // untuk tampilan UI
-    };
-    recognition.onerror = (e) => {
-      console.error(e);
-      Swal.fire('Error', 'Gagal menangkap suara', 'error');
-      stopListening();
-    };
-    recognition.onend = () => {
-      setIsListening(false);
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === 'recording'
-      ) {
-        mediaRecorderRef.current.stop();
-      }
-      // Gunakan transcriptRef.current (bukan state transcript)
-      if (transcriptRef.current) {
-        processTransaction(transcriptRef.current);
-      } else {
-        // Tidak ada ucapan yang dikenali
-        Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
-      }
-    };
-
-    recognition.start();
-    setIsListening(true);
   };
 
   const stopListening = () => {
-    if (recognitionRef.current) recognitionRef.current.stop();
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === 'recording'
@@ -213,23 +358,36 @@ function InputPos() {
     setIsListening(false);
   };
 
-  // Proses transaksi dengan menerima parameter textTranskrip
-  const processTransaction = async (spokenText) => {
+  const processTransaction = async (spokenText = '') => {
     setIsProcessing(true);
-    const jumlah = parseJumlah(spokenText) || 1;
-
-    // Optional: sedikit delay untuk memastikan audio chunks sudah terkumpul
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    if (audioChunksRef.current.length === 0) {
+      Swal.fire('Error', 'Tidak ada data audio', 'error');
+      setIsProcessing(false);
+      return;
+    }
 
     const originalBlob = new Blob(audioChunksRef.current, {
-      type: 'audio/webm',
+      type: getSupportedMimeType(),
     });
-    const wavBlob = await convertToWav(originalBlob);
+    let wavBlob;
+    try {
+      wavBlob = await convertToWav(originalBlob);
+    } catch (err) {
+      console.error('Konversi gagal:', err);
+      Swal.fire(
+        'Error',
+        'Gagal memproses audio (format tidak didukung)',
+        'error',
+      );
+      setIsProcessing(false);
+      return;
+    }
 
     const formData = new FormData();
     formData.append('audio', wavBlob, 'recording.wav');
     formData.append('transcript', spokenText);
-    formData.append('jumlah', String(jumlah));
+    // Jumlah bisa di-backup dari hasil server atau parsing sederhana
+    formData.append('jumlah', '1');
 
     try {
       const res = await api.post('/voice', formData, {
