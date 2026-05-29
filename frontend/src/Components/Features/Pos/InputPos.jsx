@@ -114,7 +114,7 @@ function InputPos() {
   const sendAudioToBackend = async (blob) => {
     setIsProcessing(true);
     const formData = new FormData();
-    formData.append('audio', blob, 'recording.wav');
+    formData.append('audio', blob, 'recording.webm');
     try {
       const response = await api.post('/voice', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
