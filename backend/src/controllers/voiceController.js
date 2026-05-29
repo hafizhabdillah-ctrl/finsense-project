@@ -2,13 +2,8 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const prisma = require('../config/prisma');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const { PassThrough } = require('stream');
 
-ffmpeg.setFfmpegPath(ffmpegPath);
-
-// Helper: normalisasi string
+// Helper: normalisasi string (aman untuk input non-string)
 const normalize = (str) =>
   String(str || '')
     .toLowerCase()
@@ -16,32 +11,10 @@ const normalize = (str) =>
     .trim();
 
 /**
- * Konversi buffer audio ke WAV (16kHz, mono)
- */
-async function convertToWavBuffer(inputBuffer, inputFormat = 'webm') {
-  return new Promise((resolve, reject) => {
-    const inputStream = new PassThrough();
-    inputStream.end(inputBuffer);
-
-    const chunks = [];
-    const command = ffmpeg(inputStream)
-      .inputFormat(inputFormat)
-      .audioFrequency(16000)
-      .audioChannels(1)
-      .format('wav');
-
-    command.on('error', (err) => {
-      reject(err);
-    });
-
-    const outputStream = command.pipe();
-    outputStream.on('data', (chunk) => chunks.push(chunk));
-    outputStream.on('end', () => resolve(Buffer.concat(chunks)));
-  });
-}
-
-/**
- * Mencari produk berdasarkan prediksi dan alternatif top3
+ * Mencari produk di database berdasarkan nama prediksi dan alternatif top3
+ * @param {string} predictedName - Nama produk hasil prediksi model
+ * @param {Array} top3Alternatives - Alternatif top3 dari model (opsional)
+ * @returns {Promise<Object|null>} Produk yang cocok atau null
  */
 async function findProductByPrediction(predictedName, top3Alternatives = []) {
   const allProducts = await prisma.product.findMany({
@@ -54,14 +27,14 @@ async function findProductByPrediction(predictedName, top3Alternatives = []) {
     normalize(alt),
   );
 
-  // Exact match
+  // 1. Coba kecocokan persis (exact match)
   for (const prod of allProducts) {
     const normalizedProd = normalize(prod.name);
     if (normalizedProd === normalizedPredicted) return prod;
     if (normalizedAlternatives.includes(normalizedProd)) return prod;
   }
 
-  // Partial match (overlap kata)
+  // 2. Fallback: partial match berdasarkan kata (overlap)
   const predictedWords = new Set(normalizedPredicted.split(/\s+/));
   let bestMatch = null;
   let bestOverlap = 0;
@@ -78,10 +51,13 @@ async function findProductByPrediction(predictedName, top3Alternatives = []) {
 }
 
 /**
- * Fallback pencarian dari transkrip jika confidence rendah
+ * Mencari produk dari transkrip (fallback saat confidence rendah atau produk tidak ditemukan)
+ * @param {string} transcript - Teks transkrip
+ * @returns {Promise<Object|null>} Produk yang cocok atau null
  */
 async function findProductFromTranscript(transcript) {
   if (!transcript) return null;
+
   const allProducts = await prisma.product.findMany({
     select: { id: true, name: true, price: true },
   });
@@ -89,6 +65,7 @@ async function findProductFromTranscript(transcript) {
 
   const transNorm = normalize(transcript);
   const transWords = new Set(transNorm.split(/\s+/));
+
   let bestMatch = null;
   let bestOverlap = 0;
   for (const prod of allProducts) {
@@ -105,6 +82,7 @@ async function findProductFromTranscript(transcript) {
 
 exports.processVoice = async (req, res) => {
   let audioFilePath = null;
+
   try {
     const audioFile = req.file;
     const transcript = req.body.transcript || '';
@@ -116,37 +94,13 @@ exports.processVoice = async (req, res) => {
         .json({ success: false, message: 'No audio file uploaded' });
     }
 
-    // Baca buffer audio dari file yang di-upload (multer simpan di memory)
-    let audioBuffer = audioFile.buffer;
-    let originalName = audioFile.originalname || 'recording.webm';
-    let isWav = originalName.toLowerCase().endsWith('.wav');
-
-    // Jika bukan WAV, konversi ke WAV (16kHz, mono)
-    if (!isWav) {
-      try {
-        const inputFormat = originalName.split('.').pop();
-        audioBuffer = await convertToWavBuffer(audioBuffer, inputFormat);
-        originalName = 'converted.wav';
-        console.log('Audio berhasil dikonversi ke WAV');
-      } catch (convErr) {
-        console.warn(
-          'Konversi gagal, menggunakan audio asli:',
-          convErr.message,
-        );
-        // Lanjutkan dengan audio asli, FastAPI mungkin tetap bisa memproses
-      }
-    }
-
-    // Simpan sementara ke file jika perlu (opsional, untuk debug)
-    // const tempPath = `temp_${Date.now()}.wav`;
-    // fs.writeFileSync(tempPath, audioBuffer);
-    // audioFilePath = tempPath;
+    audioFilePath = audioFile.path;
 
     // Siapkan FormData untuk FastAPI
     const form = new FormData();
-    form.append('audio', audioBuffer, {
-      filename: originalName,
-      contentType: 'audio/wav',
+    form.append('audio', fs.createReadStream(audioFilePath), {
+      filename: audioFile.originalname || 'recording.webm',
+      contentType: audioFile.mimetype,
     });
     form.append('transcript', transcript);
     if (jumlah > 0) form.append('jumlah', String(jumlah));
@@ -160,12 +114,12 @@ exports.processVoice = async (req, res) => {
       timeout: 60000,
     });
 
-    // Hapus file temporary jika ada
+    // Hapus file temporary
     if (audioFilePath && fs.existsSync(audioFilePath)) {
       fs.unlinkSync(audioFilePath);
     }
 
-    // Data dari FastAPI
+    // Data dari FastAPI (dengan nilai default aman)
     const {
       produk = '',
       produk_conf = 0,
@@ -178,24 +132,23 @@ exports.processVoice = async (req, res) => {
     const finalJumlah = qty || jumlah || 1;
     const finalHarga = hargaTotal || unit_price * finalJumlah;
 
-    // Cari produk di database
+    // Cari produk di database berdasarkan prediksi & alternatif
     let matchedProduct = await findProductByPrediction(produk, produk_top3);
     let usedFallback = false;
     let finalProductName = produk;
 
-    // Jika confidence rendah (<70%) atau produk tidak ditemukan, fallback dari transkrip
+    // Jika confidence rendah (<70%) atau produk tidak ditemukan, coba fallback dari transkrip
     if (produk_conf < 0.7 || !matchedProduct) {
       const fallbackProduct = await findProductFromTranscript(transcript);
       if (fallbackProduct) {
         finalProductName = fallbackProduct.name;
         matchedProduct = fallbackProduct;
         usedFallback = true;
-        console.log(
-          `[Voice] Fallback digunakan: transcript → ${finalProductName}`,
-        );
+        console.log(`[Voice] Fallback used: transcript → ${finalProductName}`);
       }
     }
 
+    // Kirim response
     res.json({
       success: true,
       produk: finalProductName,
@@ -213,13 +166,12 @@ exports.processVoice = async (req, res) => {
       usedFallback,
     });
 
-    console.log('[Voice] Proses berhasil:', {
+    console.log('[Voice] Processed successfully:', {
       produk: finalProductName,
       jumlah: finalJumlah,
       harga: finalHarga,
       matchedProduct: matchedProduct ? matchedProduct.name : 'No match',
       usedFallback,
-      confidence: produk_conf,
     });
   } catch (error) {
     console.error('[Voice] Error:', error.message);
@@ -227,6 +179,7 @@ exports.processVoice = async (req, res) => {
       console.error('[Voice] FastAPI response error:', error.response.data);
     }
 
+    // Hapus file temporary jika masih ada
     if (audioFilePath && fs.existsSync(audioFilePath)) {
       try {
         fs.unlinkSync(audioFilePath);
