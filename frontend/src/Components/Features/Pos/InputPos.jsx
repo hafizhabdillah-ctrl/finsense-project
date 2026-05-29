@@ -303,6 +303,68 @@ function InputPos() {
       setIsProcessing(false);
     }
   };
+
+  return (
+    <div className='flex flex-col items-center py-4 gap-4'>
+      {/* Input pencarian (sama seperti kode asli) */}
+      <div className='relative w-full max-w-md'>
+        <input
+          type='text'
+          placeholder='Cari produk...'
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className='w-full p-3 border border-gray-300 rounded-lg'
+        />
+        <FaSearch className='absolute right-3 top-4 text-gray-400' />
+        {filtered.length > 0 && (
+          <ul className='absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-auto'>
+            {filtered.map((p) => (
+              <li
+                key={p.id}
+                onClick={() => handleAddProduct(p)}
+                className='p-2 hover:bg-gray-100 cursor-pointer flex justify-between'
+              >
+                <span>{p.name}</span>
+                <span>Rp {p.price.toLocaleString()}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <button
+        onClick={isListening ? stopListening : startListening}
+        disabled={isProcessing}
+        className={`flex p-5 border rounded-xl transition-all ${
+          isProcessing
+            ? 'bg-gray-400 text-white cursor-not-allowed'
+            : isListening
+              ? 'bg-red-500 text-white animate-pulse'
+              : 'bg-sky-950 text-white hover:bg-white hover:text-sky-950'
+        }`}
+      >
+        <FaMicrophone size={28} />
+      </button>
+
+      <p className='text-sm text-gray-400'>
+        {isProcessing
+          ? 'Memproses suara...'
+          : isListening
+            ? 'Mendengarkan... (klik lagi untuk berhenti)'
+            : 'Tekan mikrofon untuk perintah suara'}
+      </p>
+
+      <p className='text-sm text-gray-400'>
+        Contoh: "Jual Mie Goreng 3 bungkus"
+      </p>
+
+      {/* {transcript && !isListening && !isProcessing && (
+        <div className='text-sm bg-gray-100 p-2 rounded max-w-md text-center'>
+          "{transcript}"
+        </div>
+      )} */}
+    </div>
+  );
 }
 
 export default InputPos;
