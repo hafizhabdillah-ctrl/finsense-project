@@ -9,7 +9,9 @@ const root = createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <AuthProvider>
-      <App />
+      <div className='font-poppins'>
+        <App />
+      </div>
     </AuthProvider>
   </BrowserRouter>,
 );
