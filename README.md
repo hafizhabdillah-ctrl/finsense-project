@@ -229,7 +229,5 @@ Proyek ini dilisensikan di bawah **MIT License** – bebas digunakan dan dimodif
 ---
 
 **FinSense – Smart Finance for UMKM**  
-🌐 [https://finsense-project.vercel.app](https://finsense-project.vercel.app) (contoh, sesuaikan dengan link deploy Anda)  
-📧 finsense@support.com
-
+🌐 [https://finsense-project.vercel.app](https://finsense-project.vercel.app)
 ```
