@@ -233,5 +233,3 @@ Proyek ini dilisensikan di bawah **MIT License** – bebas digunakan dan dimodif
 📧 finsense@support.com
 
 ```
-
----
