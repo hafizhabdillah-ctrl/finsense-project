@@ -235,11 +235,3 @@ Proyek ini dilisensikan di bawah **MIT License** – bebas digunakan dan dimodif
 ```
 
 ---
-
-Setelah Anda menempelkan kode di atas ke file `README.md`, pastikan untuk:
-
-1. **Mengganti link download** model AI dengan tautan yang sebenarnya (Google Drive, Hugging Face, atau lainnya).
-2. **Menyesuaikan URL deploy** jika sudah live.
-3. **Memasukkan screenshot** jika diinginkan (bisa ditambahkan dengan markdown `![alt](path)`).
-
-Dokumen ini sudah memenuhi semua kriteria yang diminta: deskripsi, setup environment, tautan model ML, cara menjalankan, dan informasi teknis. Jika ada revisi, beri tahu saya.
