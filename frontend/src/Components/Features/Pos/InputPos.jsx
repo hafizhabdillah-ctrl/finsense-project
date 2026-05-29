@@ -1,23 +1,108 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProducts } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
-import { FaMicrophone, FaStop, FaSearch } from 'react-icons/fa';
+import { FaMicrophone, FaSearch } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import api from '../../../services/api';
 import { convertToWav } from '../../../utils/audioUtils';
+
+const QTY = {
+  satu: 1,
+  dua: 2,
+  tiga: 3,
+  empat: 4,
+  lima: 5,
+  enam: 6,
+  tujuh: 7,
+  delapan: 8,
+  sembilan: 9,
+  sepuluh: 10,
+};
+const STRONG_UNITS = new Set([
+  'bungkus',
+  'botol',
+  'dus',
+  'pcs',
+  'pack',
+  'renteng',
+  'slop',
+  'sak',
+  'biji',
+  'buah',
+  'lusin',
+  'pak',
+  'karton',
+  'box',
+  'kaleng',
+  'sachet',
+  'tray',
+  'ikat',
+  'lembar',
+  'batang',
+  'butir',
+]);
+const WEAK_UNITS = new Set(['kilo', 'kilogram', 'kg', 'liter', 'gram', 'gr']);
+
+function parseJumlah(transcript) {
+  if (!transcript) return null;
+  const words = transcript.toLowerCase().split(/\s+/);
+  // 1. qty word + strong unit
+  for (let i = 0; i < words.length; i++) {
+    if (QTY[words[i]] && i + 1 < words.length && STRONG_UNITS.has(words[i + 1]))
+      return QTY[words[i]];
+  }
+  // 2. digit + strong unit
+  for (let i = 0; i < words.length; i++) {
+    if (
+      /^\d+$/.test(words[i]) &&
+      i + 1 < words.length &&
+      STRONG_UNITS.has(words[i + 1])
+    ) {
+      const v = parseInt(words[i]);
+      if (v >= 1 && v <= 10) return v;
+    }
+  }
+  // 3. qty word at end
+  if (words.length && QTY[words[words.length - 1]])
+    return QTY[words[words.length - 1]];
+  // 4. last qty + weak unit
+  let weak = null;
+  for (let i = 0; i < words.length; i++) {
+    if (QTY[words[i]] && i + 1 < words.length && WEAK_UNITS.has(words[i + 1]))
+      weak = QTY[words[i]];
+  }
+  if (weak !== null) return weak;
+  // 5. last qty not part of number phrase
+  const skip = new Set([
+    'ratus',
+    'ribu',
+    'puluh',
+    'belas',
+    'mililiter',
+    'ml',
+    ...WEAK_UNITS,
+  ]);
+  let cand = null;
+  for (let i = 0; i < words.length; i++) {
+    if (QTY[words[i]] && !skip.has(words[i + 1] || '')) cand = QTY[words[i]];
+  }
+  return cand;
+}
 
 function InputPos() {
   const [query, setQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [transcript, setTranscript] = useState(''); // tetap untuk ditampilkan ke UI
+  const transcriptRef = useRef('');
+
+  const recognitionRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-  const streamRef = useRef(null);
   const { addItem } = useCart();
 
-  // Fetch produk
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,7 +115,6 @@ function InputPos() {
     fetchProducts();
   }, []);
 
-  // Filter untuk autocomplete
   useEffect(() => {
     if (query.length > 1) {
       setFiltered(
@@ -54,82 +138,278 @@ function InputPos() {
     setFiltered([]);
   };
 
-  const startRecording = async () => {
+  // const startListening = async () => {
+  //   // Reset semua
+  //   setTranscript('');
+  //   transcriptRef.current = '';
+  //   setFiltered([]);
+  //   audioChunksRef.current = [];
+
+  //   const SpeechRecognition =
+  //     window.SpeechRecognition || window.webkitSpeechRecognition;
+  //   if (!SpeechRecognition) {
+  //     Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
+  //     return;
+  //   }
+  //   const recognition = new SpeechRecognition();
+  //   recognition.lang = 'id-ID';
+  //   recognition.interimResults = false;
+  //   recognition.maxAlternatives = 1;
+  //   recognitionRef.current = recognition;
+
+  //   // Mulai rekaman audio
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     const mediaRecorder = new MediaRecorder(stream);
+  //     mediaRecorderRef.current = mediaRecorder;
+  //     mediaRecorder.ondataavailable = (e) => {
+  //       if (e.data.size > 0) audioChunksRef.current.push(e.data);
+  //     };
+  //     mediaRecorder.start();
+  //   } catch (err) {
+  //     Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
+  //     return;
+  //   }
+
+  //   recognition.onresult = (event) => {
+  //     const text = event.results[0][0].transcript;
+  //     transcriptRef.current = text; // 🔁 simpan ke ref (sinkron)
+  //     setTranscript(text); // untuk tampilan UI
+  //   };
+  //   recognition.onerror = (e) => {
+  //     console.error(e);
+  //     Swal.fire('Error', 'Gagal menangkap suara', 'error');
+  //     stopListening();
+  //   };
+  //   recognition.onend = () => {
+  //     setIsListening(false);
+  //     if (
+  //       mediaRecorderRef.current &&
+  //       mediaRecorderRef.current.state === 'recording'
+  //     ) {
+  //       mediaRecorderRef.current.stop();
+  //     }
+  //     // Gunakan transcriptRef.current (bukan state transcript)
+  //     if (transcriptRef.current) {
+  //       processTransaction(transcriptRef.current);
+  //     } else {
+  //       // Tidak ada ucapan yang dikenali
+  //       Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+  //     }
+  //   };
+
+  //   recognition.start();
+  //   setIsListening(true);
+  // };
+
+  // const stopListening = () => {
+  //   if (recognitionRef.current) recognitionRef.current.stop();
+  //   if (
+  //     mediaRecorderRef.current &&
+  //     mediaRecorderRef.current.state === 'recording'
+  //   ) {
+  //     mediaRecorderRef.current.stop();
+  //   }
+  //   setIsListening(false);
+  // };
+
+  // // Proses transaksi dengan menerima parameter textTranskrip
+  // const processTransaction = async (spokenText) => {
+  //   setIsProcessing(true);
+  //   const jumlah = parseJumlah(spokenText) || 1;
+
+  //   // Optional: sedikit delay untuk memastikan audio chunks sudah terkumpul
+  //   await new Promise((resolve) => setTimeout(resolve, 300));
+
+  //   const originalBlob = new Blob(audioChunksRef.current, {
+  //     type: 'audio/webm',
+  //   });
+  //   const wavBlob = await convertToWav(originalBlob);
+
+  //   const formData = new FormData();
+  //   formData.append('audio', wavBlob, 'recording.wav');
+  //   formData.append('transcript', spokenText);
+  //   formData.append('jumlah', String(jumlah));
+
+  //   try {
+  //     const res = await api.post('/voice', formData, {
+  //       headers: { 'Content-Type': 'multipart/form-data' },
+  //       timeout: 30000,
+  //     });
+
+  //     const {
+  //       produk,
+  //       jumlah: qty,
+  //       harga,
+  //       produk_conf,
+  //       matchedProduct,
+  //     } = res.data;
+
+  //     if (matchedProduct) {
+  //       const result = await Swal.fire({
+  //         title: 'Tambahkan ke Keranjang?',
+  //         html: `
+  //           <strong>Produk:</strong> ${produk}<br/>
+  //           <strong>Jumlah:</strong> ${qty}<br/>
+  //           <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
+  //         `,
+  //         icon: 'question',
+  //         showCancelButton: true,
+  //         confirmButtonColor: '#3085d6',
+  //         cancelButtonColor: '#d33',
+  //         confirmButtonText: 'Ya, Tambahkan',
+  //         cancelButtonText: 'Batal',
+  //       });
+
+  //       if (result.isConfirmed) {
+  //         addItem({
+  //           id: matchedProduct.id,
+  //           name: matchedProduct.name,
+  //           price: matchedProduct.price,
+  //           qty: qty,
+  //         });
+  //         await Swal.fire(
+  //           'Berhasil!',
+  //           'Produk ditambahkan ke keranjang',
+  //           'success',
+  //         );
+  //         window.location.reload();
+  //       }
+  //     } else {
+  //       let top3Text = '';
+  //       if (res.data.produk_top3 && res.data.produk_top3.length) {
+  //         top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
+  //         for (let [name, conf] of res.data.produk_top3) {
+  //           top3Text += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
+  //         }
+  //         top3Text += '</ul>';
+  //       }
+  //       await Swal.fire({
+  //         title: 'Hasil Deteksi Suara',
+  //         html: `
+  //           Produk terdeteksi: <strong>${produk}</strong><br/>
+  //           Jumlah: ${qty}<br/>
+  //           Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}
+  //         `,
+  //         icon: 'info',
+  //         confirmButtonText: 'OK',
+  //       });
+  //       window.location.reload();
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     Swal.fire('Error', 'Gagal memproses suara. Coba lagi.', 'error');
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+  const startListening = async () => {
+    setTranscript('');
+    transcriptRef.current = '';
+    setFiltered([]);
     audioChunksRef.current = [];
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = getSupportedMimeType();
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
+
       mediaRecorder.onstop = async () => {
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
-          streamRef.current = null;
-        }
+        // Semua chunk sudah terkumpul
         if (audioChunksRef.current.length === 0) {
           Swal.fire('Info', 'Tidak ada suara yang direkam', 'info');
-          setIsRecording(false);
+          setIsListening(false);
           return;
         }
-        const originalBlob = new Blob(audioChunksRef.current, {
-          type: 'audio/webm',
-        });
-        const wavBlob = await convertToWav(originalBlob);
-        await sendAudioToBackend(wavBlob);
-        setIsRecording(false);
+        await processTransaction(transcriptRef.current); // transkrip bisa diisi dari server nanti
       };
+
       mediaRecorder.start();
-      setIsRecording(true);
-      // Auto-stop after 5 detik
+      setIsListening(true);
+
+      // Opsional: hentikan setelah durasi tertentu (misal 5 detik)
       setTimeout(() => {
         if (
           mediaRecorderRef.current &&
           mediaRecorderRef.current.state === 'recording'
         ) {
           mediaRecorderRef.current.stop();
+          stream.getTracks().forEach((track) => track.stop());
         }
       }, 5000);
     } catch (err) {
       console.error(err);
-      Swal.fire(
-        'Error',
-        'Tidak dapat mengakses mikrofon. Pastikan izin diberikan.',
-        'error',
-      );
+      Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
     }
   };
 
-  const stopRecording = () => {
+  const stopListening = () => {
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === 'recording'
     ) {
       mediaRecorderRef.current.stop();
     }
+    setIsListening(false);
   };
 
-  const sendAudioToBackend = async (blob) => {
+  const processTransaction = async (spokenText = '') => {
     setIsProcessing(true);
-    const formData = new FormData();
-    formData.append('audio', blob, 'recording.webm');
+    if (audioChunksRef.current.length === 0) {
+      Swal.fire('Error', 'Tidak ada data audio', 'error');
+      setIsProcessing(false);
+      return;
+    }
+
+    const originalBlob = new Blob(audioChunksRef.current, {
+      type: getSupportedMimeType(),
+    });
+    let wavBlob;
     try {
-      const response = await api.post('/voice', formData, {
+      wavBlob = await convertToWav(originalBlob);
+    } catch (err) {
+      console.error('Konversi gagal:', err);
+      Swal.fire(
+        'Error',
+        'Gagal memproses audio (format tidak didukung)',
+        'error',
+      );
+      setIsProcessing(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('audio', wavBlob, 'recording.wav');
+    formData.append('transcript', spokenText);
+    // Jumlah bisa di-backup dari hasil server atau parsing sederhana
+    formData.append('jumlah', '1');
+
+    try {
+      const res = await api.post('/voice', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         timeout: 30000,
       });
-      const { jumlah, harga, matchedProduct, produk_conf, produk } =
-        response.data;
+
+      const {
+        produk,
+        jumlah: qty,
+        harga,
+        produk_conf,
+        matchedProduct,
+      } = res.data;
+
       if (matchedProduct) {
         const result = await Swal.fire({
           title: 'Tambahkan ke Keranjang?',
           html: `
-            <strong>Produk:</strong> ${matchedProduct.name}<br/>
-            <strong>Jumlah:</strong> ${jumlah}<br/>
-            <strong>Harga perkiraan:</strong> Rp ${harga.toLocaleString()}<br/>
-            <small>Akurasi: ${((produk_conf || 0) * 100).toFixed(1)}%</small>
+            <strong>Produk:</strong> ${produk}<br/>
+            <strong>Jumlah:</strong> ${qty}<br/>
+            <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
           `,
           icon: 'question',
           showCancelButton: true,
@@ -138,22 +418,41 @@ function InputPos() {
           confirmButtonText: 'Ya, Tambahkan',
           cancelButtonText: 'Batal',
         });
+
         if (result.isConfirmed) {
           addItem({
             id: matchedProduct.id,
             name: matchedProduct.name,
             price: matchedProduct.price,
-            qty: jumlah,
+            qty: qty,
           });
-          Swal.fire('Berhasil!', 'Produk ditambahkan ke keranjang', 'success');
+          await Swal.fire(
+            'Berhasil!',
+            'Produk ditambahkan ke keranjang',
+            'success',
+          );
+          window.location.reload();
         }
       } else {
-        Swal.fire({
+        let top3Text = '';
+        if (res.data.produk_top3 && res.data.produk_top3.length) {
+          top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
+          for (let [name, conf] of res.data.produk_top3) {
+            top3Text += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
+          }
+          top3Text += '</ul>';
+        }
+        await Swal.fire({
           title: 'Hasil Deteksi Suara',
-          html: `Produk terdeteksi: <strong>${produk || 'Tidak diketahui'}</strong><br/>Jumlah: ${jumlah}<br/>Perkiraan harga: Rp ${harga.toLocaleString()}`,
+          html: `
+            Produk terdeteksi: <strong>${produk}</strong><br/>
+            Jumlah: ${qty}<br/>
+            Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}
+          `,
           icon: 'info',
           confirmButtonText: 'OK',
         });
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -165,6 +464,7 @@ function InputPos() {
 
   return (
     <div className='flex flex-col items-center py-4 gap-4'>
+      {/* Input pencarian (sama seperti kode asli) */}
       <div className='relative w-full max-w-md'>
         <input
           type='text'
@@ -183,57 +483,44 @@ function InputPos() {
                 className='p-2 hover:bg-gray-100 cursor-pointer flex justify-between'
               >
                 <span>{p.name}</span>
-                <span>Rp {p.price?.toLocaleString()}</span>
+                <span>Rp {p.price.toLocaleString()}</span>
               </li>
             ))}
           </ul>
         )}
       </div>
+
       <button
-        onClick={isRecording ? stopRecording : startRecording}
+        onClick={isListening ? stopListening : startListening}
         disabled={isProcessing}
         className={`flex p-5 border rounded-xl transition-all ${
           isProcessing
             ? 'bg-gray-400 text-white cursor-not-allowed'
-            : isRecording
+            : isListening
               ? 'bg-red-500 text-white animate-pulse'
               : 'bg-sky-950 text-white hover:bg-white hover:text-sky-950'
         }`}
       >
-        {isProcessing ? (
-          <svg
-            className='animate-spin h-8 w-8 text-white'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 24 24'
-          >
-            <circle
-              className='opacity-25'
-              cx='12'
-              cy='12'
-              r='10'
-              stroke='currentColor'
-              strokeWidth='4'
-            ></circle>
-            <path
-              className='opacity-75'
-              fill='currentColor'
-              d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-            ></path>
-          </svg>
-        ) : isRecording ? (
-          <FaStop size={28} />
-        ) : (
-          <FaMicrophone size={28} />
-        )}
+        <FaMicrophone size={28} />
       </button>
+
       <p className='text-sm text-gray-400'>
         {isProcessing
-          ? 'Memproses...'
-          : isRecording
-            ? 'Merekam... (klik lagi untuk berhenti)'
+          ? 'Memproses suara...'
+          : isListening
+            ? 'Mendengarkan... (klik lagi untuk berhenti)'
             : 'Tekan mikrofon untuk perintah suara'}
       </p>
+
+      <p className='text-sm text-gray-400'>
+        Contoh: "Jual Mie Goreng 3 bungkus"
+      </p>
+
+      {/* {transcript && !isListening && !isProcessing && (
+        <div className='text-sm bg-gray-100 p-2 rounded max-w-md text-center'>
+          "{transcript}"
+        </div>
+      )} */}
     </div>
   );
 }
