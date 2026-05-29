@@ -1,6 +1,8 @@
 # Gunakan base image Python 3.10 (ringan dan stabil)
 FROM python:3.10-slim
 
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # Set working directory di dalam container
 WORKDIR /app
 
