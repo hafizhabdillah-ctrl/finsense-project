@@ -82,12 +82,8 @@ async function findProductFromTranscript(transcript) {
 
 exports.processVoice = async (req, res) => {
   let audioFilePath = null;
-
   try {
     const audioFile = req.file;
-    const transcript = req.body.transcript || '';
-    let jumlah = parseInt(req.body.jumlah) || 0;
-
     if (!audioFile) {
       return res
         .status(400)
@@ -96,66 +92,51 @@ exports.processVoice = async (req, res) => {
 
     audioFilePath = audioFile.path;
 
-    // Siapkan FormData untuk FastAPI
+    // Kirim ke FastAPI endpoint /predict (sesuai README)
     const form = new FormData();
     form.append('audio', fs.createReadStream(audioFilePath), {
-      filename: audioFile.originalname || 'recording.webm',
-      contentType: audioFile.mimetype,
+      filename: 'recording.wav',
+      contentType: 'audio/wav',
     });
-    form.append('transcript', transcript);
-    if (jumlah > 0) form.append('jumlah', String(jumlah));
 
     const fastApiUrl =
-      process.env.AI_SERVICE_URL || 'http://localhost:8000/voice';
+      process.env.AI_SERVICE_URL || 'http://localhost:8000/predict';
     console.log(`[Voice] Calling FastAPI: ${fastApiUrl}`);
 
     const fastApiResponse = await axios.post(fastApiUrl, form, {
-      headers: { ...form.getHeaders() },
-      timeout: 60000,
+      headers: form.getHeaders(),
+      timeout: 30000,
     });
 
     // Hapus file temporary
-    if (audioFilePath && fs.existsSync(audioFilePath)) {
+    if (audioFilePath && fs.existsSync(audioFilePath))
       fs.unlinkSync(audioFilePath);
-    }
 
-    // Data dari FastAPI (dengan nilai default aman)
-    const {
-      produk = '',
-      produk_conf = 0,
-      produk_top3 = [],
-      jumlah: qty,
-      unit_price = 0,
-      harga: hargaTotal,
-    } = fastApiResponse.data;
+    // Data dari FastAPI (berdasarkan README)
+    const { jumlah, harga, jumlah_confidence } = fastApiResponse.data;
 
-    const finalJumlah = qty || jumlah || 1;
-    const finalHarga = hargaTotal || unit_price * finalJumlah;
+    // Cari produk terdekat berdasarkan harga prediksi
+    const userId = req.userId;
+    const products = await prisma.product.findMany({
+      where: { user_id: userId },
+      select: { id: true, name: true, price: true },
+    });
 
-    // Cari produk di database berdasarkan prediksi & alternatif
-    let matchedProduct = await findProductByPrediction(produk, produk_top3);
-    let usedFallback = false;
-    let finalProductName = produk;
-
-    // Jika confidence rendah (<70%) atau produk tidak ditemukan, coba fallback dari transkrip
-    if (produk_conf < 0.7 || !matchedProduct) {
-      const fallbackProduct = await findProductFromTranscript(transcript);
-      if (fallbackProduct) {
-        finalProductName = fallbackProduct.name;
-        matchedProduct = fallbackProduct;
-        usedFallback = true;
-        console.log(`[Voice] Fallback used: transcript → ${finalProductName}`);
+    let matchedProduct = null;
+    let minDiff = Infinity;
+    for (const p of products) {
+      const diff = Math.abs(p.price - harga);
+      if (diff < minDiff) {
+        minDiff = diff;
+        matchedProduct = p;
       }
     }
 
-    // Kirim response
     res.json({
       success: true,
-      produk: finalProductName,
-      produk_conf: produk_conf,
-      produk_top3: produk_top3,
-      jumlah: finalJumlah,
-      harga: finalHarga,
+      jumlah,
+      harga,
+      jumlah_confidence,
       matchedProduct: matchedProduct
         ? {
             id: matchedProduct.id,
@@ -163,33 +144,18 @@ exports.processVoice = async (req, res) => {
             price: matchedProduct.price,
           }
         : null,
-      usedFallback,
-    });
-
-    console.log('[Voice] Processed successfully:', {
-      produk: finalProductName,
-      jumlah: finalJumlah,
-      harga: finalHarga,
-      matchedProduct: matchedProduct ? matchedProduct.name : 'No match',
-      usedFallback,
+      produk: matchedProduct?.name || 'Tidak diketahui',
     });
   } catch (error) {
     console.error('[Voice] Error:', error.message);
-    if (error.response) {
-      console.error('[Voice] FastAPI response error:', error.response.data);
-    }
-
-    // Hapus file temporary jika masih ada
-    if (audioFilePath && fs.existsSync(audioFilePath)) {
-      try {
-        fs.unlinkSync(audioFilePath);
-      } catch (e) {}
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Failed to process voice',
-      detail: error.message,
-    });
+    if (audioFilePath && fs.existsSync(audioFilePath))
+      fs.unlinkSync(audioFilePath);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Failed to process voice',
+        detail: error.message,
+      });
   }
 };

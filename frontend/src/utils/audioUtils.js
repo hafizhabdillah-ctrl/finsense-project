@@ -1,23 +1,3 @@
-// export async function convertToWav(blob) {
-//   const arrayBuffer = await blob.arrayBuffer();
-//   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-//   let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-//   // Target sample rate 16kHz (sesuai model)
-//   const targetSampleRate = 16000;
-//   const offlineContext = new OfflineAudioContext(
-//     1, // mono
-//     (audioBuffer.length * targetSampleRate) / audioBuffer.sampleRate,
-//     targetSampleRate,
-//   );
-//   const source = offlineContext.createBufferSource();
-//   source.buffer = audioBuffer;
-//   source.connect(offlineContext.destination);
-//   source.start();
-//   const resampledBuffer = await offlineContext.startRendering();
-
-//   return audioBufferToWav(resampledBuffer);
-// }
 export async function convertToWav(blob) {
   try {
     const arrayBuffer = await blob.arrayBuffer();
