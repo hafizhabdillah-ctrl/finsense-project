@@ -49,8 +49,9 @@ function DetailDebt() {
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     const amount = parseFloat(paymentAmount);
+    console.log('Amount parsed:', amount, 'Type:', typeof amount);
     if (isNaN(amount) || amount <= 0) {
-      Swal.fire('Error', 'Jumlah pembayaran harus lebih dari 0', 'error');
+      Swal.fire('Error', 'Jumlah harus lebih dari 0', 'error');
       return;
     }
     if (amount > debt.total_debt - debt.paid_amount) {

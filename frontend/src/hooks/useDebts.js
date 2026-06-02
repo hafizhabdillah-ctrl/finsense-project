@@ -106,17 +106,16 @@ export const useDebts = () => {
   const addPayment = useCallback(
     async (id, paymentData) => {
       try {
+        console.log('Sending payment data:', paymentData); // cek data
         const response = await addPaymentService(id, paymentData);
         await fetchDebts();
         Swal.fire('Sukses', 'Pembayaran berhasil dicatat', 'success');
         return response.data;
       } catch (err) {
-        console.error(err);
-        Swal.fire(
-          'Error',
-          err.response?.data?.error || 'Gagal mencatat pembayaran',
-          'error',
-        );
+        console.error('Full error response:', err.response); // lihat detail
+        const errorMsg =
+          err.response?.data?.error || 'Gagal mencatat pembayaran';
+        Swal.fire('Error', errorMsg, 'error');
         return null;
       }
     },
