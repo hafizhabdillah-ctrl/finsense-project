@@ -204,25 +204,25 @@ try {
   const revRes = await api.get('/ai/predict-revenue');
   if (revRes.data.available === false) {
     setPredictionMessage(revRes.data.message || 'Data transaksi belum cukup');
-    setRevenuePred(null);
+    setRevenuePrediction(null);
   } else {
     let rawValue = revRes.data.predicted_revenue;
     let displayValue;
-    // Jika null atau undefined, atau nilai tidak masuk akal (misal <= 0) -> tampilkan placeholder
+    // Jika null atau undefined, atau nilai tidak masuk akal (<=0) -> tampilkan placeholder
     if (rawValue === null || rawValue === undefined || rawValue <= 0) {
       displayValue = '......';
     } else {
       displayValue = rawValue;
     }
-    setRevenuePred({
-      predicted_revenue: displayValue, // bisa number atau string '......'
+    setRevenuePrediction({
+      predicted_revenue: displayValue,
       prediction_date: revRes.data.prediction_date || new Date().toISOString().split('T')[0],
     });
     setPredictionMessage(revRes.data.note || '');
   }
 } catch (err) {
   console.error('Revenue prediction error:', err);
-  setRevenuePred(null);
+  setRevenuePrediction(null);
   setPredictionMessage('Gagal memuat prediksi pendapatan');
 }
       

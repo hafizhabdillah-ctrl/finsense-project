@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDashboardData } from '../../../hooks/useDashboardData';
-import api from '../../../services/api';
 
 const StatDashboard = () => {
-  const { todayIncome, todayCount, averageOrder, loading } = useDashboardData();
-  const [revenuePred, setRevenuePred] = useState(null);
-  useEffect(() => {
-    const fetchPred = async () => {
-      try {
-        const res = await api.get('/ai/predict-revenue');
-        setRevenuePred(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchPred();
-  }, []);
+  const {
+    todayIncome,
+    todayCount,
+    averageOrder,
+    loading,
+    revenuePrediction,
+    predictionMessage,
+  } = useDashboardData();
+
   if (loading) {
     return <div className='flex gap-4'>Memuat statistik...</div>;
   }
@@ -49,26 +44,32 @@ const StatDashboard = () => {
       </div>
 
       {/* PREDIKSI PEMASUKAN */}
-     {revenuePred && (
-  <div className='w-full bg-blue-50 p-4 rounded-md shadow-sm border border-gray-300'>
-    <div className='flex gap-1'>
-      <h2 className='text-gray-500 text-sm font-semibold'>
-        Prediksi Pemasukan Besok
-      </h2>
-      <span className='flex font-semibold items-start text-green-500 text-xs'>
-        AI Powered
-      </span>
-    </div>
-    <p className='text-2xl font-bold text-blue-900 mb-2'>
-      {typeof revenuePred.predicted_revenue === 'string' && revenuePred.predicted_revenue === '......' ? (
-        <span className="text-gray-400">......</span>
-      ) : (
-        `Rp ${(revenuePred.predicted_revenue ?? 0).toLocaleString()}`
+      {revenuePrediction && (
+        <div className='w-full bg-blue-50 p-4 rounded-md shadow-sm border border-gray-300'>
+          <div className='flex gap-1'>
+            <h2 className='text-gray-500 text-sm font-semibold'>
+              Prediksi Pemasukan Besok
+            </h2>
+            <span className='flex font-semibold items-start text-green-500 text-xs'>
+              AI Powered
+            </span>
+          </div>
+          <p className='text-2xl font-bold text-blue-900 mb-2'>
+            {typeof revenuePrediction.predicted_revenue === 'string' &&
+            revenuePrediction.predicted_revenue === '......' ? (
+              <span className='text-gray-400'>......</span>
+            ) : (
+              `Rp ${(
+                revenuePrediction.predicted_revenue ?? 0
+              ).toLocaleString()}`
+            )}
+          </p>
+          {predictionMessage && (
+            <p className='text-xs text-yellow-600'>{predictionMessage}</p>
+          )}
+          <p className='text-xs'>{revenuePrediction.prediction_date}</p>
+        </div>
       )}
-    </p>
-    <p className='text-xs'>{revenuePred.prediction_date}</p>
-  </div>
-)}
     </div>
   );
 };
