@@ -138,27 +138,91 @@ function InputPos() {
     setFiltered([]);
   };
 
+  // const startListening = async () => {
+  //   setTranscript('');
+  //   transcriptRef.current = '';
+  //   setFiltered([]);
+  //   audioChunksRef.current = [];
+
+  //   const SpeechRecognition =
+  //     window.SpeechRecognition || window.webkitSpeechRecognition;
+  //   if (!SpeechRecognition) {
+  //     Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
+  //     return;
+  //   }
+  //   const recognition = new SpeechRecognition();
+  //   recognition.lang = 'id-ID';
+  //   recognition.interimResults = false;
+  //   recognition.maxAlternatives = 1;
+  //   recognitionRef.current = recognition;
+
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     const mediaRecorder = new MediaRecorder(stream);
+  //     mediaRecorderRef.current = mediaRecorder;
+  //     mediaRecorder.ondataavailable = (e) => {
+  //       if (e.data.size > 0) audioChunksRef.current.push(e.data);
+  //     };
+  //     mediaRecorder.start();
+  //   } catch (err) {
+  //     Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
+  //     return;
+  //   }
+
+  //   recognition.onresult = (event) => {
+  //     const text = event.results[0][0].transcript;
+  //     transcriptRef.current = text;
+  //     setTranscript(text);
+  //   };
+  //   recognition.onerror = (e) => {
+  //     console.error(e);
+  //     Swal.fire('Error', 'Gagal menangkap suara', 'error');
+  //     stopListening();
+  //   };
+  //   recognition.onend = () => {
+  //     setIsListening(false);
+  //     if (
+  //       mediaRecorderRef.current &&
+  //       mediaRecorderRef.current.state === 'recording'
+  //     ) {
+  //       mediaRecorderRef.current.stop();
+  //     }
+  //     if (transcriptRef.current) {
+  //       processTransaction(transcriptRef.current);
+  //     } else {
+  //       Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+  //     }
+  //   };
+
+  //   recognition.start();
+  //   setIsListening(true);
+  // };
   const startListening = async () => {
     setTranscript('');
     transcriptRef.current = '';
     setFiltered([]);
     audioChunksRef.current = [];
 
+    // 1. Cek dukungan Speech Recognition
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
+      Swal.fire(
+        'Info',
+        'Browser tidak mendukung perintah suara. Silakan ketik manual.',
+        'info',
+      );
       return;
     }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'id-ID';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognitionRef.current = recognition;
 
+    // 2. Minta izin mikrofon dan siapkan MediaRecorder
+    let stream;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp4')
+        ? 'audio/mp4'
+        : 'audio/webm';
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
@@ -169,33 +233,51 @@ function InputPos() {
       return;
     }
 
+    // 3. Siapkan Speech Recognition
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.continuous = false; // penting untuk mobile
+
     recognition.onresult = (event) => {
       const text = event.results[0][0].transcript;
       transcriptRef.current = text;
       setTranscript(text);
+      // Hentikan recognition begitu dapat hasil (agar onend segera terpanggil)
+      recognition.stop();
     };
+
     recognition.onerror = (e) => {
-      console.error(e);
-      Swal.fire('Error', 'Gagal menangkap suara', 'error');
-      stopListening();
+      console.error('SpeechRecognition error:', e.error);
+      // Jangan tampilkan error ke user, biarkan proses tetap jalan dengan audio saja
+      transcriptRef.current = ''; // kosong, nanti jumlah default = 1
+      recognition.stop();
     };
+
     recognition.onend = () => {
       setIsListening(false);
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === 'recording'
-      ) {
+      // Hentikan MediaRecorder
+      if (mediaRecorderRef.current?.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
-      if (transcriptRef.current) {
-        processTransaction(transcriptRef.current);
-      } else {
-        Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+      // Tutup track mikrofon agar tidak boros baterai
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
       }
+      // Proses transaksi (dengan atau tanpa transkrip)
+      processTransaction(transcriptRef.current || '');
     };
 
     recognition.start();
     setIsListening(true);
+
+    // (Opsional) timeout maksimal 10 detik, stop jika terlalu lama
+    setTimeout(() => {
+      if (isListening) {
+        recognition.stop();
+      }
+    }, 10000);
   };
 
   const stopListening = () => {
