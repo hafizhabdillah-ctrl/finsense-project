@@ -5,6 +5,7 @@ import {
   updateDebt,
   deleteDebt,
   getDebtById,
+  addPayment as addPaymentService, // rename agar tidak bentrok
 } from '../services/debtService';
 import Swal from 'sweetalert2';
 
@@ -13,7 +14,6 @@ export const useDebts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch semua hutang
   const fetchDebts = useCallback(async () => {
     setLoading(true);
     try {
@@ -28,7 +28,6 @@ export const useDebts = () => {
     }
   }, []);
 
-  // Fetch satu hutang by id
   const fetchDebtById = useCallback(async (id) => {
     try {
       const response = await getDebtById(id);
@@ -45,12 +44,12 @@ export const useDebts = () => {
       throw err;
     }
   }, []);
-  // Tambah hutang
+
   const addDebt = useCallback(
     async (debtData) => {
       try {
         await createDebt(debtData);
-        await fetchDebts(); // refresh list
+        await fetchDebts();
         Swal.fire('Sukses', 'Hutang berhasil ditambahkan', 'success');
         return true;
       } catch (err) {
@@ -65,7 +64,6 @@ export const useDebts = () => {
     [fetchDebts],
   );
 
-  // Update hutang
   const editDebt = useCallback(
     async (id, debtData) => {
       try {
@@ -85,7 +83,6 @@ export const useDebts = () => {
     [fetchDebts],
   );
 
-  // Hapus hutang
   const removeDebt = useCallback(
     async (id) => {
       try {
@@ -105,6 +102,27 @@ export const useDebts = () => {
     [fetchDebts],
   );
 
+  // Perbaikan: gunakan addPaymentService dari service, bukan api langsung
+  const addPayment = useCallback(
+    async (id, paymentData) => {
+      try {
+        const response = await addPaymentService(id, paymentData);
+        await fetchDebts();
+        Swal.fire('Sukses', 'Pembayaran berhasil dicatat', 'success');
+        return response.data;
+      } catch (err) {
+        console.error(err);
+        Swal.fire(
+          'Error',
+          err.response?.data?.error || 'Gagal mencatat pembayaran',
+          'error',
+        );
+        return null;
+      }
+    },
+    [fetchDebts],
+  );
+
   useEffect(() => {
     fetchDebts();
   }, [fetchDebts]);
@@ -118,5 +136,6 @@ export const useDebts = () => {
     addDebt,
     editDebt,
     removeDebt,
+    addPayment,
   };
 };
