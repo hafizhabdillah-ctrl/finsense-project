@@ -201,22 +201,26 @@ export const useDashboardData = () => {
 
         // 6. Prediksi Revenue AI (dengan validasi minimum data di backend)
         try {
-          const revRes = await api.get('/ai/predict-revenue');
-          if (revRes.data.available === false) {
-            setPredictionMessage(
-              revRes.data.message ||
-                'Data transaksi belum cukup (minimal 7 hari)',
-            );
-            setRevenuePrediction(null);
-          } else {
-            setRevenuePrediction(revRes.data.predicted_revenue);
-            setPredictionMessage('');
-          }
-        } catch (err) {
-          console.error('Revenue prediction error:', err);
-          setPredictionMessage('Gagal memuat prediksi pendapatan');
-        }
-
+  const revRes = await api.get('/ai/predict-revenue');
+  if (revRes.data.available === false) {
+    setPredictionMessage(revRes.data.message || 'Data transaksi belum cukup');
+    setRevenuePrediction(null);
+  } else {
+    if (revRes.data.predicted_revenue === null) {
+      // AI meleset → tampilkan placeholder
+      setRevenuePrediction('......');
+      setPredictionMessage(revRes.data.note || 'Prediksi AI sedang tidak stabil');
+    } else {
+      setRevenuePrediction(revRes.data.predicted_revenue);
+      setPredictionMessage('');
+    }
+  }
+} catch (err) {
+  console.error('Revenue prediction error:', err);
+  setPredictionMessage('Gagal memuat prediksi pendapatan');
+  setRevenuePrediction(null);
+}
+      
         // 7. Prediksi Top Products AI (dengan fallback ke real data)
         try {
           const topRes = await api.get('/ai/predict-top-products');

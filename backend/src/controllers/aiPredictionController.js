@@ -297,6 +297,21 @@ function generateMinimalStockData(currentStock) {
 // ========== CONTROLLERS ==========
 
 // 1. PREDIKSI REVENUE (dengan validasi minimal data)
+// Helper untuk menghitung moving average (sebagai baseline)
+async function getMovingAveragePrediction(userId) {
+  const last7 = await getLast7DaysRevenue(userId);
+  const revenues = last7.map(d => d.Revenue);
+  if (revenues.length === 0) return 0;
+  // Weighted moving average (bobot lebih pada hari terakhir)
+  const weights = [0.05, 0.07, 0.1, 0.13, 0.18, 0.22, 0.25];
+  let weighted = 0;
+  for (let i = 0; i < revenues.length; i++) {
+    weighted += revenues[i] * weights[i];
+  }
+  return Math.round(weighted);
+}
+
+// PREDIKSI REVENUE dengan validasi kewajaran
 exports.predictRevenue = async (req, res) => {
   try {
     const userId = req.userId;
@@ -304,19 +319,39 @@ exports.predictRevenue = async (req, res) => {
     if (!hasData) {
       return res.status(200).json({
         available: false,
-        message:
-          'Prediksi AI tersedia setelah 7 hari penggunaan dengan minimal 5 transaksi',
+        message: 'Prediksi AI tersedia setelah 7 hari penggunaan dengan minimal 5 transaksi',
         predicted_revenue: null,
         currency: 'IDR',
         prediction_date: new Date().toISOString().split('T')[0],
       });
     }
+
+    // 1. Dapatkan prediksi dari AI
     const last7 = await getLast7DaysRevenue(userId);
-    const response = await axios.post(`${AI_PRED_URL}/predict-revenue`, {
-      last_7_days: last7,
+    const response = await axios.post(`${AI_PRED_URL}/predict-revenue`, { last_7_days: last7 });
+    let aiPrediction = response.data.predicted_revenue;
+
+    // 2. Hitung baseline moving average dari data aktual
+    const baseline = await getMovingAveragePrediction(userId);
+    const avgRevenue = last7.reduce((sum, d) => sum + d.Revenue, 0) / last7.length;
+
+    // 3. Validasi: jika prediksi AI lebih dari 4x rata-rata atau kurang dari 0.25x rata-rata
+    let finalPrediction = aiPrediction;
+    let note = null;
+    if (aiPrediction > avgRevenue * 4 || aiPrediction < avgRevenue * 0.25) {
+      finalPrediction = null;
+      note = 'Prediksi AI tidak stabil karena data belum cukup. Gunakan estimasi manual.';
+    }
+
+    res.json({
+      available: true,
+      predicted_revenue: finalPrediction, // bisa null jika meleset
+      note: note,
+      currency: 'IDR',
+      prediction_date: response.data.prediction_date,
     });
-    res.json({ available: true, ...response.data });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
