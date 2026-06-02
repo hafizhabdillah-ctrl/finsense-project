@@ -193,3 +193,59 @@ exports.processVoice = async (req, res) => {
     });
   }
 };
+
+exports.processTranscript = async (req, res) => {
+  try {
+    const { transcript } = req.body;
+    if (!transcript) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Transcript required' });
+    }
+
+    const fastApiUrl =
+      process.env.AI_SERVICE_URL || 'http://localhost:8000/transcript';
+    const response = await axios.post(
+      fastApiUrl,
+      { transcript },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 10000,
+      },
+    );
+
+    const { produk, jumlah, unit_price, harga, produk_conf } = response.data;
+
+    // Cari produk di database berdasarkan nama
+    let matchedProduct = await findProductByPrediction(produk, []);
+    let finalProductName = produk;
+    let finalMatchedProduct = matchedProduct;
+
+    if (!matchedProduct) {
+      const fallback = await findProductFromTranscript(transcript);
+      if (fallback) {
+        finalProductName = fallback.name;
+        finalMatchedProduct = fallback;
+      }
+    }
+
+    res.json({
+      success: true,
+      produk: finalProductName,
+      jumlah: jumlah,
+      harga: finalMatchedProduct ? finalMatchedProduct.price * jumlah : harga,
+      produk_conf: produk_conf,
+      matchedProduct: finalMatchedProduct
+        ? {
+            id: finalMatchedProduct.id,
+            name: finalMatchedProduct.name,
+            price: finalMatchedProduct.price,
+          }
+        : null,
+      produk_top3: [],
+    });
+  } catch (err) {
+    console.error('[Transcript] Error:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
