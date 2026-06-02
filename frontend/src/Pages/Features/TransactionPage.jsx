@@ -64,10 +64,10 @@ function TransactionPage() {
       <div className='overflow-x-auto mt-2'>
         <TableTransaction startDate={startDate} endDate={endDate} />
       </div>
-      <div className='mt-6'>
+      <div className='mt-4'>
         <hr />
       </div>
-      <h1 className='p-2 text-2xl font-bold'>Ringkasan Keuangan</h1>
+      <h1 className='p-2 text-2xl font-bold mt-2'>Ringkasan Keuangan</h1>
       <SummaryTransaction />
     </div>
   );

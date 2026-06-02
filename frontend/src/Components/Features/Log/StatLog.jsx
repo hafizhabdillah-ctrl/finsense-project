@@ -38,7 +38,7 @@ function StatLog() {
       </div>
       <div className='relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-gray-500 font-bold text-sm uppercase tracking-wider'>
-          STOK MASUK
+          STOK MASUK HARI INI
         </h1>
         <p className='flex items-center gap-2 text-2xl font-bold text-sky-950'>
           <span>{stats.stockIn}</span>
@@ -47,7 +47,7 @@ function StatLog() {
       </div>
       <div className='relative flex-1 flex flex-col justify-between bg-white p-4 border rounded-md border-gray-300 shadow-sm'>
         <h1 className='text-gray-500 font-bold text-sm uppercase tracking-wider'>
-          STOK KELUAR
+          STOK KELUAR HARI INI
         </h1>
         <p className='flex items-center gap-2 text-2xl font-bold text-sky-950'>
           <span>{stats.stockOut}</span>
