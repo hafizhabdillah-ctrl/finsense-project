@@ -197,26 +197,35 @@ exports.processVoice = async (req, res) => {
 exports.processTranscript = async (req, res) => {
   try {
     const { transcript } = req.body;
+    console.log('[Transcript] Received:', transcript);
     if (!transcript) {
       return res
         .status(400)
         .json({ success: false, message: 'Transcript required' });
     }
 
-    const fastApiUrl =
-      process.env.AI_SERVICE_URL || 'http://localhost:8000/transcript';
+    const fastApiUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+    const url = `${fastApiUrl}/transcript`;
+    console.log('[Transcript] Calling FastAPI:', url);
+
     const response = await axios.post(
-      fastApiUrl,
+      url,
       { transcript },
       {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 10000,
+        timeout: 15000,
       },
     );
 
+    console.log('[Transcript] FastAPI response:', response.data);
+
+    if (response.data.error) {
+      throw new Error(response.data.error);
+    }
+
     const { produk, jumlah, unit_price, harga, produk_conf } = response.data;
 
-    // Cari produk di database berdasarkan nama
+    // Cari produk di database
     let matchedProduct = await findProductByPrediction(produk, []);
     let finalProductName = produk;
     let finalMatchedProduct = matchedProduct;
@@ -226,6 +235,7 @@ exports.processTranscript = async (req, res) => {
       if (fallback) {
         finalProductName = fallback.name;
         finalMatchedProduct = fallback;
+        console.log('[Transcript] Fallback match:', finalProductName);
       }
     }
 
@@ -246,6 +256,13 @@ exports.processTranscript = async (req, res) => {
     });
   } catch (err) {
     console.error('[Transcript] Error:', err.message);
-    res.status(500).json({ success: false, message: err.message });
+    if (err.response) {
+      console.error('[Transcript] FastAPI error response:', err.response.data);
+    }
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      detail: err.response?.data || null,
+    });
   }
 };
