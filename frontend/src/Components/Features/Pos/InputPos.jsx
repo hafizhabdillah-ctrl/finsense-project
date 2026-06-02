@@ -97,10 +97,7 @@ function InputPos() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState('');
   const transcriptRef = useRef('');
-
   const recognitionRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -138,11 +135,9 @@ function InputPos() {
     setFiltered([]);
   };
 
-  const startListening = async () => {
+  const startListening = () => {
     setTranscript('');
     transcriptRef.current = '';
-    setFiltered([]);
-    audioChunksRef.current = [];
 
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -150,43 +145,36 @@ function InputPos() {
       Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
       return;
     }
+
     const recognition = new SpeechRecognition();
     recognition.lang = 'id-ID';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognitionRef.current = recognition;
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-      mediaRecorder.start();
-    } catch (err) {
-      Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
-      return;
-    }
+    recognition.continuous = false;
 
     recognition.onresult = (event) => {
       const text = event.results[0][0].transcript;
       transcriptRef.current = text;
       setTranscript(text);
+      recognition.stop(); // langsung stop setelah dapat hasil
     };
+
     recognition.onerror = (e) => {
-      console.error(e);
-      Swal.fire('Error', 'Gagal menangkap suara', 'error');
-      stopListening();
+      console.error('SpeechRecognition error:', e.error);
+      if (e.error === 'not-allowed') {
+        Swal.fire(
+          'Izin ditolak',
+          'Aktifkan izin mikrofon di pengaturan browser',
+          'warning',
+        );
+      } else {
+        Swal.fire('Error', 'Gagal menangkap suara. Coba lagi.', 'error');
+      }
+      recognition.stop();
     };
+
     recognition.onend = () => {
       setIsListening(false);
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === 'recording'
-      ) {
-        mediaRecorderRef.current.stop();
-      }
       if (transcriptRef.current) {
         processTransaction(transcriptRef.current);
       } else {
@@ -199,68 +187,43 @@ function InputPos() {
   };
 
   const stopListening = () => {
-    if (recognitionRef.current) recognitionRef.current.stop();
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state === 'recording'
-    ) {
-      mediaRecorderRef.current.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
     }
     setIsListening(false);
   };
 
   const processTransaction = async (spokenText) => {
     setIsProcessing(true);
-    const jumlah = parseJumlah(spokenText) || 1;
-
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    const originalBlob = new Blob(audioChunksRef.current, {
-      type: 'audio/webm',
-    });
-    const wavBlob = await convertToWav(originalBlob);
-
-    const formData = new FormData();
-    formData.append('audio', wavBlob, 'recording.wav');
-    formData.append('transcript', spokenText);
-    formData.append('jumlah', String(jumlah));
-
+    // Parsing jumlah bisa dilakukan di frontend atau backend, kita kirim raw transcript
     try {
-      const res = await api.post('/voice', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 30000,
+      const res = await api.post('/voice-transcript', {
+        transcript: spokenText,
       });
-
       const {
         produk,
-        jumlah: qty,
+        jumlah,
         harga,
         produk_conf,
         matchedProduct,
+        produk_top3,
       } = res.data;
 
       if (matchedProduct) {
         const result = await Swal.fire({
           title: 'Tambahkan ke Keranjang?',
-          html: `
-            <strong>Produk:</strong> ${produk}<br/>
-            <strong>Jumlah:</strong> ${qty}<br/>
-            <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
-          `,
+          html: `<strong>Produk:</strong> ${produk}<br/><strong>Jumlah:</strong> ${jumlah}<br/><small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>`,
           icon: 'question',
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
           confirmButtonText: 'Ya, Tambahkan',
           cancelButtonText: 'Batal',
         });
-
         if (result.isConfirmed) {
           addItem({
             id: matchedProduct.id,
             name: matchedProduct.name,
             price: matchedProduct.price,
-            qty: qty,
+            qty: jumlah,
           });
           await Swal.fire(
             'Berhasil!',
@@ -270,21 +233,17 @@ function InputPos() {
           window.location.reload();
         }
       } else {
-        let top3Text = '';
-        if (res.data.produk_top3 && res.data.produk_top3.length) {
-          top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
-          for (let [name, conf] of res.data.produk_top3) {
-            top3Text += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
+        let top3Html = '';
+        if (produk_top3 && produk_top3.length) {
+          top3Html = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
+          for (let [name, conf] of produk_top3) {
+            top3Html += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
           }
-          top3Text += '</ul>';
+          top3Html += '</ul>';
         }
         await Swal.fire({
           title: 'Hasil Deteksi Suara',
-          html: `
-            Produk terdeteksi: <strong>${produk}</strong><br/>
-            Jumlah: ${qty}<br/>
-            Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}
-          `,
+          html: `Produk terdeteksi: <strong>${produk}</strong><br/>Jumlah: ${jumlah}<br/>Perkiraan harga: Rp ${harga.toLocaleString()}${top3Html}`,
           icon: 'info',
           confirmButtonText: 'OK',
         });
@@ -300,7 +259,7 @@ function InputPos() {
 
   return (
     <div className='flex flex-col items-center py-4 gap-4'>
-      {/* Input pencarian */}
+      {/* Input pencarian (sama seperti semula) */}
       <div className='relative w-full max-w-md'>
         <input
           type='text'
@@ -326,7 +285,7 @@ function InputPos() {
         )}
       </div>
 
-      {/* Tombol dengan styling sesuai permintaan */}
+      {/* Tombol mikrofon */}
       <button
         onClick={isListening ? stopListening : startListening}
         disabled={isProcessing}
@@ -352,7 +311,6 @@ function InputPos() {
             ? 'Mendengarkan... (klik lagi untuk berhenti)'
             : 'Tekan mikrofon untuk perintah suara'}
       </p>
-
       <p className='text-sm text-gray-400'>
         Contoh: "Jual Mie Goreng 3 bungkus"
       </p>
