@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProducts } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
-import { FaMicrophone, FaSearch, FaSyncAlt } from 'react-icons/fa';
+import { FaMicrophone, FaSearch, FaSyncAlt } from 'react-icons/fa'; // tambah FaSyncAlt
 import Swal from 'sweetalert2';
 import api from '../../../services/api';
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from 'react-speech-recognition';
+import { convertToWav } from '../../../utils/audioUtils';
 
 const QTY = {
   satu: 1,
@@ -95,19 +93,15 @@ function InputPos() {
   const [query, setQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]);
-  const mediaRecorderRef = useRef(null);
-  const streamRef = useRef(null);
-  const { addItem } = useCart();
+  const [transcript, setTranscript] = useState('');
+  const transcriptRef = useRef('');
 
-  // Hook Speech Recognition
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  const recognitionRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const { addItem } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -144,80 +138,106 @@ function InputPos() {
     setFiltered([]);
   };
 
+  const [audioMimeType, setAudioMimeType] = useState('');
+
   const startListening = async () => {
-    if (!browserSupportsSpeechRecognition) {
-      Swal.fire('Error', 'Browser tidak mendukung Speech Recognition', 'error');
+    setTranscript('');
+    transcriptRef.current = '';
+    setFiltered([]);
+    audioChunksRef.current = [];
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      Swal.fire('Error', 'Browser tidak mendukung Web Speech API', 'error');
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'id-ID';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognitionRef.current = recognition;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Deteksi MIME type yang didukung
+      let mimeType = '';
+      if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
+      else if (MediaRecorder.isTypeSupported('audio/mp4'))
+        mimeType = 'audio/mp4';
+      else if (MediaRecorder.isTypeSupported('audio/mpeg'))
+        mimeType = 'audio/mpeg';
+      else mimeType = ''; // biarkan default browser
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = mediaRecorder;
+      setAudioMimeType(mimeType || mediaRecorder.mimeType); // simpan MIME type
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorder.start();
+    } catch (err) {
+      Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
       return;
     }
 
-    // Reset
-    resetTranscript();
-    setAudioChunks([]);
+    recognition.onresult = (event) => {
+      const text = event.results[0][0].transcript;
+      transcriptRef.current = text;
+      setTranscript(text);
+    };
+    recognition.onerror = (e) => {
+      console.error(e);
+      Swal.fire('Error', 'Gagal menangkap suara', 'error');
+      stopListening();
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === 'recording'
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+      if (transcriptRef.current) {
+        processTransaction(transcriptRef.current);
+      } else {
+        Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
+      }
+    };
 
-    // Minta akses mic untuk MediaRecorder (rekam audio untuk model)
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          setAudioChunks((prev) => [...prev, e.data]);
-        }
-      };
-
-      mediaRecorder.start(1000); // rekam setiap 1 detik
-
-      // Mulai Speech Recognition (transkrip)
-      await SpeechRecognition.startListening({
-        language: 'id',
-        continuous: false,
-      });
-    } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Tidak dapat mengakses mikrofon', 'error');
-    }
+    recognition.start();
+    setIsListening(true);
   };
 
   const stopListening = () => {
-    SpeechRecognition.stopListening();
+    if (recognitionRef.current) recognitionRef.current.stop();
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === 'recording'
     ) {
       mediaRecorderRef.current.stop();
     }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-    }
+    setIsListening(false);
   };
-
-  useEffect(() => {
-    // Ketika listening berhenti (baik selesai atau di-stop)
-    if (!listening && transcript && !isProcessing) {
-      processTransaction(transcript);
-    } else if (
-      !listening &&
-      !transcript &&
-      !isProcessing &&
-      audioChunks.length > 0
-    ) {
-      // Fallback jika tidak ada transkrip
-      Swal.fire('Info', 'Tidak ada ucapan yang terekam', 'info');
-    }
-  }, [listening, transcript]);
 
   const processTransaction = async (spokenText) => {
     setIsProcessing(true);
     const jumlah = parseJumlah(spokenText) || 1;
 
-    // Gabungkan audio chunks menjadi blob
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-      ? 'audio/webm'
-      : 'audio/mp4';
-    const audioBlob = new Blob(audioChunks, { type: mimeType });
-    const extension = mimeType.includes('webm') ? 'webm' : 'mp4';
+    // Tunggu sebentar agar MediaRecorder benar-benar selesai
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Gabungkan chunks menjadi blob asli (tanpa konversi)
+    const mimeType = audioMimeType || 'audio/webm';
+    const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+
+    // Tentukan ekstensi file berdasarkan MIME type
+    let extension = 'webm';
+    if (mimeType.includes('mp4')) extension = 'mp4';
+    else if (mimeType.includes('mpeg')) extension = 'mp3';
 
     const formData = new FormData();
     formData.append('audio', audioBlob, `recording.${extension}`);
@@ -225,7 +245,11 @@ function InputPos() {
     formData.append('jumlah', String(jumlah));
 
     try {
-      const res = await api.post('/voice', formData, { timeout: 30000 });
+      const res = await api.post('/voice', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 30000,
+      });
+
       const {
         produk,
         jumlah: qty,
@@ -237,18 +261,25 @@ function InputPos() {
       if (matchedProduct) {
         const result = await Swal.fire({
           title: 'Tambahkan ke Keranjang?',
-          html: `<strong>Produk:</strong> ${produk}<br/><strong>Jumlah:</strong> ${qty}<br/><small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>`,
+          html: `
+          <strong>Produk:</strong> ${produk}<br/>
+          <strong>Jumlah:</strong> ${qty}<br/>
+          <small>Akurasi: ${(produk_conf * 100).toFixed(1)}%</small>
+        `,
           icon: 'question',
           showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
           confirmButtonText: 'Ya, Tambahkan',
           cancelButtonText: 'Batal',
         });
+
         if (result.isConfirmed) {
           addItem({
             id: matchedProduct.id,
             name: matchedProduct.name,
             price: matchedProduct.price,
-            qty,
+            qty: qty,
           });
           await Swal.fire(
             'Berhasil!',
@@ -259,7 +290,7 @@ function InputPos() {
         }
       } else {
         let top3Text = '';
-        if (res.data.produk_top3?.length) {
+        if (res.data.produk_top3 && res.data.produk_top3.length) {
           top3Text = '<br/><br/><strong>Alternatif teratas:</strong><ul>';
           for (let [name, conf] of res.data.produk_top3) {
             top3Text += `<li>${name} (${(conf * 100).toFixed(1)}%)</li>`;
@@ -268,8 +299,13 @@ function InputPos() {
         }
         await Swal.fire({
           title: 'Hasil Deteksi Suara',
-          html: `Produk terdeteksi: <strong>${produk}</strong><br/>Jumlah: ${qty}<br/>Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}`,
+          html: `
+          Produk terdeteksi: <strong>${produk}</strong><br/>
+          Jumlah: ${qty}<br/>
+          Perkiraan harga: Rp ${harga.toLocaleString()}${top3Text}
+        `,
           icon: 'info',
+          confirmButtonText: 'OK',
         });
         window.location.reload();
       }
@@ -281,17 +317,9 @@ function InputPos() {
     }
   };
 
-  if (!browserSupportsSpeechRecognition) {
-    return (
-      <div className='p-4 text-red-500'>
-        Browser tidak mendukung voice input. Silakan ketik produk.
-      </div>
-    );
-  }
-
   return (
     <div className='flex flex-col items-center py-4 gap-4'>
-      {/* Input pencarian (sama seperti sebelumnya) */}
+      {/* Input pencarian */}
       <div className='relative w-full max-w-md'>
         <input
           type='text'
@@ -317,13 +345,14 @@ function InputPos() {
         )}
       </div>
 
+      {/* Tombol dengan styling sesuai permintaan */}
       <button
-        onClick={listening ? stopListening : startListening}
+        onClick={isListening ? stopListening : startListening}
         disabled={isProcessing}
         className={`flex p-5 border rounded-xl transition-all ${
           isProcessing
             ? 'bg-gray-400 text-white cursor-not-allowed'
-            : listening
+            : isListening
               ? 'bg-white text-red-500 border-red-500'
               : 'bg-sky-950 text-white hover:bg-white hover:text-sky-950'
         }`}
@@ -338,10 +367,11 @@ function InputPos() {
       <p className='text-sm text-gray-400'>
         {isProcessing
           ? 'Memproses suara...'
-          : listening
+          : isListening
             ? 'Mendengarkan... (klik lagi untuk berhenti)'
             : 'Tekan mikrofon untuk perintah suara'}
       </p>
+
       <p className='text-sm text-gray-400'>
         Contoh: "Jual Mie Goreng 3 bungkus"
       </p>
