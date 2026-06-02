@@ -199,26 +199,31 @@ export const useDashboardData = () => {
           setBestSellers(topSellers);
         }
 
-        // 6. Prediksi Revenue AI (dengan validasi minimum data di backend)
-        try {
+       // 6. Prediksi Revenue AI (dengan validasi kewajaran)
+try {
   const revRes = await api.get('/ai/predict-revenue');
   if (revRes.data.available === false) {
     setPredictionMessage(revRes.data.message || 'Data transaksi belum cukup');
-    setRevenuePrediction(null);
+    setRevenuePred(null);
   } else {
-    if (revRes.data.predicted_revenue === null) {
-      // AI meleset → tampilkan placeholder
-      setRevenuePrediction('......');
-      setPredictionMessage(revRes.data.note || 'Prediksi AI sedang tidak stabil');
+    let rawValue = revRes.data.predicted_revenue;
+    let displayValue;
+    // Jika null atau undefined, atau nilai tidak masuk akal (misal <= 0) -> tampilkan placeholder
+    if (rawValue === null || rawValue === undefined || rawValue <= 0) {
+      displayValue = '......';
     } else {
-      setRevenuePrediction(revRes.data.predicted_revenue);
-      setPredictionMessage('');
+      displayValue = rawValue;
     }
+    setRevenuePred({
+      predicted_revenue: displayValue, // bisa number atau string '......'
+      prediction_date: revRes.data.prediction_date || new Date().toISOString().split('T')[0],
+    });
+    setPredictionMessage(revRes.data.note || '');
   }
 } catch (err) {
   console.error('Revenue prediction error:', err);
+  setRevenuePred(null);
   setPredictionMessage('Gagal memuat prediksi pendapatan');
-  setRevenuePrediction(null);
 }
       
         // 7. Prediksi Top Products AI (dengan fallback ke real data)
