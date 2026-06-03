@@ -1,0 +1,8 @@
+numpy
+pandas
+matplotlib
+seaborn
+gdown
+ipython
+pydub
+num2words
