@@ -5,7 +5,12 @@ function StatDebt() {
   const { debts, loading } = useDebts();
 
   const total = debts
-    .filter((item) => item.status === 'pending' || item.status === 'overdue')
+    .filter(
+      (item) =>
+        item.status === 'pending' ||
+        item.status === 'overdue' ||
+        item.status === 'partial',
+    )
     .reduce((acc, item) => acc + (item.total_debt || 0), 0);
 
   if (loading) return <div className='p-4'>Memuat total hutang...</div>;
