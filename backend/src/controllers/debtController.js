@@ -126,7 +126,7 @@ exports.updateDebt = async (req, res) => {
   }
 };
 
-// POST /debts/:id/pay - catat pembayaran
+// POST /debts/:id/pay - catat pembayaran (dan buat transaksi income)
 exports.addPayment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -153,26 +153,68 @@ exports.addPayment = async (req, res) => {
       newStatus = 'partial';
     }
 
-    const result = await prisma.$transaction([
-      prisma.debtPayment.create({
+    // Ambil kategori "Pendapatan Lain" (sudah ada di seed)
+    let category = await prisma.transactionCategory.findFirst({
+      where: {
+        name: 'Pendapatan Lain',
+        type: 'income',
+      },
+    });
+    // Fallback: jika tidak ada (misal seed belum jalan), cari kategori income apa pun
+    if (!category) {
+      category = await prisma.transactionCategory.findFirst({
+        where: { type: 'income' },
+      });
+      if (!category) {
+        throw new Error(
+          'No income category found. Please seed TransactionCategory.',
+        );
+      }
+    }
+
+    const now = new Date();
+    // Lakukan semua operasi dalam satu transaksi database
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Catat pembayaran hutang
+      const payment = await tx.debtPayment.create({
         data: {
           debt_id: id,
           amount: paymentAmount,
           note: note || null,
         },
-      }),
-      prisma.debt.update({
+      });
+
+      // 2. Update status hutang
+      const updatedDebt = await tx.debt.update({
         where: { id },
         data: {
           paid_amount: newPaid,
           status: newStatus,
         },
-      }),
-    ]);
+      });
+
+      // 3. Buat transaksi pendapatan (income) dengan kategori "Pendapatan Lain"
+      const transaction = await tx.transaction.create({
+        data: {
+          user_id: userId,
+          category_id: category.id,
+          type: 'income',
+          amount: paymentAmount,
+          description: `Pembayaran hutang dari ${debt.customer_name}${note ? ` - ${note}` : ''}`,
+          transaction_date: now,
+          source: 'manual',
+          is_anomaly: false,
+        },
+      });
+
+      return { payment, updatedDebt, transaction };
+    });
+
     res.json({
-      message: 'Payment recorded',
-      payment: result[0],
-      debt: result[1],
+      message: 'Payment recorded and income transaction created',
+      payment: result.payment,
+      debt: result.updatedDebt,
+      transaction: result.transaction,
     });
   } catch (err) {
     console.error(err);
