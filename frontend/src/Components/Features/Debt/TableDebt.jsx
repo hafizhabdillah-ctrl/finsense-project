@@ -84,6 +84,12 @@ function TableDebt({ searchTerm = '' }) {
             <th className='px-4 py-3 text-right text-sm font-semibold'>
               Total Hutang
             </th>
+            <th className='px-4 py-3 text-right text-sm font-semibold'>
+              Sudah Dibayar
+            </th>
+            <th className='px-4 py-3 text-right text-sm font-semibold'>
+              Sisa Hutang
+            </th>
             <th className='px-4 py-3 text-center text-sm font-semibold'>
               Jatuh Tempo
             </th>
@@ -93,29 +99,38 @@ function TableDebt({ searchTerm = '' }) {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((debt, idx) => (
-            <tr
-              key={debt.id}
-              onClick={() => navigate(`/debts/${debt.id}`)}
-              className='border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-all'
-            >
-              <td className='px-4 py-3 text-center text-sm text-gray-700'>
-                {indexOfFirstItem + idx + 1}
-              </td>
-              <td className='px-4 py-3 text-left text-sm font-medium text-gray-900'>
-                {debt.customer_name}
-              </td>
-              <td className='px-4 py-3 text-right text-sm text-gray-700'>
-                Rp {debt.total_debt?.toLocaleString('id-ID')}
-              </td>
-              <td className='px-4 py-3 text-center text-sm text-gray-700'>
-                {new Date(debt.due_date).toLocaleDateString('id-ID')}
-              </td>
-              <td className='px-4 py-3 text-center'>
-                {getStatusBadge(debt.status)}
-              </td>
-            </tr>
-          ))}
+          {currentItems.map((debt, idx) => {
+            const remaining = debt.total_debt - debt.paid_amount;
+            return (
+              <tr
+                key={debt.id}
+                onClick={() => navigate(`/debts/${debt.id}`)}
+                className='border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-all'
+              >
+                <td className='px-4 py-3 text-center text-sm text-gray-700'>
+                  {indexOfFirstItem + idx + 1}
+                </td>
+                <td className='px-4 py-3 text-left text-sm font-medium text-gray-900'>
+                  {debt.customer_name}
+                </td>
+                <td className='px-4 py-3 text-right text-sm text-gray-500 line-through'>
+                  Rp {debt.total_debt?.toLocaleString('id-ID')}
+                </td>
+                <td className='px-4 py-3 text-right text-sm text-gray-600'>
+                  Rp {debt.paid_amount?.toLocaleString('id-ID')}
+                </td>
+                <td className='px-4 py-3 text-right text-sm font-bold text-red-700'>
+                  Rp {remaining?.toLocaleString('id-ID')}
+                </td>
+                <td className='px-4 py-3 text-center text-sm text-gray-700'>
+                  {new Date(debt.due_date).toLocaleDateString('id-ID')}
+                </td>
+                <td className='px-4 py-3 text-center'>
+                  {getStatusBadge(debt.status)}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
