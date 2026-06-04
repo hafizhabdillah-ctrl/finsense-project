@@ -7,7 +7,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115.11-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 
@@ -127,14 +127,14 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 ## 👥 Tim Pengembang
 
-| Nama | Role | LinkedIn | 
-|------|------|------|
-| Ibrahim Irfanul Haq (CACC229D6Y0513) | AI Engineer | [Ibrahim Irfanul Haq](https://www.linkedin.com/in/ibrahimirfanulhaq/)|
-| Rafi Azhar Suadmaja (CACC229D6Y0563) | AI Engineer |  [Rafi Azhar Suadmaja](https://www.linkedin.com/in/rafi-azhar-suadmaja-53493028b)|
-| Alifah Mu’asyaroh (CDCC229D6X1533) | Data Scientist | [Alifah Mu’asyaroh](https://www.linkedin.com/in/alifah-mu-asyaroh-8667513ab)|
-| Alviyatur Rahmaniyah (CDCC229D6X1609) | Data Scientist | [Alviyatur Rahmaniyah](https://www.linkedin.com/in/alviyatur-rahmaniyah)|
-| Hafizh Kusuma Abdillah (CFCC229D6Y1818) | Full-Stack Developer | [Hafizh Kusuma Abdillah](https://www.linkedin.com/in/hafizh-kusuma-abdillah-440102297/)|
-| Rifki Ardiansah (CFCC574D6Y2454) | Full-Stack Developer | [Rifki Ardiansah](https://www.linkedin.com/in/rifki-ardiansahh/) |
+| Nama | Role | ID | LinkedIn | 
+|------|------|------|------|
+| Ibrahim Irfanul Haq | CACC229D6Y0513 | AI Engineer | [Ibrahim Irfanul Haq](https://www.linkedin.com/in/ibrahimirfanulhaq/)|
+| Rafi Azhar Suadmaja | CACC229D6Y0563 | AI Engineer |  [Rafi Azhar Suadmaja](https://www.linkedin.com/in/rafi-azhar-suadmaja-53493028b)|
+| Alifah Mu’asyaroh | CDCC229D6X1533 | Data Scientist | [Alifah Mu’asyaroh](https://www.linkedin.com/in/alifah-mu-asyaroh-8667513ab)|
+| Alviyatur Rahmaniyah | CDCC229D6X1609 | Data Scientist | [Alviyatur Rahmaniyah](https://www.linkedin.com/in/alviyatur-rahmaniyah)|
+| Hafizh Kusuma Abdillah | CFCC229D6Y1818 | Full-Stack Developer | [Hafizh Kusuma Abdillah](https://www.linkedin.com/in/hafizh-kusuma-abdillah-440102297/)|
+| Rifki Ardiansah | CFCC574D6Y2454 | Full-Stack Developer | [Rifki Ardiansah](https://www.linkedin.com/in/rifki-ardiansahh/) |
 
 ---
 
