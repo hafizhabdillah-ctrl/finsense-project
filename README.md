@@ -1,5 +1,4 @@
 ```markdown
-<div align="center">
 
 # 💰 FinSense
 ### *Smart Finance Assistant for UMKM*
@@ -16,8 +15,6 @@
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
 
 > **Capstone Project Coding Camp 2026** – Team ID: CC26-PSU282
-
-</div>
 
 ---
 
