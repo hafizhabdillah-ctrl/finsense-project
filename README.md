@@ -118,7 +118,7 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 | Model | Link | Penempatan |
 |-------|------|-------------|
 | Voice Model (v10) & Forecasting Models  | [Google Drive](https://drive.google.com/drive/u/0/folders/17zq-z2nmwsiqvGJcqZ4NHkJy6oiy2iEU) | `ai-service/` |
-| Preprocessing Data | [Google Drive](https://drive.google.com/drive/folders/1mIRjNcGmQtct0z2QnpFC3AKbsFXZDMf0?usp=sharing) | `data-science/' |
+| Preprocessing Data | [Google Drive](https://drive.google.com/drive/folders/1mIRjNcGmQtct0z2QnpFC3AKbsFXZDMf0?usp=sharing) | `data-science/` |
 
 > Tanpa model, backend tetap berjalan (fitur AI tidak aktif).
 
