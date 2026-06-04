@@ -127,7 +127,7 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 ## 👥 Tim Pengembang
 
-| Nama | Role | ID | LinkedIn | 
+| Nama | ID | Role | Contact | 
 |------|------|------|------|
 | Ibrahim Irfanul Haq | CACC229D6Y0513 | AI Engineer | [Ibrahim Irfanul Haq](https://www.linkedin.com/in/ibrahimirfanulhaq/)|
 | Rafi Azhar Suadmaja | CACC229D6Y0563 | AI Engineer |  [Rafi Azhar Suadmaja](https://www.linkedin.com/in/rafi-azhar-suadmaja-53493028b)|
