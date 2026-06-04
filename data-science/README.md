@@ -2,7 +2,7 @@
 
 ## Overview
 
-Folder ini berisi seluruh proses *data science* pada project pencatatan transaksi retail berbasis suara *(voice input)*. Modul mencakup preprocessing data transaksi, exploratory data analysis (EDA), preprocessing audio, pembentukan transkrip, serta pelabelan NLP untuk mendukung sistem transaksi berbasis suara.
+Folder ini berisi seluruh proses *data science* pada project FinSense. Proses ini mencakup preprocessing data transaksi, exploratory data analysis (EDA), preprocessing audio, pembentukan transkrip, pelabelan NLP (*intent* dan *entity*), serta evaluasi sistem melalui A/B testing untuk membandingkan efisiensi *voice input* dan *manual input*. Selain itu, tersedia laporan komprehensif yang mendokumentasikan seluruh proses analisis.
 
 ---
 
@@ -14,17 +14,24 @@ Folder ini berisi seluruh proses *data science* pada project pencatatan transaks
 | `02_analysis_transactions.ipynb` | Exploratory Data Analysis (EDA) dan visualisasi transaksi                                      |
 | `03_cleaning_audio.ipynb`        | Audio preprocessing (*mono conversion*, *resampling*, *normalization*, dan *silence trimming*) |
 | `04_nlp_audio.ipynb`             | Pembentukan transkrip transaksi dan pelabelan NLP (*intent* dan *entity*)                      |
-
+| `05_ab_testing.ipynb`            | Analisis A/B testing untuk membandingkan voice input vs manual input berdasarkan waktu        |
 ---
 
-## Installation
+## How to Run
 
-Install dependency:
+Install dependency dan jalankan Jupyter Notebook:
 
 ```bash
 pip install -r requirements.txt
+jupyter notebook
 ```
 
+Kemudian jalankan notebook sesuai urutan:
+1. 01_cleaning_transactions.ipynb
+2. 02_analysis_transactions.ipynb
+3. 03_cleaning_audio.ipynb
+4. 04_nlp_audio.ipynb
+5. 05_ab_testing.ipynb
 ---
 
 ## Dataset Documentation
@@ -32,6 +39,12 @@ pip install -r requirements.txt
 Detail dataset, preprocessing, definisi variabel, serta karakteristik data tersedia pada:
 
 `data_dictionary.md`
+
+---
+
+## Comprehensive Report
+Dokumen ini menjelaskan secara rinci setiap tahapan analisis data yang dilakukan dalam project.
+🔗 **View Report:** [Google Drive Link](https://drive.google.com/file/d/1tpCK65ZhvTN2tGw2_13QvLoUaAEBpER7/view?usp=sharing)
 
 ---
 

@@ -217,8 +217,6 @@ audio_raw/
 
 ## Catatan Tambahan
 
-## Catatan Tambahan
-
 - Dataset transaksi akhir merupakan hasil penggabungan antara dataset transaksi dan dataset stok inventori.
 - Kolom inventori (`Stock_In`, `Stock_Out`, dan `Stock_End`) merupakan hasil simulasi berdasarkan aturan restock dan aktivitas penjualan produk.
 - Dataset transaksi telah melalui proses data cleaning, transformasi data, agregasi penjualan harian, simulasi inventori, serta penggabungan dataset sebelum digunakan pada tahap analisis.

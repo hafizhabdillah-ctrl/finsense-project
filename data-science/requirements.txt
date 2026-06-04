@@ -6,3 +6,4 @@ gdown
 ipython
 pydub
 num2words
+scipy
