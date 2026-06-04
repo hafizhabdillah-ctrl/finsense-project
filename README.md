@@ -65,7 +65,7 @@ FinSense adalah **asisten keuangan cerdas** untuk UMKM yang menggabungkan pencat
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/yourusername/finsense.git
+git clone https://github.com/hafizhabdillah-ctrl/finsense-project.git
 cd finsense
 
 # 2. Setup backend
