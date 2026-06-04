@@ -1,14 +1,16 @@
+```markdown
 # 💰 FinSense - Aplikasi Pencatatan Keuangan UMKM Berbasis AI
 
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)
-![React](https://img.shields.io/badge/React-18-blue)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38B2AC)
+![React](https://img.shields.io/badge/React-19-blue)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688)
-![Prisma](https://img.shields.io/badge/Prisma-5-2D3748)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-orange)
 
-**FinSense** adalah platform manajemen keuangan yang dirancang khusus untuk UMKM. Dilengkapi dengan kecerdasan buatan (AI) untuk **prediksi pemasukan harian**, **rekomendasi restok stok**, **deteksi produk terlaris**, serta **input transaksi via suara**. Dashboard interaktif membantu pemilik usaha memantau kesehatan keuangan secara real-time.
+**FinSense** adalah platform manajemen keuangan yang dirancang khusus untuk UMKM. Dilengkapi dengan kecerdasan buatan (AI) untuk **prediksi pemasukan harian**, **rekomendasi restok stok**, **deteksi produk terlaris**, serta **input transaksi via suara** (voice‑to‑produk). Dashboard interaktif membantu pemilik usaha memantau kesehatan keuangan secara real-time.
 
-> 🚀 Proyek ini adalah Capstone Project untuk Coding Camp 2026.
+> 🚀 Proyek ini adalah Capstone Project **Coding Camp 2026** (Team ID: CC26-PSU282).
 
 ---
 
@@ -17,86 +19,78 @@
 | Modul | Fitur |
 |-------|-------|
 | 🔐 **Autentikasi** | Login, Register, Lupa password (via email) |
-| 📝 **Transaksi** | Tambah manual & input suara (voice-to-intent) |
+| 📝 **Transaksi** | Tambah manual & input suara (voice‑to‑produk) |
 | 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
-| 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time-series |
-| 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris |
-| 🗣️ **AI Speech** | Konversi suara ke transaksi (*mendukung [121 produk](./PRODUCTS_LIST.md), [lihat daftar](./PRODUCTS_LIST.md)*) |
+| 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time‑series |
+| 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris (AI) |
+| 🗣️ **AI Speech** | Konversi suara ke produk (mendukung **121 produk**) |
+| 📦 **Manajemen Stok** | CRUD produk, riwayat stok, notifikasi stok menipis |
+| 🛒 **POS Terminal** | Penjualan cepat dengan keranjang & voice |
 
-> ℹ️ **Batasan Voice Recognition:** Model speech-to-intent hanya mengenali **121 produk** yang sudah dilatih. Produk di luar daftar tidak akan terdeteksi. Silakan gunakan input manual untuk produk lain.
+> 🗣️ **Batasan Voice Recognition** – Model speech‑to‑produk hanya mengenali **121 produk** yang sudah dilatih. [Lihat daftar lengkap](./PRODUCTS_LIST.md). Di luar daftar, gunakan input manual.
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React 18 + Vite
-- TailwindCSS + DaisyUI
+- React 19 + Vite
+- TailwindCSS 4 + DaisyUI
 - Axios, React Router DOM
-- Recharts (grafik)
+- React Chart.js 2, SweetAlert2
 
 ### Backend
 - Node.js + Express
 - PostgreSQL + Prisma ORM
 - JWT (authentication)
 - Nodemailer (reset password)
-- Bcrypt
+- Bcrypt, Multer, Fluent‑ffmpeg
 
 ### AI Service (Python)
 - FastAPI + Uvicorn
 - TensorFlow 2.19
 - Librosa (audio processing)
-- Pandas, NumPy, Scikit-learn
+- Pandas, NumPy, Scikit‑learn
 - Holidays (fitur hari libur)
 
 ### Deployment (opsional)
 - Frontend: Vercel / Netlify
 - Backend: Railway / Render
-- AI Service: Hugging Face Spaces / Local
+- AI Service: Hugging Face Spaces / Local / VPS
 
 ---
 
-## 🗣️ Batasan Voice Recognition
-
-Model AI speech-to-intent pada FinSense saat ini **hanya mendukung 121 produk** yang sudah dilatih. Produk di luar daftar **tidak akan terdeteksi** oleh sistem suara.
-
-📋 **Daftar lengkap 121 produk** dapat dilihat di [PRODUCTS_LIST.md](./PRODUCTS_LIST.md).
-
-> 📌 **Catatan:** Untuk produk yang tidak ada dalam daftar, silakan gunakan **input manual** atau **pencarian teks** pada halaman POS Terminal. Tim pengembang akan terus menambah dataset produk pada versi berikutnya.
-
-## 📦 Struktur Proyek
+## 📁 Struktur Proyek
 
 ```
-FinSense/
+FINSENSE-PROJECT/
+├── ai-service/
+│   ├── model_v10/                 # Model voice (savedmodel + artifacts.json)
+│   ├── serve_model.py             # FastAPI untuk voice (produk)
+│   ├── app_prediction.py          # FastAPI untuk forecasting (revenue, stock, top products)
+│   ├── combined_ai.py             # Menggabungkan voice + prediction dalam satu server
+│   ├── get_prediction.py          # Inference logic 3 model
+│   ├── inference_wrapper_v10.py   # Wrapper voice + jumlah parsing
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── ... (file model .keras, .pkl)
 ├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── middleware/
-│   │   └── utils/
-│   ├── prisma/
+│   ├── src/                       (controllers, routes, services, middleware)
+│   ├── prisma/                    (schema, migrations)
+│   ├── uploads/                   (temporary audio)
 │   ├── .env.example
 │   ├── package.json
 │   └── server.js
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   └── context/
 │   ├── public/
 │   ├── .env.example
-│   └── package.json
-├── ai-service/
-│   ├── app.py               # FastAPI untuk voice
-│   ├── app_prediction.py    # FastAPI untuk forecasting
-│   ├── get_prediction.py    # Inference script
-│   ├── requirements.txt
-│   └── Dockerfile (opsional)
+│   ├── package.json
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── data-science/                  (notebooks, data dictionary)
 ├── README.md
-└── .gitignore
+└── PRODUCTS_LIST.md
 ```
 
 ---
@@ -108,6 +102,7 @@ FinSense/
 - **Python** 3.10 – 3.12
 - **PostgreSQL** (atau database lain yang didukung Prisma)
 - **Git**
+- **ffmpeg** (di server AI – wajib untuk decode audio dari browser)
 
 ### 1. Clone repository
 ```bash
@@ -134,21 +129,35 @@ npm install
 npm run dev   # Running di http://localhost:5173
 ```
 
-### 4. AI Service (Voice & Forecasting)
+### 4. AI Service (Voice + Forecasting)
+
+#### Opsi A – Jalankan voice dan prediction secara terpisah (dua terminal)
 ```bash
 cd ai-service
-# Buat virtual environment (disarankan)
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# atau .\venv\Scripts\activate (Windows)
-
+source venv/bin/activate  # atau .\venv\Scripts\activate
 pip install -r requirements.txt
-# Download model dari tautan di bawah (lihat bagian Model ML)
-# Jalankan voice service
-python app.py                # → http://localhost:8000
-# Jalankan forecasting service (terminal terpisah)
-python app_prediction.py     # → http://localhost:8001
+
+# Terminal 1: voice model (produk)
+python serve_model.py          # → http://localhost:8000
+
+# Terminal 2: forecasting (revenue, stock, top products)
+python app_prediction.py       # → http://localhost:8001
 ```
+
+#### Opsi B – Jalankan combined server (satu port, kedua API)
+```bash
+cd ai-service
+python combined_ai.py          # → http://localhost:8000
+# Endpoints:
+# - /voice/predict     (produk dari audio)
+# - /predict/health    (forecasting)
+```
+
+> 📌 **Pastikan ffmpeg terinstal** di sistem server AI.  
+> - Windows: download dari [ffmpeg.org](https://ffmpeg.org/download.html), tambahkan ke PATH.  
+> - macOS: `brew install ffmpeg`  
+> - Linux: `sudo apt install ffmpeg`
 
 ---
 
@@ -156,19 +165,21 @@ python app_prediction.py     # → http://localhost:8001
 
 Karena ukuran file model besar (>100 MB), model tidak disertakan dalam repository. Silakan unduh dari tautan berikut:
 
-### 1. FinSense SLU (Speech-to-Intent)
-- **File:** `finsense_slu.keras` (~2 MB)
-- **Download:** [Google Drive / Hugging Face – SLU Model](https://drive.google.com/your-link) *(ganti dengan link Anda)*
-- **Penempatan:** Letakkan di folder `ai-service/`
+### 1. Voice Model (SLU – produk)
+- **Folder:** `model_v10/` berisi:
+  - `savedmodel_v10/` (TF SavedModel)
+  - `artifacts.json` (vocab 121 produk & unit_price_lookup)
+- **Download:** [Google Drive – Voice Model v10](https://drive.google.com/your-link) *(ganti dengan link nyata)*
+- **Penempatan:** Ekstrak ke `ai-service/model_v10/`
 
-### 2. FinSense Forecasting (Revenue, Stock, Top Products)
+### 2. Forecasting Models (Revenue, Stock, Top Products)
 - **File:**
   - `model_prediksi.keras` (revenue)
-  - `model_product.keras` (top products)
-  - `model_stock.keras` (stock restock)
+  - `model_product.keras` (top 5 produk)
+  - `model_stock.keras` (restok stok)
   - `scaler_prediksi.pkl` (scaler & metadata)
-- **Download:** [Google Drive / Hugging Face – Forecasting Models](https://drive.google.com/your-link) *(ganti dengan link Anda)*
-- **Penempatan:** Letakkan di folder `ai-service/`
+- **Download:** [Google Drive – Forecasting Models](https://drive.google.com/your-link) *(ganti dengan link nyata)*
+- **Penempatan:** Letakkan di `ai-service/` (satu folder dengan `app_prediction.py`)
 
 **Catatan:** Jika tidak menggunakan AI service, backend tetap berjalan dengan fallback manual (transaksi biasa, tanpa prediksi).
 
@@ -179,12 +190,11 @@ Karena ukuran file model besar (>100 MB), model tidak disertakan dalam repositor
 1. **Database PostgreSQL** pastikan berjalan.
 2. **Backend:** Terminal 1 → `cd backend && npm run dev`
 3. **Frontend:** Terminal 2 → `cd frontend && npm run dev`
-4. **AI Voice:** Terminal 3 → `cd ai-service && python app.py`
-5. **AI Forecasting:** Terminal 4 → `cd ai-service && python app_prediction.py`
-6. Buka browser di `http://localhost:5173`
+4. **AI Service:** Terminal 3 → `cd ai-service && python combined_ai.py`
+5. Buka browser di `http://localhost:5173`
 
 > Untuk **testing voice di mobile**, pastikan frontend diakses via **HTTPS** (gunakan ngrok atau deploy ke Vercel).  
-> Server AI (FastAPI) harus dapat diakses oleh backend Express (pastikan `AI_SERVICE_URL` benar).
+> Server AI (FastAPI) harus dapat diakses oleh backend Express (setting `AI_SERVICE_URL` di `.env`).
 
 ---
 
@@ -192,24 +202,27 @@ Karena ukuran file model besar (>100 MB), model tidak disertakan dalam repositor
 
 ### Backend `.env` (contoh)
 ```env
-PORT=5000
-DATABASE_URL="postgresql://postgres:password@localhost:5432/finsense"
-JWT_SECRET="your_super_secret_key"
-AI_SERVICE_URL=http://localhost:8000/predict
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USER=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
-FRONTEND_URL=http://localhost:5173
+DATABASE_URL={{ DATABASE_URL }}
+PORT={{ PORT }}
+JWT_SECRET={{ JWT_SECRET }}
+FRONTEND_URL={{ FRONTEND_URL }}
+AI_SERVICE_URL={{ AI_SERVICE_URL }}
+PREDICTION_SERVICE_URL={{ PREDICTION_SERVICE_URL }}
+MAIL_HOST={{ MAIL_HOST }}
+MAIL_PORT={{ MAIL_PORT }}
+MAIL_USER={{ MAIL_USER }}
+MAIL_PASSWORD={{ MAIL_PASSWORD }}
 ```
 
 ### Frontend `.env` (contoh)
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL={{ VITE_API_URL }}
+VITE_VOICE_AI_URL={{ VITE_VOICE_AI_URL }}
+VITE_PRED_AI_URL={{ VITE_PRED_AI_URL }}
 ```
-## 📄 Referensi
 
-- [Daftar 121 Produk yang Didukung Voice](./PRODUCTS_LIST.md)
+---
+
 
 ## 🤝 Tim Pengembang
 
@@ -233,5 +246,8 @@ VITE_API_URL=http://localhost:5000/api
 ---
 
 **FinSense – Smart Finance for UMKM**  
-🌐 [https://finsense-project.vercel.app](https://finsense-project.vercel.app)
+🌐 [https://finsense-project.vercel.app](https://finsense-project.vercel.app) (contoh)  
+📧 finsense@support.com
+```
 
+---
