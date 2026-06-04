@@ -200,63 +200,11 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api
 ```
 
-```markdown
-## 🗣️ Batasan Voice Recognition
-
-Model AI speech-to-intent pada FinSense saat ini **hanya mendukung 121 produk** yang sudah dilatih. Produk di luar daftar **tidak akan terdeteksi** oleh sistem suara.
-
-📋 **Daftar produk yang dikenali (121 item):**  
-*Klik untuk melihat selengkapnya* (atau tampilkan cuplikan):
-
-<details>
-<summary>Lihat 10 contoh produk</summary>
-
-- abc kecap asin 620ml
-- abc kecap manis 620ml
-- acnes obat jerawat
-- aqua 600ml
-- beras maknyuss 5kg
-- bimoli minyak goreng 2L
-- coca cola 1L
-- indomie goreng
-- make over lipmatte
-- milo 1kg
-- ... dan 111 produk lainnya (total 121)
-</details>
-
-> 📌 **Catatan:** Untuk produk yang tidak ada dalam daftar, silakan gunakan **input manual** atau **pencarian teks** pada halaman POS Terminal. Tim pengembang akan terus menambah dataset produk pada versi berikutnya.
-```
-
-Atau Anda bisa menambahkan langsung sebagai bullet point di fitur AI Speech:
 
 ```markdown
 - 🗣️ **AI Speech** – Konversi suara ke transaksi (hanya mendukung **121 produk** yang sudah dilatih, lihat daftar lengkap di [tautan ini] atau di bagian bawah README).
 ```
 
-Jika ingin lebih rapi, buat file terpisah `PRODUCTS_LIST.md` lalu tautkan. Tapi karena README harus mandiri, gunakan collapsible section seperti di atas.
-
----
-
-## ✅ UPDATE README LENGKAP (dengan bagian batasan)
-
-Anda bisa mengganti bagian **Fitur Utama** atau menambahkan setelah **AI Speech**. Saya tulis ulang cuplikan README yang relevan:
-
-```markdown
-## ✨ Fitur Utama
-
-| Modul | Fitur |
-|-------|-------|
-| 🔐 **Autentikasi** | Login, Register, Lupa password (via email) |
-| 📝 **Transaksi** | Tambah manual & input suara (voice-to-intent) |
-| 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
-| 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time-series |
-| 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris |
-| 🗣️ **AI Speech** | Konversi suara ke transaksi (*mendukung 121 produk*) |
-
-> ℹ️ **Batasan Voice Recognition:** Model speech-to-intent hanya mengenali **121 produk** yang sudah dilatih. Produk di luar daftar tidak akan terdeteksi. Silakan gunakan input manual untuk produk lain.
-```
-
-Kemudian di bagian bawah README (sebelum Lisensi atau sesudah Kontak), tambahkan:
 
 ```markdown
 ## 📋 Daftar Produk yang Didukung Voice (121 item)
