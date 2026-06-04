@@ -1,5 +1,3 @@
----
-
 ```markdown
 <div align="center">
 
@@ -300,5 +298,3 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
   <sub>🌐 <a href="https://finsense-project.vercel.app">Live Demo</a> | 📧 finsense@support.com</sub>
 </div>
 ```
-
----
