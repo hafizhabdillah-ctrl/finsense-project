@@ -5,7 +5,6 @@
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38B2AC)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688)
 ![Prisma](https://img.shields.io/badge/Prisma-5-2D3748)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 **FinSense** adalah platform manajemen keuangan yang dirancang khusus untuk UMKM. Dilengkapi dengan kecerdasan buatan (AI) untuk **prediksi pemasukan harian**, **rekomendasi restok stok**, **deteksi produk terlaris**, serta **input transaksi via suara**. Dashboard interaktif membantu pemilik usaha memantau kesehatan keuangan secara real-time.
 
@@ -22,7 +21,9 @@
 | 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
 | 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time-series |
 | 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris |
-| 🗣️ **AI Speech** | Konversi suara ke transaksi (tanpa mengetik) |
+| 🗣️ **AI Speech** | Konversi suara ke transaksi (*mendukung 121 produk*) |
+
+> ℹ️ **Batasan Voice Recognition:** Model speech-to-intent hanya mengenali **121 produk** yang sudah dilatih. Produk di luar daftar tidak akan terdeteksi. Silakan gunakan input manual untuk produk lain.
 
 ---
 
@@ -199,13 +200,198 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api
 ```
 
+```markdown
+## 🗣️ Batasan Voice Recognition
+
+Model AI speech-to-intent pada FinSense saat ini **hanya mendukung 121 produk** yang sudah dilatih. Produk di luar daftar **tidak akan terdeteksi** oleh sistem suara.
+
+📋 **Daftar produk yang dikenali (121 item):**  
+*Klik untuk melihat selengkapnya* (atau tampilkan cuplikan):
+
+<details>
+<summary>Lihat 10 contoh produk</summary>
+
+- abc kecap asin 620ml
+- abc kecap manis 620ml
+- acnes obat jerawat
+- aqua 600ml
+- beras maknyuss 5kg
+- bimoli minyak goreng 2L
+- coca cola 1L
+- indomie goreng
+- make over lipmatte
+- milo 1kg
+- ... dan 111 produk lainnya (total 121)
+</details>
+
+> 📌 **Catatan:** Untuk produk yang tidak ada dalam daftar, silakan gunakan **input manual** atau **pencarian teks** pada halaman POS Terminal. Tim pengembang akan terus menambah dataset produk pada versi berikutnya.
+```
+
+Atau Anda bisa menambahkan langsung sebagai bullet point di fitur AI Speech:
+
+```markdown
+- 🗣️ **AI Speech** – Konversi suara ke transaksi (hanya mendukung **121 produk** yang sudah dilatih, lihat daftar lengkap di [tautan ini] atau di bagian bawah README).
+```
+
+Jika ingin lebih rapi, buat file terpisah `PRODUCTS_LIST.md` lalu tautkan. Tapi karena README harus mandiri, gunakan collapsible section seperti di atas.
+
 ---
 
-## 📝 Lisensi
+## ✅ UPDATE README LENGKAP (dengan bagian batasan)
 
-Proyek ini dilisensikan di bawah **MIT License** – bebas digunakan dan dimodifikasi untuk keperluan edukasi dan komersial.
+Anda bisa mengganti bagian **Fitur Utama** atau menambahkan setelah **AI Speech**. Saya tulis ulang cuplikan README yang relevan:
 
----
+```markdown
+## ✨ Fitur Utama
+
+| Modul | Fitur |
+|-------|-------|
+| 🔐 **Autentikasi** | Login, Register, Lupa password (via email) |
+| 📝 **Transaksi** | Tambah manual & input suara (voice-to-intent) |
+| 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
+| 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time-series |
+| 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris |
+| 🗣️ **AI Speech** | Konversi suara ke transaksi (*mendukung 121 produk*) |
+
+> ℹ️ **Batasan Voice Recognition:** Model speech-to-intent hanya mengenali **121 produk** yang sudah dilatih. Produk di luar daftar tidak akan terdeteksi. Silakan gunakan input manual untuk produk lain.
+```
+
+Kemudian di bagian bawah README (sebelum Lisensi atau sesudah Kontak), tambahkan:
+
+```markdown
+## 📋 Daftar Produk yang Didukung Voice (121 item)
+
+<details>
+<summary>Klik untuk melihat daftar lengkap</summary>
+
+```
+abc kecap asin enam ratus dua puluh mililiter
+abc kecap manis enam ratus dua puluh mililiter
+abc sari kacang hijau dua ratus lima puluh mililiter
+acnes obat jerawat
+antimo obat anti mabuk
+aqua enam ratus mililiter
+bango kecap manis seratus delapan puluh sembilan gram
+baygon obat nyamuk bakar
+beras maknyuss lima kilogram
+beras ramos super lima kilogram
+beras rojolele lima kilogram
+beras sania lima kilogram
+betadine obat luka lima gram
+bimoli minyak goreng dua liter
+buavita dua ratus lima puluh mililiter
+clas mild
+coca cola satu liter
+cotton bud
+dettol body wash dua ratus mililiter
+diapet
+downy pewangi lima ratus lima puluh mililiter
+dua kelinci kacang
+enervon c vitamin
+esse change
+evangeline parfume seratus mililiter
+fanta satu liter
+floridina tiga ratus lima puluh mililiter
+formula sikat gigi
+forvita margarin dua ratus lima puluh gram
+frisian flag susu kental manis
+gaga seratus habanero
+gaga seratus jalapeno
+gaga seratus lada hitam
+gajah kopi tubruk
+garam dapur
+glad two glow moisturizer
+gula pasir tiga kilogram
+hadalabo face wash lima puluh gram
+hanasui masker wajah
+hatari malkist dua ratus enam puluh gram
+hit magic obat nyamuk bakar
+hs rokok filter
+implora moisturizer
+indofood saus tomat tiga ratus tiga puluh lima mililiter
+indomie goreng
+indomie rendang
+indomie soto
+indomilk uht cokelat satu liter
+indomilk uht full cream satu liter
+kaki tiga larutan lima ratus mililiter
+kanzler singles sosis
+kecap asin enam ratus dua puluh mililiter
+kiranti pegel linu
+kobe tepung roti dua ratus gram
+koko crunch
+konidin obh
+kool fever
+la ice
+le minerale enam ratus mililiter
+lifebuoy body wash
+make over lipmatte
+mama lemon sabun cuci piring
+marlboro gold
+masako
+milo satu kilogram
+monde butter cookies
+nabati kaleng dua ratus delapan puluh tujuh gram
+nabati wafer
+neo coffee sachet pack
+nescafe kitkat dua ratus dua puluh mililiter
+omg lipcream
+oreo sandwich roll seratus sembilan belas gram
+pantene conditioner seratus lima puluh mililiter
+pantene shampoo satu liter
+pepsodent toothpaste
+pocari sweat lima ratus mililiter
+poci teh celup
+pop mie tujuh puluh lima gram
+prenagen tiga ratus enam puluh gram
+prochiz slices keju cheddar
+quacker oatmeal instan delapan ratus gram
+rexona deodorant
+roma kelapa tiga ratus gram
+roma sari gandum seratus empat puluh sembilan gram
+sampoerna mild enam belas
+saori saus tiram dua ratus tujuh puluh mililiter
+sari kue cheesecake
+sari kue lapis surabaya
+sari roti klasik kasur seratus delapan puluh lima gram
+sari roti sisir seratus enam puluh lima gram
+sari roti sobek tujuh puluh dua gram
+sari roti tawar
+sasa micin
+sedaap ayam bawang
+sedaap goreng
+sedaap kari spesial
+sedaap kecap manis lima ratus lima puluh mililiter
+sedaap selection
+sedaap singapore laksa
+sedaap soto
+segitiga biru tepung terigu satu kilogram
+sgm soya vanila empat ratus gram
+silverqueen milk chocolate
+sleek detergen cair empat ratus lima puluh mililiter
+so klin liquid tujuh ratus dua puluh mililiter
+sprite satu liter
+stella spray empat ratus mililiter
+sweety silver pants
+taro tiga puluh dua gram
+teh kotak dua ratus mililiter
+teh pucuk harum tiga ratus lima puluh mililiter
+tejahe permen
+telor ayam satu kilogram
+tolak angin
+tolak linu
+top coffee sachet pack
+tropicana slim
+wafello wafer
+wardah cushion
+wipol tujuh ratus lima puluh mililiter
+you c thousand seratus empat puluh mililiter
+```
+</details>
+
+> 💡 **Harga produk** sudah tersedia dalam sistem sehingga saat voice dikenali, harga akan otomatis mengikuti harga jual yang tersimpan di database.
+```
+
 
 ## 🤝 Tim Pengembang
 
