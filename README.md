@@ -143,4 +143,3 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
   Built with ☕ by Team CC26-PSU282  
   🌐 <a href="https://finsense-project.vercel.app">Live Demo</a> | 📧 finsense@support.com
 </div>
-```
