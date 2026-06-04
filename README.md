@@ -1,21 +1,21 @@
 ```markdown
 
 <div align="center">
-# 💰 FinSense
-### *Smart Finance Assistant for UMKM*
+<sub># 💰 FinSense</sub>
+<sub>### *Smart Finance Assistant for UMKM*</sub>
 
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+<sub>![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)</sub>
+<sub>![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)</sub>
+<sub>![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)</sub>
+<sub>![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)</sub>
+<sub>![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)</sub>
+<sub>![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)</sub>
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/network/members)
-[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+<sub>[![GitHub stars](https://img.shields.io/github/stars/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/stargazers)</sub>
+<sub>[![GitHub forks](https://img.shields.io/github/forks/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/network/members)</sub>
+<sub>[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)</sub>
 
-> **Capstone Project Coding Camp 2026** – Team ID: CC26-PSU282
+<sub>> **Capstone Project Coding Camp 2026** – Team ID: CC26-PSU282</sub>
 </div>
 
 ---
