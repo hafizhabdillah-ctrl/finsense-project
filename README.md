@@ -1,254 +1,304 @@
 ---
+
 ```markdown
-# 💰 FinSense - Aplikasi Pencatatan Keuangan UMKM Berbasis AI
+<div align="center">
 
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)
-![React](https://img.shields.io/badge/React-19-blue)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688)
-![Prisma](https://img.shields.io/badge/Prisma-7-2D3748)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-orange)
+# 💰 FinSense
+### *Smart Finance Assistant for UMKM*
 
-**FinSense** adalah platform manajemen keuangan yang dirancang khusus untuk UMKM. Dilengkapi dengan kecerdasan buatan (AI) untuk **prediksi pemasukan harian**, **rekomendasi restok stok**, **deteksi produk terlaris**, serta **input transaksi via suara** (voice‑to‑produk). Dashboard interaktif membantu pemilik usaha memantau kesehatan keuangan secara real-time.
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 
-> 🚀 Proyek ini adalah Capstone Project **Coding Camp 2026** (Team ID: CC26-PSU282).
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/yourusername/finsense?style=social)](https://github.com/yourusername/finsense/network/members)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+> **Capstone Project Coding Camp 2026** – Team ID: CC26-PSU282
+
+</div>
 
 ---
 
-## ✨ Fitur Utama
+## 📌 Tentang FinSense
 
-| Modul | Fitur |
-|-------|-------|
-| 🔐 **Autentikasi** | Login, Register, Lupa password (via email) |
-| 📝 **Transaksi** | Tambah manual & input suara (voice‑to‑produk) |
-| 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
-| 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time‑series |
-| 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris (AI) |
-| 🗣️ **AI Speech** | Konversi suara ke produk (mendukung **121 produk**) |
+FinSense adalah **asisten keuangan cerdas** untuk UMKM yang menggabungkan pencatatan transaksi manual, **input suara** (voice-to-produk), serta **prediksi AI** untuk pemasukan, rekomendasi restok stok, dan deteksi produk terlaris. Dibangun dengan arsitektur modern dan siap di-deploy ke cloud.
+
+### 🎯 Masalah yang Diselesaikan
+- UMKM kesulitan mencatat transaksi secara real-time
+- Stok tidak terpantau → kehabisan atau overstock
+- Sulit memprediksi pemasukan di masa depan
+- Input transaksi lambat (terutama saat ramai)
+
+### 💡 Solusi FinSense
+✅ Pencatatan **cepat** (manual + voice)  
+✅ Dashboard **interaktif** & real-time  
+✅ Prediksi **akurat** dengan model time-series  
+✅ Rekomendasi **restok otomatis**  
+✅ **Voice input** untuk 121 produk (tingkat akurasi tinggi)
+
+---
+
+## ✨ Fitur Unggulan
+
+| 🚀 Fitur | 📝 Deskripsi |
+|----------|--------------|
+| 🔐 **Autentikasi** | Login, register, reset password via email (JWT) |
+| 🛒 **POS + Voice** | Input transaksi dengan suara (121 produk) atau manual |
+| 📊 **Dashboard** | Grafik pemasukan/pengeluaran, saldo, top 5 produk |
+| 🔮 **Forecasting** | Prediksi pemasukan harian (model LSTM) |
 | 📦 **Manajemen Stok** | CRUD produk, riwayat stok, notifikasi stok menipis |
-| 🛒 **POS Terminal** | Penjualan cepat dengan keranjang & voice |
+| 🧠 **Rekomendasi AI** | Restok stok & produk terlaris dari model ML |
 
-> 🗣️ **Batasan Voice Recognition** – Model speech‑to‑produk hanya mengenali **121 produk** yang sudah dilatih. [Lihat daftar lengkap](./PRODUCTS_LIST.md). Di luar daftar, gunakan input manual.
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-- React 19 + Vite
-- TailwindCSS 4 + DaisyUI
-- Axios, React Router DOM
-- React Chart.js 2, SweetAlert2
-
-### Backend
-- Node.js + Express
-- PostgreSQL + Prisma ORM
-- JWT (authentication)
-- Nodemailer (reset password)
-- Bcrypt, Multer, Fluent‑ffmpeg
-
-### AI Service (Python)
-- FastAPI + Uvicorn
-- TensorFlow 2.19
-- Librosa (audio processing)
-- Pandas, NumPy, Scikit‑learn
-- Holidays (fitur hari libur)
-
-### Deployment (opsional)
-- Frontend: Vercel / Netlify
-- Backend: Railway / Render
-- AI Service: Hugging Face Spaces / Local / VPS
+> 🗣️ **Voice Recognition** – Model mendukung **121 produk spesifik** ([lihat daftar](./PRODUCTS_LIST.md)). Di luar itu, gunakan input manual.
 
 ---
 
-## 📁 Struktur Proyek
+## 🖼️ Demo & Screenshot
+
+> *Sertakan screenshot aplikasi di sini. Contoh:*
+
+<div align="center">
+  <img src="https://via.placeholder.com/800x400?text=FinSense+Dashboard" alt="Dashboard" width="80%">
+  <br>
+  <i>Dashboard utama – grafik pemasukan & pengeluaran</i>
+</div>
+
+<details>
+<summary>📸 Klik untuk melihat screenshot lainnya</summary>
+<div align="center">
+  <img src="https://via.placeholder.com/400x300?text=Voice+Input" alt="Voice Input">
+  <img src="https://via.placeholder.com/400x300?text=Prediction+Result" alt="Prediction">
+  <img src="https://via.placeholder.com/400x300?text=Stock+Management" alt="Stock">
+</div>
+</details>
+
+---
+
+## 🧱 Arsitektur Sistem
 
 ```
-FINSENSE-PROJECT/
-├── ai-service/
-│   ├── model_v10/                 # Model voice (savedmodel + artifacts.json)
-│   ├── serve_model.py             # FastAPI untuk voice (produk)
-│   ├── app_prediction.py          # FastAPI untuk forecasting (revenue, stock, top products)
-│   ├── combined_ai.py             # Menggabungkan voice + prediction dalam satu server
-│   ├── get_prediction.py          # Inference logic 3 model
-│   ├── inference_wrapper_v10.py   # Wrapper voice + jumlah parsing
+┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
+│   Browser   │────▶│   React     │────▶│   Express.js    │
+│  (User)     │◀────│   Vite      │◀────│   (Backend API)  │
+└─────────────┘     └─────────────┘     └────────┬────────┘
+                                                  │
+                                                  ▼
+┌─────────────────────────────────────────────────────────┐
+│                      PostgreSQL (Prisma)                 │
+└─────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────┐     ┌─────────────┐
+│ FastAPI     │◀────│   AI Models │
+│ (Voice +    │     │ (TensorFlow)│
+│ Forecasting)│     └─────────────┘
+└─────────────┘
+```
+
+**Komunikasi:**  
+- Frontend ↔ Backend: REST API (JSON, JWT)  
+- Backend ↔ AI Service: HTTP requests (voice & prediction)  
+- AI Service ↔ Model: TensorFlow Serving / direktori lokal
+
+---
+
+## 📂 Struktur Proyek (Detail)
+
+```bash
+FinSense/
+├── .github/                 # Workflows CI/CD (opsional)
+├── ai-service/              # Layanan AI (Python)
+│   ├── model_v10/           # Model voice (SavedModel + artifacts)
+│   ├── serve_model.py       # FastAPI untuk voice (port 8000)
+│   ├── app_prediction.py    # FastAPI untuk forecasting (port 8001)
+│   ├── combined_ai.py       # Gabungan kedua service (port 8000)
 │   ├── requirements.txt
-│   ├── Dockerfile
-│   └── ... (file model .keras, .pkl)
-├── backend/
-│   ├── src/                       (controllers, routes, services, middleware)
-│   ├── prisma/                    (schema, migrations)
-│   ├── uploads/                   (temporary audio)
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js
-├── frontend/
+│   └── Dockerfile
+├── backend/                 # Express.js backend
 │   ├── src/
-│   ├── public/
+│   │   ├── controllers/     # Auth, transaksi, produk, dashboard
+│   │   ├── routes/          # API endpoints
+│   │   ├── services/        # Logika bisnis, AI client
+│   │   └── middleware/      # Auth, upload, error handler
+│   ├── prisma/              # Schema & migrations
+│   ├── uploads/             # Temp audio files
 │   ├── .env.example
-│   ├── package.json
-│   ├── vite.config.js
-│   └── tailwind.config.js
-├── data-science/                  (notebooks, data dictionary)
-├── README.md
-└── PRODUCTS_LIST.md
+│   └── package.json
+├── frontend/                # React Vite
+│   ├── src/
+│   │   ├── components/      # UI reusabel
+│   │   ├── pages/           # Login, Dashboard, Transaksi, Stok
+│   │   ├── hooks/           # useAuth, useVoice, etc.
+│   │   ├── context/         # AuthContext, ThemeContext
+│   │   └── services/        # API calls
+│   ├── .env.example
+│   └── package.json
+├── data-science/            # Notebooks & dataset info
+├── PRODUCTS_LIST.md         # 121 produk yang dikenali voice
+└── README.md
 ```
 
 ---
 
-## ⚙️ Setup Environment
+## ⚙️ Setup Cepat (5 Langkah)
 
 ### Prasyarat
-- **Node.js** 18+ dan **npm**
-- **Python** 3.10 – 3.12
-- **PostgreSQL** (atau database lain yang didukung Prisma)
-- **Git**
-- **ffmpeg** (di server AI – wajib untuk decode audio dari browser)
+- Node.js 18+, npm
+- Python 3.10 – 3.12
+- PostgreSQL
+- ffmpeg (untuk voice service)
 
-### 1. Clone repository
+### Langkah-langkah
+
 ```bash
+# 1. Clone repo
 git clone https://github.com/username/finsense.git
 cd finsense
-```
 
-### 2. Backend Setup
-```bash
+# 2. Backend
 cd backend
-cp .env.example .env
-# Edit .env: isi DATABASE_URL, JWT_SECRET, dll
+cp .env.example .env   # isi DATABASE_URL, JWT_SECRET
 npm install
 npx prisma migrate dev --name init
-npx prisma generate
-npm run dev   # Running di http://localhost:5000
-```
+npm run dev
 
-### 3. Frontend Setup
-```bash
+# 3. Frontend (terminal baru)
 cd frontend
 cp .env.example .env
 npm install
-npm run dev   # Running di http://localhost:5173
-```
+npm run dev
 
-### 4. AI Service (Voice + Forecasting)
-
-#### Opsi A – Jalankan voice dan prediction secara terpisah (dua terminal)
-```bash
+# 4. AI Service (terminal baru)
 cd ai-service
-python -m venv venv
-source venv/bin/activate  # atau .\venv\Scripts\activate
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+python combined_ai.py   # jalankan kedua AI dalam satu server
 
-# Terminal 1: voice model (produk)
-python serve_model.py          # → http://localhost:8000
-
-# Terminal 2: forecasting (revenue, stock, top products)
-python app_prediction.py       # → http://localhost:8001
+# 5. Buka browser
+open http://localhost:5173
 ```
 
-#### Opsi B – Jalankan combined server (satu port, kedua API)
-```bash
-cd ai-service
-python combined_ai.py          # → http://localhost:8000
-# Endpoints:
-# - /voice/predict     (produk dari audio)
-# - /predict/health    (forecasting)
-```
-
-> 📌 **Pastikan ffmpeg terinstal** di sistem server AI.  
-> - Windows: download dari [ffmpeg.org](https://ffmpeg.org/download.html), tambahkan ke PATH.  
-> - macOS: `brew install ffmpeg`  
-> - Linux: `sudo apt install ffmpeg`
+> **Catatan:** Pastikan PostgreSQL berjalan, dan sesuaikan `AI_SERVICE_URL` di backend `.env` menjadi `http://localhost:8000`.
 
 ---
 
-## 🤖 Tautan Model Machine Learning
+## 🧪 Environment Variables
 
-Karena ukuran file model besar (>100 MB), model tidak disertakan dalam repository. Silakan unduh dari tautan berikut:
+| File | Variabel | Contoh | Keterangan |
+|------|----------|--------|-------------|
+| `backend/.env` | `DATABASE_URL` | `postgresql://user:pass@localhost:5432/finsense` | Koneksi DB |
+| | `JWT_SECRET` | `supersecretkey` | Secret untuk token |
+| | `AI_SERVICE_URL` | `http://localhost:8000/voice/predict` | Endpoint voice |
+| | `PREDICTION_SERVICE_URL` | `http://localhost:8000/predict/health` | Endpoint forecasting |
+| `frontend/.env` | `VITE_API_URL` | `http://localhost:5000/api` | Backend API |
+| | `VITE_VOICE_AI_URL` | `http://localhost:8000` | AI voice server |
 
-### 1. Voice Model (SLU – produk)
-- **Folder:** `model_v10/` berisi:
-  - `savedmodel_v10/` (TF SavedModel)
-  - `artifacts.json` (vocab 121 produk & unit_price_lookup)
-- **Download:** [Google Drive – Voice Model v10](https://drive.google.com/your-link) *(ganti dengan link nyata)*
+---
+
+## 🤖 Model AI & Link Download
+
+Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
+
+### 1. Voice Model (Produk)
+- **Folder:** `model_v10/` (TF SavedModel + artifacts.json)
+- **Link:** [Google Drive - Voice Model v10](https://drive.google.com/your-link-here)
 - **Penempatan:** Ekstrak ke `ai-service/model_v10/`
 
-### 2. Forecasting Models (Revenue, Stock, Top Products)
-- **File:**
-  - `model_prediksi.keras` (revenue)
-  - `model_product.keras` (top 5 produk)
-  - `model_stock.keras` (restok stok)
-  - `scaler_prediksi.pkl` (scaler & metadata)
-- **Download:** [Google Drive – Forecasting Models](https://drive.google.com/your-link) *(ganti dengan link nyata)*
-- **Penempatan:** Letakkan di `ai-service/` (satu folder dengan `app_prediction.py`)
+### 2. Forecasting Models
+- **File:** `model_prediksi.keras`, `model_product.keras`, `model_stock.keras`, `scaler_prediksi.pkl`
+- **Link:** [Google Drive - Forecasting Models](https://drive.google.com/your-link-here)
+- **Penempatan:** Letakkan di `ai-service/`
 
-**Catatan:** Jika tidak menggunakan AI service, backend tetap berjalan dengan fallback manual (transaksi biasa, tanpa prediksi).
+> Jika model tidak tersedia, backend tetap berjalan tanpa fitur AI (fallback ke logika sederhana).
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi (Lengkap)
+## 📬 API Endpoints (Contoh)
 
-1. **Database PostgreSQL** pastikan berjalan.
-2. **Backend:** Terminal 1 → `cd backend && npm run dev`
-3. **Frontend:** Terminal 2 → `cd frontend && npm run dev`
-4. **AI Service:** Terminal 3 → `cd ai-service && python combined_ai.py`
-5. Buka browser di `http://localhost:5173`
+| Method | Endpoint | Deskripsi |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Registrasi user |
+| POST | `/api/auth/login` | Login → JWT |
+| GET | `/api/transactions` | Ambil transaksi user |
+| POST | `/api/transactions` | Tambah transaksi (manual) |
+| POST | `/api/voice/process` | Upload audio → voice AI |
+| GET | `/api/predictions/revenue` | Dapatkan prediksi pemasukan |
+| GET | `/api/stats/dashboard` | Statistik untuk dashboard |
 
-> Untuk **testing voice di mobile**, pastikan frontend diakses via **HTTPS** (gunakan ngrok atau deploy ke Vercel).  
-> Server AI (FastAPI) harus dapat diakses oleh backend Express (setting `AI_SERVICE_URL` di `.env`).
+> Dokumentasi lengkap (Swagger) tersedia di `http://localhost:5000/api-docs` saat backend running.
 
 ---
 
-## 📄 Konfigurasi Environment
+## 🧪 Testing
 
-### Backend `.env` (contoh)
-```env
-DATABASE_URL={{ DATABASE_URL }}
-PORT={{ PORT }}
-JWT_SECRET={{ JWT_SECRET }}
-FRONTEND_URL={{ FRONTEND_URL }}
-AI_SERVICE_URL={{ AI_SERVICE_URL }}
-PREDICTION_SERVICE_URL={{ PREDICTION_SERVICE_URL }}
-MAIL_HOST={{ MAIL_HOST }}
-MAIL_PORT={{ MAIL_PORT }}
-MAIL_USER={{ MAIL_USER }}
-MAIL_PASSWORD={{ MAIL_PASSWORD }}
-```
+```bash
+# Backend unit tests (Jest)
+cd backend
+npm test
 
-### Frontend `.env` (contoh)
-```env
-VITE_API_URL={{ VITE_API_URL }}
-VITE_VOICE_AI_URL={{ VITE_VOICE_AI_URL }}
-VITE_PRED_AI_URL={{ VITE_PRED_AI_URL }}
+# Frontend (Vitest)
+cd frontend
+npm test
+
+# AI Service (pytest)
+cd ai-service
+pytest tests/
 ```
 
 ---
 
+## 🗺️ Roadmap (Fitur Mendatang)
 
-## 🤝 Tim Pengembang
-
-| Nama | Role | Kontak |
-|------|------|--------|
-| Ibrahim Irfanul Haq | AI Engineer | [GitHub](https://github.com/) |
-| Rafi Azhar Suadmaja | AI Engineer | [GitHub](https://github.com/) |
-| Alifah Mu’asyaroh | Data Scientist | [GitHub](https://github.com/) |
-| Alviyatur Rahmaniyah | Data Scientist | [GitHub](https://github.com/) |
-| Hafizh Kusuma Abdillah | Full-Stack Web Developer | [GitHub](https://github.com/) |
-| Rifki Ardiansah | Full-Stack Web Developer | [GitHub](https://github.com/) |
+- [ ] Integrasi pembayaran digital (QRIS)
+- [ ] Export laporan ke PDF dengan template kustom
+- [ ] Notifikasi realtime (WebSocket) untuk stok menipis
+- [ ] Aplikasi mobile (React Native)
+- [ ] Multi-bisnis (satu akun bisa kelola beberapa toko)
 
 ---
 
-## 🙏 Ucapan Terima Kasih
+## 👥 Tim Pengembang
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><b>Ibrahim Irfanul Haq</b><br/>AI Engineer</td>
+    <td align="center"><b>Rafi Azhar Suadmaja</b><br/>AI Engineer</td>
+    <td align="center"><b>Alifah Mu’asyaroh</b><br/>Data Scientist</td>
+  </tr>
+  <tr>
+    <td align="center"><b>Alviyatur Rahmaniyah</b><br/>Data Scientist</td>
+    <td align="center"><b>Hafizh Kusuma Abdillah</b><br/>Full-Stack Developer</td>
+    <td align="center"><b>Rifki Ardiansah</b><br/>Full-Stack Developer</td>
+  </tr>
+</table>
+</div>
+
+---
+
+## 📄 Lisensi
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+
+## 🙏 Apresiasi
 
 - **Coding Camp 2026** oleh DBS Foundation
-- Mentor dan penguji yang telah memberikan arahan berharga
-- Seluruh pihak yang telah mendukung penyelesaian proyek ini
+- Mentor dan tim penguji yang membimbing
+- Semua kontributor open-source yang library-nya kami gunakan
 
 ---
 
-**FinSense – Smart Finance for UMKM**  
-🌐 [https://finsense-project.vercel.app](https://finsense-project.vercel.app) (contoh)  
-📧 finsense@support.com
+<div align="center">
+  <sub>Built with ☕ and 🧠 by Team CC26-PSU282</sub>
+  <br/>
+  <sub>🌐 <a href="https://finsense-project.vercel.app">Live Demo</a> | 📧 finsense@support.com</sub>
+</div>
 ```
 
 ---
