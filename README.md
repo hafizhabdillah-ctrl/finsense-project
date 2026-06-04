@@ -1,3 +1,4 @@
+---
 ```markdown
 # 💰 FinSense - Aplikasi Pencatatan Keuangan UMKM Berbasis AI
 
