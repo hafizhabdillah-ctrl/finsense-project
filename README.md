@@ -129,10 +129,10 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 | Nama | Role | LinkedIn | 
 |------|------|------|
-| Ibrahim Irfanul Haq | AI Engineer | [Ibrahim Irfanul Haq] (https://www.linkedin.com/in/ibrahimirfanulhaq/)|
-| Rafi Azhar Suadmaja | AI Engineer |  [Rafi Azhar Suadmaja]https://www.linkedin.com/in/|
-| Alifah Mu’asyaroh | Data Scientist | [Alifah Mu’asyaroh]https://www.linkedin.com/in/|
-| Alviyatur Rahmaniyah | Data Scientist | [Alviyatur Rahmaniyah]https://www.linkedin.com/in/|
+| Ibrahim Irfanul Haq | AI Engineer | [Ibrahim Irfanul Haq](https://www.linkedin.com/in/ibrahimirfanulhaq/)|
+| Rafi Azhar Suadmaja | AI Engineer |  [Rafi Azhar Suadmaja](https://www.linkedin.com/in/rafi-azhar-suadmaja-53493028b)|
+| Alifah Mu’asyaroh | Data Scientist | [Alifah Mu’asyaroh](https://www.linkedin.com/in/alifah-mu-asyaroh-8667513ab)|
+| Alviyatur Rahmaniyah | Data Scientist | [Alviyatur Rahmaniyah](https://www.linkedin.com/in/alviyatur-rahmaniyah)|
 | Hafizh Kusuma Abdillah | Full-Stack Developer | [Hafizh Kusuma Abdillah](https://www.linkedin.com/in/hafizh-kusuma-abdillah-440102297/)|
 | Rifki Ardiansah | Full-Stack Developer | [Rifki Ardiansah](https://www.linkedin.com/in/rifki-ardiansahh/) |
 
