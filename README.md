@@ -11,9 +11,6 @@
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/finsense?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/finsense?style=social)
-![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
 
 > **Capstone Project Coding Camp 2026** – Team ID: CC26-PSU282
 
@@ -127,19 +124,6 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 ---
 
-## 📬 API Endpoints (Contoh)
-
-| Method | Endpoint | Deskripsi |
-|--------|----------|-----------|
-| POST | `/api/auth/register` | Registrasi user |
-| POST | `/api/auth/login` | Login → JWT |
-| GET | `/api/transactions` | Daftar transaksi |
-| POST | `/api/voice/process` | Upload audio → voice AI |
-| GET | `/api/predictions/revenue` | Prediksi pemasukan |
-
-> Dokumentasi lengkap: `http://localhost:5000/api-docs`
-
----
 
 ## 👥 Tim Pengembang
 
@@ -154,11 +138,6 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 ---
 
-## 📄 Lisensi
-
-MIT License - silakan gunakan untuk pembelajaran dan pengembangan.
-
----
 
 <div align="center">
   Built with ☕ by Team CC26-PSU282  
