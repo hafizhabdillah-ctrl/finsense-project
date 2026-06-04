@@ -127,14 +127,14 @@ Model tidak disertakan di repo (ukuran besar). Unduh dari tautan berikut:
 
 ## 👥 Tim Pengembang
 
-| Nama | Role |
-|------|------|
-| Ibrahim Irfanul Haq | AI Engineer |
-| Rafi Azhar Suadmaja | AI Engineer |
-| Alifah Mu’asyaroh | Data Scientist |
-| Alviyatur Rahmaniyah | Data Scientist |
-| Hafizh Kusuma Abdillah | Full-Stack Developer |
-| Rifki Ardiansah | Full-Stack Developer |
+| Nama | Role | LinkedIn | 
+|------|------|------|
+| Ibrahim Irfanul Haq | AI Engineer |  https://www.linkedin.com/in/ibrahimirfanulhaq/  |
+| Rafi Azhar Suadmaja | AI Engineer |  https://www.linkedin.com/in/|
+| Alifah Mu’asyaroh | Data Scientist |  https://www.linkedin.com/in/|
+| Alviyatur Rahmaniyah | Data Scientist |  https://www.linkedin.com/in/|
+| Hafizh Kusuma Abdillah | Full-Stack Developer | https://www.linkedin.com/in/hafizh-kusuma-abdillah-440102297/|
+| Rifki Ardiansah | Full-Stack Developer | https://www.linkedin.com/in/rifki-ardiansahh/ |
 
 ---
 
