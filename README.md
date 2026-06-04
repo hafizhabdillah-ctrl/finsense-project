@@ -5,7 +5,6 @@
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38B2AC)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688)
 ![Prisma](https://img.shields.io/badge/Prisma-5-2D3748)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 **FinSense** adalah platform manajemen keuangan yang dirancang khusus untuk UMKM. Dilengkapi dengan kecerdasan buatan (AI) untuk **prediksi pemasukan harian**, **rekomendasi restok stok**, **deteksi produk terlaris**, serta **input transaksi via suara**. Dashboard interaktif membantu pemilik usaha memantau kesehatan keuangan secara real-time.
 
@@ -22,7 +21,9 @@
 | 📊 **Dashboard** | Grafik pemasukan, pengeluaran, saldo, top produk |
 | 🤖 **Prediksi** | Forecasting pemasukan harian dengan model time-series |
 | 🧠 **Rekomendasi** | Restok stok otomatis & produk terlaris |
-| 🗣️ **AI Speech** | Konversi suara ke transaksi (tanpa mengetik) |
+| 🗣️ **AI Speech** | Konversi suara ke transaksi (*mendukung [121 produk](./PRODUCTS_LIST.md), [lihat daftar](./PRODUCTS_LIST.md)*) |
+
+> ℹ️ **Batasan Voice Recognition:** Model speech-to-intent hanya mengenali **121 produk** yang sudah dilatih. Produk di luar daftar tidak akan terdeteksi. Silakan gunakan input manual untuk produk lain.
 
 ---
 
@@ -54,6 +55,14 @@
 - AI Service: Hugging Face Spaces / Local
 
 ---
+
+## 🗣️ Batasan Voice Recognition
+
+Model AI speech-to-intent pada FinSense saat ini **hanya mendukung 121 produk** yang sudah dilatih. Produk di luar daftar **tidak akan terdeteksi** oleh sistem suara.
+
+📋 **Daftar lengkap 121 produk** dapat dilihat di [PRODUCTS_LIST.md](./PRODUCTS_LIST.md).
+
+> 📌 **Catatan:** Untuk produk yang tidak ada dalam daftar, silakan gunakan **input manual** atau **pencarian teks** pada halaman POS Terminal. Tim pengembang akan terus menambah dataset produk pada versi berikutnya.
 
 ## 📦 Struktur Proyek
 
@@ -198,14 +207,9 @@ FRONTEND_URL=http://localhost:5173
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
+## 📄 Referensi
 
----
-
-## 📝 Lisensi
-
-Proyek ini dilisensikan di bawah **MIT License** – bebas digunakan dan dimodifikasi untuk keperluan edukasi dan komersial.
-
----
+- [Daftar 121 Produk yang Didukung Voice](./PRODUCTS_LIST.md)
 
 ## 🤝 Tim Pengembang
 
