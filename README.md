@@ -1,5 +1,3 @@
----
-
 ```markdown
 <div align="center">
 
@@ -168,5 +166,3 @@ MIT License - silakan gunakan untuk pembelajaran dan pengembangan.
   🌐 <a href="https://finsense-project.vercel.app">Live Demo</a> | 📧 finsense@support.com
 </div>
 ```
-
----
