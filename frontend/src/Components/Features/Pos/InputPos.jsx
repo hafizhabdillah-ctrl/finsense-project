@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProducts } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
-import { FaMicrophone, FaSearch, FaSyncAlt } from 'react-icons/fa'; // tambah FaSyncAlt
+import { FaMicrophone, FaSearch, FaSyncAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import api from '../../../services/api';
 import { convertToWav } from '../../../utils/audioUtils';
@@ -127,6 +127,7 @@ function InputPos() {
     }
   }, [query, products]);
 
+  // ========== MODIFIKASI DI SINI ==========
   const handleAddProduct = (product) => {
     addItem({
       id: product.id,
@@ -134,9 +135,21 @@ function InputPos() {
       price: product.price || 0,
       qty: 1,
     });
+    // Notifikasi SweetAlert sukses
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: `${product.name} ditambahkan ke keranjang`,
+      timer: 1500,
+      showConfirmButton: false,
+    }).then(() => {
+      window.location.reload();
+    });
+    // Kosongkan input dan daftar filter
     setQuery('');
     setFiltered([]);
   };
+  // =======================================
 
   const [audioMimeType, setAudioMimeType] = useState('');
 
@@ -161,18 +174,17 @@ function InputPos() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Deteksi MIME type yang didukung
       let mimeType = '';
       if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
       else if (MediaRecorder.isTypeSupported('audio/mp4'))
         mimeType = 'audio/mp4';
       else if (MediaRecorder.isTypeSupported('audio/mpeg'))
         mimeType = 'audio/mpeg';
-      else mimeType = ''; // biarkan default browser
+      else mimeType = '';
 
       const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
-      setAudioMimeType(mimeType || mediaRecorder.mimeType); // simpan MIME type
+      setAudioMimeType(mimeType || mediaRecorder.mimeType);
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
@@ -227,14 +239,11 @@ function InputPos() {
     setIsProcessing(true);
     const jumlah = parseJumlah(spokenText) || 1;
 
-    // Tunggu sebentar agar MediaRecorder benar-benar selesai
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Gabungkan chunks menjadi blob asli (tanpa konversi)
     const mimeType = audioMimeType || 'audio/webm';
     const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
 
-    // Tentukan ekstensi file berdasarkan MIME type
     let extension = 'webm';
     if (mimeType.includes('mp4')) extension = 'mp4';
     else if (mimeType.includes('mpeg')) extension = 'mp3';
@@ -345,7 +354,7 @@ function InputPos() {
         )}
       </div>
 
-      {/* Tombol dengan styling sesuai permintaan */}
+      {/* Tombol suara dan status proses */}
       <button
         onClick={isListening ? stopListening : startListening}
         disabled={isProcessing}
